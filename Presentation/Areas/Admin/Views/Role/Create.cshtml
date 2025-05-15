@@ -1,0 +1,118 @@
+﻿@using Entity
+@model Presentation.DTO.RoleDto
+
+@{
+    ViewData["Title"] = "ایجاد نقش";
+    Layout = "_Layout";
+}
+@section Styles
+{
+    <link href="~/plugins/treeview/themes/default/style.css" rel="stylesheet">
+    <link href="~/plugins/treeview/file-explore.css" rel="stylesheet">
+    <style>
+        li{
+            list-style-type: none;
+        }
+    </style>
+}
+<hr/>
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <form asp-action="Create" method="post">
+                <div class="col-md-6">
+                    @if (ViewBag.Errors is not null)
+                    {
+                        <div class="alert alert-danger">
+                            @foreach (var item in ViewBag.Errors)
+                            {
+                                <strong>@item.Description</strong>
+                            }
+                        </div>
+                    }
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control"/>
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Title" class="control-label"></label>
+                        <input asp-for="Title" class="form-control"/>
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="tree_main">
+                                <ul id="bs_main" class="main_ul">
+                                    @foreach (var permissions in Permissions.All.GroupBy(i => i.Controller))
+                                    {
+                                        <li>
+
+                                            <div style="cursor: pointer" class="parent-row row">
+                                                <div class="form-check" style="width: 80px">
+                                                    <input class="form-check-input" style="margin-left: 10px; float: right"
+                                                           name="PermissionController" value="@(permissions.First().Controller)"
+                                                           type="checkbox"/>
+                                                    <label class="form-check-label parent" style="font-size: 16px; color: black; cursor: pointer">
+                                                        <strong>@permissions.First().ControllerLabel</strong>
+                                                    </label>
+                                                </div>
+                                                <span class="col parent"><i class="mdi mdi-chevron-left"></i></span>
+                                            </div>
+                                            <ul class="sub_ul">
+                                                @foreach (var permission in permissions)
+                                                {
+                                                    var permissionKey = $"{permission.Controller}.{permission.Action}";
+                                                    <li class="form-check">
+                                                        <input class="ml-1 form-check-input" style="margin-left: 10px; float: right"
+                                                               name="Permissions" value="@permissionKey" id="@permissionKey"
+                                                               type="checkbox"/>
+                                                        <label for="@permissionKey"
+                                                               class="form-check-label">@permission.ActionLabel</label>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="ثبت" class="btn btn-primary"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        $("input[name='PermissionController']").change(function () {
+            let controller = $(this).val();
+            if ($(this).prop("checked"))
+                $(`input[name=Permissions][value^=${controller}]`).prop("checked", true)
+            else
+                $(`input[name=Permissions][value^=${controller}]`).prop("checked", false)
+        })
+        $(document).ready(function (){
+
+            $(".sub_ul").hide()
+        })
+        $(".parent").click(function (){
+            $(this).parent(".parent-row").parent().find(".sub_ul").slideToggle();
+            let el = $(this).parent().find(".mdi")
+            if (el.hasClass("mdi-chevron-left"))
+                el.removeClass("mdi-chevron-left").addClass("mdi-chevron-down")
+            else 
+                el.removeClass("mdi-chevron-down").addClass("mdi-chevron-left")
+        })
+    </script>
+}
