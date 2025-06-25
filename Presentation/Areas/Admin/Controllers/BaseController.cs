@@ -25,7 +25,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
     where TResDto : BaseDto<TResDto, TEntity, TKey>
 {
     private List<Column> Columns = [];
-    private readonly IndexViewModel<TResDto> _indexViewModel = new();
+    protected readonly IndexViewModel<TResDto> indexViewModel = new();
     protected readonly CreateViewModel CreateViewModel = new();
     protected Dictionary<string, List<SelectListItem>> Options = new();
     protected readonly EditViewModel EditViewModel = new();
@@ -65,7 +65,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
 
     protected void AddListAction(string title, string cls, string method, string controller = "", string aClass = "", string rowUrl = "#")
     {
-        _indexViewModel.ListActions.Add(new()
+        indexViewModel.ListActions.Add(new()
             { Class = cls, Title = title, Method = method, AClass = aClass, RowUrl = rowUrl, Controller = controller});
     }
 
@@ -76,7 +76,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
 
     private void SetTitle(string title)
     {
-        _indexViewModel.Title = title;
+        indexViewModel.Title = title;
         CreateViewModel.Title = title;
         EditViewModel.Title = title;
     }
@@ -112,13 +112,13 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         items ??= [];
         if (type is FieldType.Select or FieldType.MultiSelect)
             items.Insert(0, new SelectListItem("انتخاب کنید", ""));
-        _indexViewModel.Filters.Add(new Field
+        indexViewModel.Filters.Add(new Field
             { Label = label, Name = name, Type = type, Value = value, Items = items });
     }
 
     public virtual async Task Configure(string method, CancellationToken ct)
     {
-        _indexViewModel.ViewSetting.Create = false;
+        indexViewModel.ViewSetting.Create = false;
 
 
         var title = typeof(TEntity).GetCustomAttribute<DisplayAttribute>()?.Name ?? "";
@@ -144,7 +144,7 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
         ViewBag.Components = components ?? [];
         var controllerName = ControllerContext.ActionDescriptor.ControllerName;
         if (CheckPermission.Check(User, $"{controllerName}.Create"))
-            _indexViewModel.ViewSetting.Create = true;
+            indexViewModel.ViewSetting.Create = true;
         if (CheckPermission.Check(User, $"{controllerName}.Edit"))
             AddListAction("ویرایش", "fa fa-pencil", "Edit", controllerName);
         if (CheckPermission.Check(User, $"{controllerName}.Delete"))
@@ -165,8 +165,8 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
                 list = list.Where(condition).AsQueryable();
         var queryRes = await list.OrderDescending().ToListAsync(ct);
         var res = mapper.Map<List<TResDto>>(queryRes);
-        _indexViewModel.Rows = res;
-        _indexViewModel.Columns = Columns;
+        indexViewModel.Rows = res;
+        indexViewModel.Columns = Columns;
         JsFiles.TryGetValue("index", out var jsFiles);
         ViewBag.JsFiles = jsFiles ?? [];
         ViewBag.SelectedFilters = model.Filters;
@@ -187,8 +187,8 @@ public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> r
 
         ViewBag.Sums = sumItems;
 
-        ViewBag.Model = _indexViewModel;
-        return View("~/Areas/Admin/Views/Base/Index.cshtml", _indexViewModel);
+        ViewBag.Model = indexViewModel;
+        return View("~/Areas/Admin/Views/Base/Index.cshtml", indexViewModel);
     }
 
     [HttpGet]

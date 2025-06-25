@@ -18,6 +18,7 @@ public class User : IdentityUser<int>, IEntity<int>
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
 
     public List<Role> Roles { get; set; }
+    public List<UploadedFile> UploadedFiles { get; set; }
 }
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
@@ -31,6 +32,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasMany(u => u.Roles)
             .WithMany(r => r.Users)
             .UsingEntity<IdentityUserRole<int>>();
+        builder.HasMany(i => i.UploadedFiles)
+            .WithOne(i => i.User)
+            .HasForeignKey(i => i.UserId);
     }
 }
 

@@ -1,0 +1,80 @@
+@using Common.Utilities
+@using Domain
+@model Domain.Activity
+
+@{
+    ViewBag.Title = "جزئیات فعالیت";
+    Layout = "_Layout";
+}
+
+
+<div class="card">
+    <div class="card-body">
+        <h2>جزئیات فعالیت</h2>
+
+        <div class="d-flex justify-content-between mt-3">
+            <a asp-action="AddDetail" asp-route-id="@Model.Id" asp-area="Admin" class="btn btn-primary">افزودن</a>
+            <button data-bs-toggle="modal" data-bs-target="#addImageModal" type="button" class="btn btn-primary">افزودن تصویر</button>
+        </div>
+        <table class="table table-hover mt-2">
+            <tr>
+                <th>نوع</th>
+                <th>شماره</th>
+                <th>تاریخ</th>
+                <th>مبلغ</th>
+                <th>عملیات</th>
+            </tr>
+            @foreach (var item in Model.Details)
+            {
+                <tr>
+                    <td>@item.Type.ToDisplay()</td>
+                    <td>@item.Number</td>
+                    <td>@item.Date.ToShamsi()</td>
+                    <td>@item.Price</td>
+                    <td>
+                        @if (item.Status == ActivityDetailStatus.Pending)
+                        {
+                            <a asp-controller="Activity" asp-action="ApprovedDetail" asp-route-id="@item.Id" class="btn btn-primary">تایید</a>
+                        }
+                        else
+                        {
+                            <span>تایید شده</span>
+                        }
+                    </td>
+                </tr>
+            }
+            <tfoot>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td colspan="2">جمع پرداختی:   @Model.Details.Sum(i => i.Price)</td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<div class="modal fade" id="addImageModal" tabindex="-1" aria-labelledby="addImageModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h1 class="modal-title fs-5" id="addImageModalLabel">افزودن تصویر</h1>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="Title">عنوان</label>
+                    <input type="text" class="form-control" id="Title" name="Title">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="File">فایل</label>
+                    <input type="file" class="form-control" name="File" id="File">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                <button type="button" class="btn btn-primary">ثبت</button>
+            </div>
+        </div>
+    </div>
+</div>

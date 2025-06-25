@@ -1,70 +1,36 @@
 @using Presentation.Helpers
-
-<div class="main-icon-menu">
-    <nav class="nav">
-        <a href="#Home" class="nav-link" id="MainHome">
-            <i class="fa fa-home"></i>
-        </a>
-        @if (CheckPermission.Check(User, ["User.Index", "Role.Index", "Customer.Index", "Project.Index"]))
-        {
-            <a href="#BaseInfo" class="nav-link" id="MainBaseInfo">
-                <i class="fa fa-info-circle"></i>
-            </a>
-        }
-    </nav>
-</div>
-<div class="main-menu-inner">
-    <div class="menu-body slimscroll">
-        <div class="main-icon-menu-pane" id="Home">
-            <div class="title-box">
-                <h6 class="menu-title">خانه</h6>
-            </div>
-            <ul class="nav config-active-menu-home">
-                <li class="nav-item">
-                    <a class="nav-link menu-item" asp-action="Index" asp-controller="Dashboard"><i
-                            class="dripicons-meter"></i>داشبورد</a>
-                </li>
-            </ul>
-
-        </div>
-        <div class="main-icon-menu-pane" id="BaseInfo">
-            <div class="title-box">
-                <h6 class="menu-title">اطلاعات پایه</h6>
-            </div>
-
-            <ul class="nav metismenu config-active-menu-baseInfo">
-                @if (CheckPermission.Check(User, ["User.Index", "Role.Index"]))
-                {
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" aria-expanded="true">
-                            <i class="dripicons-user-group"></i>
-                            <span class="w-100">ناحیه کاربری</span>
-                            <span class="menu-arrow">
-                            <i class="mdi mdi-chevron-right"></i>
-                        </span>
-                        </a>
-                        <ul class="nav-second-level" aria-expanded="false">
-                            @if (CheckPermission.Check(User, "User.Index"))
-                            {
-                                <li>
-                                    <a class="menu-item" asp-action="Index" asp-controller="User">کاربر</a>
-                                </li>
-                            }
-                            @if (CheckPermission.Check(User, "Role.Index"))
-                            {
-                                <li>
-                                    <a class="menu-item" asp-action="Index" asp-controller="Role">نقش</a>
-                                </li>
-                            }
-                        </ul>
-                    </li>
-                }
-
-            </ul>
-
-
-        </div>
+<aside id="sidebar" class="sidebar expanded d-flex flex-column">
+    <div class="logo px-3">
+        <img src="/logo.svg" alt="Logo" class="me-2" style="width: 40px; height: 40px;">
+        <span id="logo-text" class="text-gold fw-bold fs-4">SARAYENO</span>
     </div>
-</div>
-@* <ul class="metismenu left-sidenav-menu"> *@
-@* </ul> *@
+    <nav class="flex-grow-1 mt-3">
+        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="menu-item">
+            <i class="fas fa-clock text-gold"></i><span class="menu-label">داشبورد</span>
+        </a>
+        <a asp-area="Admin" asp-controller="User" asp-action="Index" class="menu-item">
+            <i class="fas fa-user text-gold"></i><span class="menu-label">کاربران</span>
+        </a>
+        <a asp-area="Admin" asp-controller="CostGroup" asp-action="Index" class="menu-item">
+            <i class="fas fa-users text-gold"></i><span class="menu-label">گروه هزینه</span>
+        </a>
+        <a asp-area="Admin" asp-controller="Creditor" asp-action="Index" class="menu-item">
+            <i class="fas fa-user-clock text-gold"></i><span class="menu-label">بستانکار</span>
+        </a>
+        <a asp-area="Admin" asp-controller="Project" asp-action="Index" class="menu-item">
+            <i class="fas fa-folder text-gold"></i><span class="menu-label">پروژه ما</span>
+        </a>
+        <div class="menu-item">
+            <i class="fas fa-image text-gold"></i><span class="menu-label">گالری</span>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-calculator text-gold"></i><span class="menu-label">حسابداری</span>
+        </div>
+        <a asp-area="Admin" asp-controller="Activity" asp-action="Index" class="menu-item">
+            <i class="fas fa-envelope text-gold"></i><span class="menu-label">فعالیت</span>
+        </a>
+    </nav>
+    <button id="collapseBtn" class="btn text-white w-100" style="background-color: var(--color-navy);">
+        <i id="collapseIcon" class="fas fa-angle-left"></i>
+    </button>
+</aside>

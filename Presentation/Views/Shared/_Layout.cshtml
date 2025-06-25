@@ -10,61 +10,35 @@
 	<title>@ViewData["Title"]</title>
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
 	<link rel="stylesheet" href="~/css/icons.css"/>
-	<link rel="stylesheet" href="~/css/metisMenu.min.css"/>
+	@* <link rel="stylesheet" href="~/css/metisMenu.min.css"/> *@
 	<link rel="stylesheet" href="~/css/font.css"/>
 	<link rel="stylesheet" href="~/plugins/select2/select2.min.css"/>
 	<link rel="stylesheet" href="~/css/persian-datepicker.css"/>
-	<link rel="stylesheet" href="~/css/style.min.css"/>
+	@* <link rel="stylesheet" href="~/css/style.min.css"/> *@
 	<link rel="stylesheet" href="~/css/site.css"/>
 	<link rel="stylesheet" href="~/plugins/font-awesome-4/css/font-awesome.css"/>
 	@await RenderSectionAsync("Styles", required: false)
 </head>
+
 <body>
-<div class="topbar">
-	<div class="topbar-left">
-		<a href="/" class="logo">
-			<img src="~/images/taskmanagementlogo.jpg" style="width: 150px; height: 45px" alt="logo-large"
-			     class="logo-lg">
-		</a>
-	</div>
-	<nav class="navbar-custom">
+<div class="d-flex h-100">
+	<!-- Sidebar -->
+	<partial name="_Menu"/>
+	<!-- Main Content -->
+	<main class="flex-grow-1 d-flex flex-column">
+		<!-- Header -->
+		<header class="bg-dark d-flex justify-content-end align-items-center px-4" style="height: 64px;">
+			<div class="d-flex align-items-center gap-2">
+				<span>مدیر کل</span>
+				<i class="fas fa-user-circle fs-4"></i>
+			</div>
+		</header>
 
-		<ul class="list-unstyled topbar-nav mb-0 pl-2" style="float: left">
-
-			<li class="dropdown">
-				<a class="nav-link dropdown-toggle waves-effect waves-light nav-user" data-bs-toggle="dropdown" href="#"
-				   role="button"
-				   aria-haspopup="false" aria-expanded="false">
-					<span class="ml-1 nav-user-name hidden-sm">@userFullName <i
-							class="mdi mdi-chevron-down"></i> </span>
-				</a>
-				<div class="dropdown-menu pr-1">
-					@* <div class="dropdown-divider"></div> *@
-					<a class="dropdown-item pr-1" style="text-align: right" asp-area="" asp-controller="Account"
-					   asp-action="Logout"><i class="dripicons-exit text-muted mr-2"></i> خروج</a>
-				</div>
-			</li>
-
-		</ul>
-
-		<ul class="list-unstyled topbar-nav mb-0">
-			<li>
-				<button class="button-menu-mobile nav-link waves-effect waves-light">
-					<i class="dripicons-menu nav-icon"></i>
-				</button>
-			</li>
-		</ul>
-	</nav>
+		<section class="p-4">
+			@RenderBody()
+		</section>
+	</main>
 </div>
-<div class="page-wrapper">
-	<div class="left-sidenav">
-		<partial name="_Menu"/>
-	</div>
-	<div class="container-fluid p-5">
-		@RenderBody()
-	</div>
-</div>
-
 <script>
 	let datePickerConfigs = {
 		"inline": false,
@@ -186,10 +160,18 @@
 	$(".select2").select2({
 		width: "100%"
 	})
+
+	function showSection(event, id) {
+		document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+		event.currentTarget.classList.add('active');
+
+		document.querySelectorAll('.content-section').forEach(section => {
+			section.classList.remove('active');
+		});
+
+		document.getElementById(id).classList.add('active');
+	}
 	$(document).ready(function () {
-		$(".metismenu").metisMenu();
-
-
 		$('.repeater-default').repeater({
 			show: function () {
 				$(this).slideDown();

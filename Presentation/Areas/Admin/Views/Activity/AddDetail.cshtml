@@ -1,0 +1,48 @@
+@using Common.Utilities
+@using Domain
+@model Presentation.DTO.ActivityDetailDto
+
+@{
+    ViewBag.Title = "افزودن";
+    Layout = "_Layout";
+}
+
+
+<div class="card">
+    <div class="card-body">
+        <h2>افزودن جزئیات فعالیت</h2>
+        <form asp-action="CreateDetail" method="post">
+            <input type="hidden" asp-for="ActivityId">
+            <div class="row">
+                <div class="form-group col-6">
+                    <label asp-for="Type" class="control-label"></label>
+                    <select name="Type" class="form-control select2">
+                        <option value="@ActivityDetailType.Check">@ActivityDetailType.Check.ToDisplay()</option>
+                        <option value="@ActivityDetailType.EmployerPayment">@ActivityDetailType.EmployerPayment.ToDisplay()</option>
+                        <option value="@ActivityDetailType.TrustFund">@ActivityDetailType.TrustFund.ToDisplay()</option>
+                    </select>
+                    <span asp-validation-for="Type" class="text-danger"></span>
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="Number" class="control-label"></label>
+                    <input asp-for="Number" class="form-control"/>
+                    <span asp-validation-for="Number" class="text-danger"></span>
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="Date" class="control-label"></label>
+                    <input class="form-control date-picker" type="text" autocomplete="off" name="Date"/>
+                    <span asp-validation-for="Date" class="text-danger"></span>
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="Price" class="control-label"></label>
+                    <input asp-for="Price" class="form-control"/>
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">ثبت</button>
+        </form>
+        
+        
+    </div>
+</div>

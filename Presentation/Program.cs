@@ -5,6 +5,8 @@ using Data.Reprositories;
 using DTO.CustomMapping;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.FileProviders;
+using Service.Model;
+using Service.Model.Contracts;
 using Services.DataInitializer;
 using WebFramework.Configuration;
 
@@ -19,6 +21,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUploadedFileService, UploadedFileService>();
 
 builder.Services.AddScoped<IDataInitializer, RoleDataInitializer>();
 builder.Services.AddScoped<IDataInitializer, UserDataInitializer>();

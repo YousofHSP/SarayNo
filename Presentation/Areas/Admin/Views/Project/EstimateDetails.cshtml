@@ -1,0 +1,34 @@
+@using Domain
+@model Domain.Project
+
+@{
+    ViewBag.Title = "جزئیات پروژه";
+    Layout = "_Layout";
+}
+
+
+<div class="card">
+    <div class="card-body">
+        <h3>جزئیات تخمین شده</h3>
+        <div class="d-flex justify-content-between mt-3">
+            <a asp-action="AddEstimateDetail" asp-route-id="@Model.Id" asp-area="Admin" class="btn btn-primary">افزودن</a>
+        </div>
+        <table class="table table-hover mt-2">
+            <tr>
+                <th>عنوان</th>
+                <th>مقدار</th>
+                <th>فی</th>
+                <th>قیمت کل</th>
+            </tr>
+            @foreach (var item in Model.Details.Where(i => i.Type == ProjectDetailType.Estimate))
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.Area</td>
+                    <td>@item.UnitPrice</td>
+                    <td>@item.TotalPrice</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

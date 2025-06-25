@@ -29,7 +29,7 @@
                         continue;
                     field.SetLabelFromProperty(property);
 
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <div class="@(field.Type == FieldType.Checkbox ? "form-check" : "form-group")">
                             <label class="@(field.Type == FieldType.Checkbox ? "from-check-label" : "form-label")"
                                    for="@property.Name">@field.Label</label>
