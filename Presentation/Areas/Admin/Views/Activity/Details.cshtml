@@ -1,10 +1,14 @@
 @using Common.Utilities
+@using DocumentFormat.OpenXml.Wordprocessing
 @using Domain
+@using Service.Model.Contracts
 @model Domain.Activity
+@inject IUploadedFileService UploadedFileService
 
 @{
     ViewBag.Title = "جزئیات فعالیت";
     Layout = "_Layout";
+    var images = await UploadedFileService.GetFiles(nameof(Activity), [Model.Id], null, default);
 }
 
 
@@ -12,9 +16,41 @@
     <div class="card-body">
         <h2>جزئیات فعالیت</h2>
 
-        <div class="d-flex justify-content-between mt-3">
-            <a asp-action="AddDetail" asp-route-id="@Model.Id" asp-area="Admin" class="btn btn-primary">افزودن</a>
-            <button data-bs-toggle="modal" data-bs-target="#addImageModal" type="button" class="btn btn-primary">افزودن تصویر</button>
+        @if (!Model.IsDone)
+        {
+            <div class="d-flex justify-content-start mt-3">
+                <a asp-action="AddDetail" asp-route-id="@Model.Id" asp-area="Admin" class="btn btn-primary">افزودن</a>
+                <button data-bs-toggle="modal" data-bs-target="#addImageModal" type="button"
+                        class="btn btn-primary me-2">افزودن
+                    تصویر
+                </button>
+                <button data-bs-toggle="modal" data-bs-target="#setTotalAmountModal" type="button"
+                        class="btn btn-primary me-2">ثبت مبلغ فاکتور
+                </button>
+                <a asp-action="Done" asp-route-id="@Model.Id" class="btn btn-primary me-2">اتمام فعالیت و ارسال به فاکتور تسویه نشده</a>
+            </div>
+        }
+        else
+        {
+            <h4>اتمام فعالیت و ارسال به فاکتور تسویه نشده</h4>
+        }
+        <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
+
+            @foreach (var image in images)
+            {
+                <div class="col">
+                    <div class="card">
+                        <img src="@UploadedFileService.GetFilePath(image, default)" class="card-img-top"
+                             alt="@image.Type.ToString()"/>
+                        <div class="card-body">
+                            <h5>@image.Type.ToDisplay()</h5>
+                            <p class="card-text">@image.Description</p>
+                            <a asp-action="RemoveImage" asp-route-id="@image.Id" class="btn btn-danger">حذف</a>
+                        </div>
+
+                    </div>
+                </div>
+            }
         </div>
         <table class="table table-hover mt-2">
             <tr>
@@ -30,11 +66,12 @@
                     <td>@item.Type.ToDisplay()</td>
                     <td>@item.Number</td>
                     <td>@item.Date.ToShamsi()</td>
-                    <td>@item.Price</td>
+                    <td>@item.Price.ToNumeric()</td>
                     <td>
                         @if (item.Status == ActivityDetailStatus.Pending)
                         {
-                            <a asp-controller="Activity" asp-action="ApprovedDetail" asp-route-id="@item.Id" class="btn btn-primary">تایید</a>
+                            <a asp-controller="Activity" asp-action="ApprovedDetail" asp-route-id="@item.Id"
+                               class="btn btn-primary">تایید</a>
                         }
                         else
                         {
@@ -44,11 +81,20 @@
                 </tr>
             }
             <tfoot>
+            @{
+                var totalPrice = Model.Details.Sum(i => i.Price);
+            }
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td colspan="2">جمع پرداختی:   @Model.Details.Sum(i => i.Price)</td>
+                <td colspan="3"></td>
+                <td colspan="2">جمع پرداختی: @totalPrice.ToNumeric()</td>
+            </tr>
+            <tr>
+                <td colspan="3"></td>
+                <td colspan="2">مبلغ کل فاکتور: @Model.TotalAmount.ToNumeric()</td>
+            </tr>
+            <tr>
+                <td colspan="3"></td>
+                <td colspan="2">مانده نهایی: @((Model.TotalAmount - totalPrice).ToNumeric()) </td>
             </tr>
             </tfoot>
         </table>
@@ -61,20 +107,55 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 <h1 class="modal-title fs-5" id="addImageModalLabel">افزودن تصویر</h1>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label" for="Title">عنوان</label>
-                    <input type="text" class="form-control" id="Title" name="Title">
+            <form asp-action="AddImage" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="ModelId" value="@Model.Id">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="Type">نوع</label>
+                        <select class="form-control" id="Type" name="Type">
+                            <option value="@UploadedFileType.Unknown">@UploadedFileType.Unknown.ToDisplay()</option>
+                            <option value="@UploadedFileType.Contract">@UploadedFileType.Contract.ToDisplay()</option>
+                            <option value="@UploadedFileType.OnAccount">@UploadedFileType.OnAccount.ToDisplay()</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="File">فایل</label>
+                        <input type="file" class="form-control" name="File" id="File" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="Description">توضیحات</label>
+                        <textarea class="form-control" name="Description" id="Description"></textarea>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="File">فایل</label>
-                    <input type="file" class="form-control" name="File" id="File">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <button type="submit" class="btn btn-primary">ثبت</button>
                 </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="setTotalAmountModal" tabindex="-1" aria-labelledby="setTotalAmountModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-between">
+                <h1 class="modal-title fs-5" id="setTotalAmountModalLabel">ثبت مبلغ فاکتور</h1>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
-                <button type="button" class="btn btn-primary">ثبت</button>
-            </div>
+            <form asp-action="SetTotalAmount" asp-route-id="@Model.Id" method="post">
+                <input type="hidden" name="ModelId" value="@Model.Id">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="totalAmount">مبلغ کل فاکتور</label>
+                        <input type="text" class="form-control numeric" name="totalAmount" id="totalAmount"
+                               value="@Model.TotalAmount" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <button type="submit" class="btn btn-primary">ثبت</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

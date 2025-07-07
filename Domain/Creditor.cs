@@ -13,6 +13,8 @@ public class Creditor : BaseEntity
     public string LastName { get; set; }
     
     public List<Activity> Activities { get; set; }
+    public List<UnverifiedInvoice> UnverifiedInvoices { get; set; }
+    public List<UnsettledInvoice> UnsettledInvoices { get; set; }
 }
 
 public class CreditorConfiguration : IEntityTypeConfiguration<Creditor>
@@ -20,6 +22,12 @@ public class CreditorConfiguration : IEntityTypeConfiguration<Creditor>
     public void Configure(EntityTypeBuilder<Creditor> builder)
     {
         builder.HasMany(i => i.Activities)
+            .WithOne(i => i.Creditor)
+            .HasForeignKey(i => i.CreditorId);
+        builder.HasMany(i => i.UnverifiedInvoices)
+            .WithOne(i => i.Creditor)
+            .HasForeignKey(i => i.CreditorId);
+        builder.HasMany(i => i.UnsettledInvoices)
             .WithOne(i => i.Creditor)
             .HasForeignKey(i => i.CreditorId);
     }

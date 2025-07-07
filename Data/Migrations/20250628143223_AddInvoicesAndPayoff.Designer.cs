@@ -4,6 +4,7 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250628143223_AddInvoicesAndPayoff")]
+    partial class AddInvoicesAndPayoff
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -324,15 +327,10 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("Discount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("real")
-                        .HasDefaultValue(0f);
+                        .HasColumnType("real");
 
                     b.Property<float>("RemainAmount")
                         .HasColumnType("real");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
                     b.Property<int?>("UnverifiedInvoiceId")
                         .HasColumnType("int");

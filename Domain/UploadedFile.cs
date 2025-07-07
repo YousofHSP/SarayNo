@@ -1,4 +1,5 @@
-﻿using Domain.Common;
+﻿using System.ComponentModel.DataAnnotations;
+using Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,11 +12,10 @@ namespace Domain
         public string MimeType { get; set; }
         public string ModelType { get; set; }
         public int ModelId { get; set; }
-        public string Hash { get; set; }
-        public string SaltCode { get; set; }
         public int UserId { get; set; }
         public UploadedFileType Type { get; set; }
         public bool Status { get; set; }
+        public string Description { get; set; }
 
         public User User { get; set; }
     }
@@ -24,6 +24,7 @@ namespace Domain
     {
         public void Configure(EntityTypeBuilder<UploadedFile> builder)
         {
+            builder.Property(i => i.Description).HasDefaultValue("");
             builder.HasOne(i => i.User)
                 .WithMany(i => i.UploadedFiles)
                 .HasForeignKey(i => i.UserId);
@@ -32,8 +33,16 @@ namespace Domain
 
     public enum UploadedFileType
     {
-        Unknown = 0,
-        Avatar = 1,
+        [Display(Name = "مشخص نشده")]
+        Unknown,
+        [Display(Name = "پروفایل")]
+        Avatar,
+        [Display(Name = "قرارداد")]
+        Contract,
+        [Display(Name = "علی الحساب")]
+        OnAccount,
+        [Display(Name = "گزارش")]
+        Report
     }
 }
 

@@ -161,6 +161,33 @@
 		width: "100%"
 	})
 
+	function formatNumericInput(input) {
+		let cursorPosition = input.selectionStart;
+
+		let rawValue = input.value.replace(/,/g, '').replace(/[^\d]/g, '');
+
+		if (rawValue === '') {
+			input.value = '';
+			return;
+		}
+
+		let formatted = Number(rawValue).toLocaleString('en-US');
+		input.value = formatted;
+
+		// تنظیم مکان‌نما
+		let diff = formatted.length - rawValue.length;
+		input.setSelectionRange(cursorPosition + diff, cursorPosition + diff);
+	}
+
+	$(".numeric").on("input", function () {
+		formatNumericInput(this);
+	});
+
+	// ✅ اجرای فرمت روی مقدارهای اولیه
+	$(".numeric").each(function () {
+		formatNumericInput(this);
+	});
+
 	function showSection(event, id) {
 		document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
 		event.currentTarget.classList.add('active');
@@ -171,6 +198,7 @@
 
 		document.getElementById(id).classList.add('active');
 	}
+
 	$(document).ready(function () {
 		$('.repeater-default').repeater({
 			show: function () {

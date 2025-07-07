@@ -1,0 +1,264 @@
+@using Common.Utilities
+@using Data.Contracts
+@using Domain
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Newtonsoft.Json
+@using Service.Model.Contracts
+@using JsonSerializer = System.Text.Json.JsonSerializer
+@model List<Domain.UnverifiedInvoice>
+@inject IRepository<CostGroup> CostGroupRepository
+@inject IRepository<Creditor> CreditorRepository
+@inject IRepository<Project> ProjectRepository
+@inject IUploadedFileService UploadFileService
+
+@{
+    ViewBag.Title = "قاکتور های تایید نشده";
+    Layout = "_Layout";
+    var creditors = await CreditorRepository.GetSelectListItems(nameof(Creditor.LastName));
+    var costGroups = await CostGroupRepository.GetSelectListItems();
+    var projects = await ProjectRepository.GetSelectListItems();
+    var files = await UploadFileService.GetFiles(nameof(UnverifiedInvoice), [], null, default);
+}
+
+<div class="card">
+    <div class="card-body">
+
+
+        <div class="d-flex justify-content-between">
+            <button data-bs-toggle="modal" data-bs-target="#addModal" type="button" class="btn btn-primary">افزودن
+            </button>
+        </div>
+
+
+        <table class="table table-hover mt-2">
+            <thead>
+            <tr>
+                <td>ردیف</td>
+                <td>پروژه</td>
+                <td>گروه هزینه</td>
+                <td>بستانکار</td>
+                <td>تاریخ</td>
+                <td>توضیحات</td>
+                <td>مبلغ</td>
+                <td>وضعیت</td>
+                <td>عملیات</td>
+            </tr>
+            </thead>
+            <tbody>
+            @{
+                var index = 0;
+            }
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@(++index)</td>
+                    <td>@item.Project.Title</td>
+                    <td>@item.CostGroup.Title</td>
+                    <td>@item.Creditor.FirstName @item.Creditor.LastName</td>
+                    <td>@item.Date.ToShamsi()</td>
+                    <td>@item.Description</td>
+                    <td>@item.Amount.ToNumeric()</td>
+                    <td>@item.Status.ToDisplay()</td>
+                    <td>
+
+                        <div class="dropdown d-inline-block">
+                            <a class="nav-link" style="padding: .5rem 1rem"
+                               data-bs-toggle="dropdown"
+                               href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                                <i class="fa fa-ellipsis-v font-20 text-muted"></i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
+                                 style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#updateModal"
+                                   data-id="@item.Id" data-cost-group-id="@item.CostGroupId"
+                                   data-creditor-id="@item.CreditorId" data-project-id="@item.ProjectId"
+                                   data-amount="@item.Amount" data-date="@item.Date.ToShamsi()"
+                                   data-description="@item.Description"
+                                   class="dropdown-item">
+                                    <i
+                                        class="fa fa-pencil"></i>
+                                    ویرایش
+                                </a>
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#uploadImageModal"
+                                   class="dropdown-item" data-bs-invoice-id="@item.Id">
+                                    <i
+                                        class="fa fa-image"></i>
+                                    آپلود تصویر
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-between">
+                <h1 class="modal-title fs-5" id="addModalLabel">ثبت فاکتور</h1>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Create" method="post">
+                <input type="hidden" name="ModelId" value="">
+                <div class="modal-body">
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="CostGroupId">گروه هزینه</label>
+                        <select name="CostGroupId" id="CostGroupId" class="form-control select2"
+                                asp-items="costGroups"></select>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="CreditorId">بستانکار</label>
+                        <select name="CreditorId" id="CreditorId" class="form-control select2"
+                                asp-items="creditors"></select>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="ProjectId">پروژه</label>
+                        <select name="ProjectId" id="ProjectId" class="form-control select2"
+                                asp-items="projects"></select>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="Amount">مبلغ</label>
+                        <input name="Amount" id="Amount" type="text" class="form-control numeric"/>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="Date">تاریخ</label>
+                        <input name="Date" id="Date" type="text" class="form-control date-picker" autocomplete="off"/>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="Description">توضیحات</label>
+                        <textarea name="Description" id="Description" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <button type="submit" class="btn btn-primary">ثبت</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="uploadImageModal" tabindex="-1" aria-labelby="uploadImageModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="uploadImageModalLabel">افزودن تصویر</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="AddImage" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" name="ModelId">
+                    <div class="form-group">
+                        <label class="form-label" for="Type">نوع</label>
+                        <select class="form-control" id="Type" name="Type">
+                            <option value="@UploadedFileType.Unknown">@UploadedFileType.Unknown.ToDisplay()</option>
+                            <option value="@UploadedFileType.Contract">@UploadedFileType.Contract.ToDisplay()</option>
+                            <option value="@UploadedFileType.OnAccount">@UploadedFileType.OnAccount.ToDisplay()</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="File">فایل</label>
+                        <input type="file" class="form-control" name="File" id="File" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="DescriptionImage">توضیحات</label>
+                        <textarea class="form-control" name="Description" id="DescriptionImage"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <button type="submit" class="btn btn-primary">ثبت</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-between">
+                <h1 class="modal-title fs-5" id="updateModalLabel">ویرایش</h1>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Update" method="post">
+                <input type="hidden" name="Id" value="">
+                <div class="modal-body">
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="CostGroupIdUpdate">گروه هزینه</label>
+                        <select name="CostGroupId" id="CostGroupIdUpdate" class="form-control select2"
+                                asp-items="costGroups"></select>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="CreditorIdUpdate">بستانکار</label>
+                        <select name="CreditorId" id="CreditorIdUpdate" class="form-control select2"
+                                asp-items="creditors"></select>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="ProjectIdUpdate">پروژه</label>
+                        <select name="ProjectId" id="ProjectIdUpdate" class="form-control select2"
+                                asp-items="projects"></select>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="AmountUpdate">مبلغ</label>
+                        <input name="Amount" id="AmountUpdate" type="text" class="form-control numeric"/>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="DateUpdate">تاریخ</label>
+                        <input name="Date" id="DateUpdate" type="text" class="form-control date-picker"
+                               autocomplete="off"/>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="DescriptionUpdate">توضیحات</label>
+                        <textarea name="Description" id="DescriptionUpdate" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <button type="submit" class="btn btn-primary">ثبت</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        let files = @Html.Raw(JsonSerializer.Serialize(files))
+        $('#uploadImageModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget)
+            const recipient = button.data('bs-invoice-id')
+            const modal = $(this)
+            modal.find('input[name=ModelId]').val(recipient)
+        })
+        $("#updateModal").on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget)
+            const id = button.data('id')
+            const modelFiles = files.filter(i => i.ModelId == id);
+            console.log(modelFiles)
+            const projectId = button.data('projectId')
+            const creditor = button.data('creditorId')
+            const costGroup = button.data('costGroupId')
+            const date = button.data('date')
+            const amount = button.data('amount')
+            const description = button.data('description')
+            const modal = $(this)
+            modal.find('input[name=Id]').val(id)
+            modal.find('input[name=Date]').val(date)
+            modal.find('input[name=Amount]').val(amount)
+            modal.find('textarea[name=Description]').val(description)
+            modal.find('select[name=CreditorId]')
+                .val(creditor)
+                .trigger("change")
+            modal.find('select[name=CostGroupId]')
+                .val(costGroup)
+                .trigger("change")
+            modal.find('select[name=ProjectId]')
+                .val(projectId)
+                .trigger("change")
+        })
+    
+    
+    </script>
+}

@@ -20,14 +20,26 @@
         <a asp-area="Admin" asp-controller="Project" asp-action="Index" class="menu-item">
             <i class="fas fa-folder text-gold"></i><span class="menu-label">پروژه ما</span>
         </a>
-        <div class="menu-item">
-            <i class="fas fa-image text-gold"></i><span class="menu-label">گالری</span>
-        </div>
-        <div class="menu-item">
-            <i class="fas fa-calculator text-gold"></i><span class="menu-label">حسابداری</span>
-        </div>
+        <a asp-area="Admin" asp-controller="Project" asp-action="EstimateDetails" class="menu-item">
+            <i class="fas fa-folder text-gold"></i><span class="menu-label">برآورد و تخمین</span>
+        </a>
+        <a asp-area="Admin" asp-controller="Project" asp-action="FinalDetails" class="menu-item">
+            <i class="fas fa-folder text-gold"></i><span class="menu-label">متراژ و قیمت اجرا شده</span>
+        </a>
+        @* <div class="menu-item"> *@
+        @*     <i class="fas fa-image text-gold"></i><span class="menu-label">گالری</span> *@
+        @* </div> *@
+        @* <div class="menu-item"> *@
+        @*     <i class="fas fa-calculator text-gold"></i><span class="menu-label">حسابداری</span> *@
+        @* </div> *@
         <a asp-area="Admin" asp-controller="Activity" asp-action="Index" class="menu-item">
             <i class="fas fa-envelope text-gold"></i><span class="menu-label">فعالیت</span>
+        </a>
+        <a asp-area="Admin" asp-controller="UnverifiedInvoice" asp-action="Index" class="menu-item">
+            <i class="fas fa-envelope text-gold"></i><span class="menu-label">فاکتور های تایید نشده</span>
+        </a>
+        <a asp-area="Admin" asp-controller="UnsettledInvoice" asp-action="Index" class="menu-item">
+            <i class="fas fa-envelope text-gold"></i><span class="menu-label">فاکتور های تسویه نشده</span>
         </a>
     </nav>
     <button id="collapseBtn" class="btn text-white w-100" style="background-color: var(--color-navy);">

@@ -1,8 +1,8 @@
 @using Domain
-@model Domain.Project
+@model List<Presentation.DTO.ActivityResDto>
 
 @{
-    ViewBag.Title = "جزئیات پروژه";
+    ViewBag.Title = "لیست فعالیت ها";
     Layout = "_Layout";
     var projects = ViewBag.Projects as List<Project>;
 }
@@ -15,7 +15,7 @@
             <div class="row gap-2">
                 @foreach (var project in projects)
                 {
-                    <a asp-action="EstimateDetails" asp-route-projectId="@project.Id" class="card"
+                    <a asp-action="Index" asp-route-projectId="@project.Id" class="card"
                        style="width: 18rem;">
                         <div class="card-body">
                             <h5 class="card-title">@project.Title</h5>
@@ -28,24 +28,27 @@
         }
         else
         {
-            <h3>جزئیات تخمین شده : @Model.Title</h3>
-            <div class="d-flex justify-content-between mt-3">
-                <a asp-action="AddEstimateDetail" asp-route-id="@Model.Id" asp-area="Admin" class="btn btn-primary">افزودن</a>
+            <div class="d-flex justify-content-between">
+                <button data-bs-toggle="modal" data-bs-target="#addModal" type="button" class="btn btn-primary">افزودن
+                </button>
             </div>
             <table class="table table-hover mt-2">
                 <tr>
-                    <th>عنوان</th>
-                    <th>مقدار</th>
-                    <th>فی</th>
-                    <th>قیمت کل</th>
+                    <th>پروژه</th>
+                    <th>گروه هزینه</th>
+                    <th>بستانکار</th>
+                    <th>توضیحات</th>
+                    <th>علی الحساب</th>
+                    <th>عملیات</th>
                 </tr>
-                @foreach (var item in Model.Details.Where(i => i.Type == ProjectDetailType.Estimate))
+                @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@item.Title</td>
-                        <td>@item.Area</td>
-                        <td>@item.UnitPrice</td>
-                        <td>@item.TotalPrice</td>
+                        <td>@item.ProjectTitle</td>
+                        <td>@item.CostGroupTitle</td>
+                        <td>@item.CreditorFullName</td>
+                        <td>@item.OnAccount</td>
+                        <td>test</td>
                     </tr>
                 }
             </table>

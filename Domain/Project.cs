@@ -15,6 +15,7 @@ public class Project : BaseEntity
 
     public List<ProjectDetail> Details { get; set; }
     public List<Activity> Activities { get; set; }
+    public List<UnverifiedInvoice> UnverifiedInvoices { get; set; }
 }
 public class ProjectConfiguration : IEntityTypeConfiguration<Project>
 {
@@ -24,6 +25,9 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .WithOne(i => i.Project)
             .HasForeignKey(i => i.ProjectId);
         builder.HasMany(i => i.Activities)
+            .WithOne(i => i.Project)
+            .HasForeignKey(i => i.ProjectId);
+        builder.HasMany(i => i.UnverifiedInvoices)
             .WithOne(i => i.Project)
             .HasForeignKey(i => i.ProjectId);
     }

@@ -28,24 +28,40 @@ public class ProjectController(
         return View(list);
     }
 
-    [HttpGet("[action]/{id}")]
-    public async Task<IActionResult> EstimateDetails([FromRoute] int id, CancellationToken ct)
+    [HttpGet("[action]")]
+    public async Task<IActionResult> EstimateDetails([FromQuery] int? projectId, CancellationToken ct)
     {
+        if (projectId is null)
+        {
+            var projects = await _repository.TableNoTracking.ToListAsync(ct);
+
+            ViewBag.Projects = projects;
+            return View();
+        }
+
         var model = await _repository.TableNoTracking
             .Include(i => i.Details)
-            .FirstOrDefaultAsync(i => i.Id == id, ct);
+            .FirstOrDefaultAsync(i => i.Id == projectId, ct);
         if (model is null)
             return NotFound();
 
         return View(model);
     }
 
-    [HttpGet("[action]/{id}")]
-    public async Task<IActionResult> FinalDetails([FromRoute] int id, CancellationToken ct)
+    [HttpGet("[action]")]
+    public async Task<IActionResult> FinalDetails([FromQuery] int? projectId, CancellationToken ct)
     {
+        if (projectId is null)
+        {
+            var projects = await _repository.TableNoTracking.ToListAsync(ct);
+
+            ViewBag.Projects = projects;
+            return View();
+        }
+
         var model = await _repository.TableNoTracking
             .Include(i => i.Details)
-            .FirstOrDefaultAsync(i => i.Id == id, ct);
+            .FirstOrDefaultAsync(i => i.Id == projectId, ct);
         if (model is null)
             return NotFound();
 
@@ -81,8 +97,9 @@ public class ProjectController(
     {
         var model = dto.ToEntity(_mapper);
         await _projectDetailRepository.AddAsync(model, ct);
-        if(model.Type == ProjectDetailType.Estimate)
-            return RedirectToAction(nameof(EstimateDetails), new {id=model.ProjectId, ct = new CancellationToken()});
-        return RedirectToAction(nameof(FinalDetails), new {id=model.ProjectId, ct = new CancellationToken()});
+        if (model.Type == ProjectDetailType.Estimate)
+            return RedirectToAction(nameof(EstimateDetails),
+                new { id = model.ProjectId, ct = new CancellationToken() });
+        return RedirectToAction(nameof(FinalDetails), new { id = model.ProjectId, ct = new CancellationToken() });
     }
 }

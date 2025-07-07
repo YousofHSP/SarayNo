@@ -25,7 +25,7 @@ namespace Common.Utilities
         {
             return value.ToString("N0"); // "123,456"
         }
-        public static string ToNumeric(this decimal value)
+        public static string ToNumeric(this float value)
         {
             return value.ToString("N0");
         }

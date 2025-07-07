@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using AutoMapper;
+using Common.Utilities;
 using Domain;
 using Presentation.Attributes;
 using Presentation.Models;
@@ -45,7 +46,7 @@ public class ActivityResDto : BaseDto<ActivityResDto, Activity>
     public string Description { get; set; }
     
     [Display(Name = "علی الحساب")]
-    public float OnAccount { get; set; }
+    public string OnAccount { get; set; }
 
     protected override void CustomMappings(IMappingExpression<Activity, ActivityResDto> mapping)
     {
@@ -54,6 +55,14 @@ public class ActivityResDto : BaseDto<ActivityResDto, Activity>
             s => s.MapFrom(m => $"{m.Creditor.FirstName} {m.Creditor.LastName}"));
         mapping.ForMember(
             d => d.OnAccount,
-            s => s.MapFrom(m => m.Details.Sum(i => i.Price)));
+            s => s.MapFrom(m => m.Details.Sum(i => i.Price).ToNumeric()));
     }
+}
+
+public class AddImageDto
+{
+    public int ModelId { get; set; }
+    public UploadedFileType Type { get; set; }
+    public IFormFile File { get; set; }
+    public string Description { get; set; }
 }

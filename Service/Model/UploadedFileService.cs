@@ -47,11 +47,34 @@ namespace Service.Model
             CancellationToken ct)
         {
             var query = _repository.Table
-                .Where(i => i.ModelType == modelType && modelIds.Contains(i.ModelId))
+                .Where(i => i.ModelType == modelType)
                 .AsQueryable();
             if (type is not null)
                 query = query.Where(i => i.Type == type);
+            if (modelIds.Any())
+                query = query
+                    .Where(i => modelIds.Contains(i.ModelId));
             return await query.ToListAsync(ct);
+        }
+
+        public async Task<UploadedFile> GetFile(int id, CancellationToken ct)
+        {
+            var model = await _repository.TableNoTracking.FirstOrDefaultAsync(i => i.Id == id, ct);
+            if (model is null)
+                throw new NotFoundException();
+            return model;
+        }
+
+        public async Task RemoveFile(UploadedFile model, CancellationToken ct)
+        {
+            
+            var filePath = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads", model.SavedName);
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            await _repository.DeleteAsync(model, ct);
         }
 
         public async Task SetDisableFilesAsync(CancellationToken ct, string modelType, int modelId,
@@ -72,7 +95,7 @@ namespace Service.Model
         }
 
         public async Task<string> UploadFileAsync(IFormFile file, UploadedFileType type
-            , string modelType, int modelId, int userId, CancellationToken ct)
+            , string modelType, int modelId, int userId, CancellationToken ct, string description = "")
         {
             if (file == null || file.Length == 0)
                 throw new BadRequestException("فایل وارد نشد");
@@ -100,7 +123,8 @@ namespace Service.Model
                 ModelType = modelType,
                 ModelId = modelId,
                 UserId = userId,
-                Status = true
+                Status = true,
+                Description = description
             };
 
             await _repository.AddAsync(uploadedFile, ct);

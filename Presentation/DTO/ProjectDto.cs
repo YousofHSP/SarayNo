@@ -25,12 +25,6 @@ public class ProjectDto : BaseDto<ProjectDto, Project>
     [Field(FieldType.DateTime)]
     public string Date { get; set; }
     
-    [Display(Name = "قیمت تخمینی")]
-    [Required(ErrorMessage = "{0} را وارد کنید")]
-    [Field(FieldType.Number)]
-    public float EstimatePrice { get; set; }
-
-
     protected override void CustomMappings(IMappingExpression<ProjectDto, Project> mapping)
     {
         mapping.ForMember(

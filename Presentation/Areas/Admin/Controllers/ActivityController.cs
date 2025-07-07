@@ -1,5 +1,6 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Common.Utilities;
 using Data.Contracts;
 using DocumentFormat.OpenXml.Bibliography;
 using Domain;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Presentation.DTO;
 using Presentation.Models;
+using Service.Model.Contracts;
 
 namespace Presentation.Areas.Admin.Controllers;
 
@@ -18,6 +20,8 @@ public class ActivityController(
     IRepository<ActivityDetail> activityDetailRepository,
     IRepository<CostGroup> costGroupRepository,
     IRepository<Creditor> creditorRepository,
+    IRepository<UnsettledInvoice> unsettledInvoiceRepository,
+    IUploadedFileService uploadedFileService,
     IMapper mapper) : BaseController<ActivityDto, ActivityResDto, Activity>(repository, mapper)
 {
     public override async Task Configure(string method, CancellationToken ct)
@@ -35,6 +39,24 @@ public class ActivityController(
     }
 
 
+    [HttpGet("[area]/[controller]")]
+    public async Task<IActionResult> Index([FromQuery] int? projectId, CancellationToken ct)
+    {
+        if (projectId is null or 0)
+        {
+            var projects = await projectRepository.TableNoTracking.ToListAsync(ct);
+            ViewBag.Projects = projects;
+            return View();
+        }
+        var model = await repository.TableNoTracking
+            .Include(i => i.CostGroup)
+            .Include(i => i.Creditor)
+            .Include(i => i.Project)
+            .Where(i => i.ProjectId == projectId)
+            .ProjectTo<ActivityResDto>(mapper.ConfigurationProvider)
+            .ToListAsync(ct);
+        return View(model);
+    }
     [HttpGet("[area]/[controller]/[action]/{id}")]
     public async Task<IActionResult> Details([FromRoute] int id, CancellationToken ct)
     {
@@ -83,5 +105,61 @@ public class ActivityController(
             await activityDetailRepository.UpdateAsync(model, ct);
         }
         return RedirectToAction(nameof(Details), "Activity", new {id = model.ActivityId});
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddImage(AddImageDto dto, CancellationToken ct)
+    {
+        var userId = User.Identity!.GetUserId<int>();
+        await uploadedFileService.UploadFileAsync(dto.File, dto.Type, nameof(Activity), dto.ModelId, userId, ct, dto.Description);
+
+        return RedirectToAction("Details", new { id = dto.ModelId, ct });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> RemoveImage(int id, CancellationToken ct)
+    {
+
+        var model = await uploadedFileService.GetFile(id, ct);
+        await uploadedFileService.RemoveFile(model, ct);
+        return RedirectToAction("Details", new { id = model.ModelId, ct });
+    }
+
+    [HttpPost("[area]/[controller]/[action]/{id:int}")]
+    public async Task<IActionResult> SetTotalAmount([FromRoute] int id, float totalAmount, CancellationToken ct)
+    {
+        var model = await repository.GetByIdAsync(ct, id);
+        if (model is null)
+            return NotFound();
+        model.TotalAmount = totalAmount;
+        await repository.UpdateAsync(model, ct);
+        return RedirectToAction("Details", new { id, ct });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Done(int id, CancellationToken ct)
+    {
+        var model = await repository.Table
+            .Include(i => i.Details)
+            .FirstOrDefaultAsync(i => i.Id == id, ct);
+        
+        if (model is null)
+            return NotFound();
+        if (model.IsDone)
+            return RedirectToAction("Details", new { id, ct });
+        model.IsDone = true;
+        var invoice = new UnsettledInvoice()
+        {
+            ActivityId = model.Id,
+            Description = model.Description,
+            CreditorId = model.CreditorId,
+            Date = DateTimeOffset.Now,
+            RemainAmount = model.TotalAmount - model.Details.Sum(i => i.Price),
+            CostGroupId = model.CostGroupId,
+            CreatedAt = DateTimeOffset.Now
+        };
+        await unsettledInvoiceRepository.AddAsync(invoice, ct);
+        await repository.UpdateAsync(model, ct);
+        return RedirectToAction("Details", new { id, ct });
     }
 }
