@@ -13,7 +13,7 @@ public class UnsettledInvoice : BaseEntity
     public int CreditorId { get; set; }
     public DateTimeOffset Date { get; set; }
     public float RemainAmount { get; set; }
-    public string Description { get; set; }
+    public string? Description { get; set; }
     public float Discount { get; set; }
     public UnsettledInvoiceStatus Status { get; set; }
     

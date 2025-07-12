@@ -10,8 +10,11 @@ namespace Service.Model.Contracts
         Task<string> UploadFileAsync(IFormFile file, UploadedFileType type, string modelType, int modelId, int userId, CancellationToken ct, string description = "");
         Task<string> GetFilePath(string modelType, int modelId, UploadedFileType type, CancellationToken ct);
         string GetFilePath(UploadedFile model, CancellationToken ct);
+        string GetUrl();
         Task<List<UploadedFile>> GetFiles(string modelType, List<int> modelIds, UploadedFileType? type, CancellationToken ct);
+        Task<List<UploadedFile>> GetFiles(List<string > modelType, List<int> modelIds, UploadedFileType? type, CancellationToken ct);
         Task<UploadedFile> GetFile(int id,CancellationToken ct);
         Task RemoveFile(UploadedFile model, CancellationToken ct);
+        Task AddRangeAsync(List<UploadedFile> list, CancellationToken ct);
     }
 }

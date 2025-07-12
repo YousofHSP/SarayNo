@@ -13,7 +13,7 @@ public class UnverifiedInvoice : BaseEntity
     public float Amount { get; set; }
     public UnverifiedInvoiceStatus Status { get; set; }
     public DateTimeOffset Date { get; set; }
-    public string Description { get; set; }
+    public string? Description { get; set; }
     
     public Creditor Creditor { get; set; }
     public CostGroup CostGroup{ get; set; }

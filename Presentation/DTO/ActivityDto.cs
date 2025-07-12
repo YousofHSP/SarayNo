@@ -17,12 +17,12 @@ public class ActivityDto : BaseDto<ActivityDto, Activity>
     [Display(Name = "گروه هزینه")]
     [Required(ErrorMessage = "{0} را وارد کنید")]
     [Field(FieldType.Select)]
-    public string CostGroupId { get; set; }
+    public int CostGroupId { get; set; }
     
     [Display(Name = "بستانکار")]
     [Required(ErrorMessage = "{0} را وارد کنید")]
     [Field(FieldType.Select)]
-    public string CreditorId { get; set; }
+    public int CreditorId { get; set; }
     
     [Display(Name = "توضیحات")]
     [Required(ErrorMessage = "{0} را وارد کنید")]

@@ -48,6 +48,9 @@ public class ActivityController(
             ViewBag.Projects = projects;
             return View();
         }
+
+        var project = await projectRepository.TableNoTracking.FirstOrDefaultAsync(i => i.Id == projectId, ct);
+        ViewBag.Project = project;
         var model = await repository.TableNoTracking
             .Include(i => i.CostGroup)
             .Include(i => i.Creditor)
@@ -57,6 +60,14 @@ public class ActivityController(
             .ToListAsync(ct);
         return View(model);
     }
+
+    public override async Task<IActionResult> Create(ActivityDto dto, CancellationToken ct)
+    {
+        var model = dto.ToEntity(mapper);
+        await repository.AddAsync(model, ct);
+        return RedirectToAction("Index","Activity", new { projectId = model.ProjectId });
+    }
+
     [HttpGet("[area]/[controller]/[action]/{id}")]
     public async Task<IActionResult> Details([FromRoute] int id, CancellationToken ct)
     {

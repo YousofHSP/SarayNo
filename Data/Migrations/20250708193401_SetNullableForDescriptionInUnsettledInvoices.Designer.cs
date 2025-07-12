@@ -4,6 +4,7 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250708193401_SetNullableForDescriptionInUnsettledInvoices")]
+    partial class SetNullableForDescriptionInUnsettledInvoices
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,36 +149,6 @@ namespace Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Creditors");
-                });
-
-            modelBuilder.Entity("Domain.EmployerPayment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<float>("Amount")
-                        .HasColumnType("real");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<DateTimeOffset>("Date")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("EmployerPayments");
                 });
 
             modelBuilder.Entity("Domain.Payoff", b =>
@@ -715,17 +688,6 @@ namespace Data.Migrations
                     b.Navigation("Activity");
                 });
 
-            modelBuilder.Entity("Domain.EmployerPayment", b =>
-                {
-                    b.HasOne("Domain.Project", "Project")
-                        .WithMany("EmployerPayments")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Project");
-                });
-
             modelBuilder.Entity("Domain.Payoff", b =>
                 {
                     b.HasOne("Domain.UnsettledInvoice", "UnsettledInvoice")
@@ -898,8 +860,6 @@ namespace Data.Migrations
                     b.Navigation("Activities");
 
                     b.Navigation("Details");
-
-                    b.Navigation("EmployerPayments");
 
                     b.Navigation("UnverifiedInvoices");
                 });

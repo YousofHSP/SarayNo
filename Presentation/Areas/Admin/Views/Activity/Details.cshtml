@@ -24,7 +24,7 @@
                         class="btn btn-primary me-2">افزودن
                     تصویر
                 </button>
-                <button data-bs-toggle="modal" data-bs-target="#setTotalAmountModal" type="button"
+                <button data-bs-toggle="modal" data-bs-target="#setAmountNumericModal" type="button"
                         class="btn btn-primary me-2">ثبت مبلغ فاکتور
                 </button>
                 <a asp-action="Done" asp-route-id="@Model.Id" class="btn btn-primary me-2">اتمام فعالیت و ارسال به فاکتور تسویه نشده</a>
@@ -135,7 +135,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="setTotalAmountModal" tabindex="-1" aria-labelledby="setTotalAmountModal" aria-hidden="true">
+<div class="modal fade" id="setTotalAmountModal" tabindex="-1" aria-labelledby="setAmountNumericModal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header justify-content-between">
@@ -143,11 +143,11 @@
                 <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form asp-action="SetTotalAmount" asp-route-id="@Model.Id" method="post">
-                <input type="hidden" name="ModelId" value="@Model.Id">
+                <input type="hidden" name="Id" value="@Model.Id">
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="form-label" for="totalAmount">مبلغ کل فاکتور</label>
-                        <input type="text" class="form-control numeric" name="totalAmount" id="totalAmount"
+                        <input type="text" class="form-control numeric" name="totalAmountNumeric" id="totalAmount"
                                value="@Model.TotalAmount" required>
                     </div>
                 </div>

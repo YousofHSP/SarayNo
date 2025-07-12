@@ -1,0 +1,106 @@
+*{
+    direction: rtl !important;
+    font-family: IranSans;
+
+}
+body {
+    background-color: white;
+    color: white;
+    text-align: center;
+    padding-top: 50px;
+}
+
+.login-box {
+    background-color: #293b63;
+    padding: 40px;
+    border-radius: 10px;
+    max-width: 400px;
+    margin: auto;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    position: absolute;
+    right: 0;
+    left: 0;
+    margin: auto;
+    top: 40px;
+
+}
+.form-icon{
+    right: 10px !important;
+}
+
+.login-box h1 {
+    font-weight: bold;
+    color: #f2c94c;
+    font-size: 28px;
+}
+
+.login-box p {
+    margin-bottom: 30px;
+    font-size: 18px;
+}
+
+.form-control {
+    background-color: transparent;
+    border: 1px solid #405788;
+    color: white;
+    padding-right: 1.9rem !important;
+    height: 48px !important;
+    border-radius: 12px !important;
+
+}
+
+.form-control:focus{
+    background-color: transparent;
+}
+
+.form-control::placeholder {
+    color: #ccc;
+}
+
+.form-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #f2c94c;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.btn-login {
+    background-color: #f2c94c;
+    color: black;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    height: 48px;
+}
+
+.btn-login:hover {
+    background-color: #e1b935;
+}
+
+.forgot-link {
+    text-align: right;
+    display: block;
+    margin-bottom: 20px;
+    color: white;
+    text-decoration: underline;
+    font-size: 14px;
+}
+
+.footer-text {
+    margin-top: 30px;
+    font-size: 12px;
+}
+
+.logo {
+    width: 150px;
+}
+
+.nav-link.active{
+    background-color: #f2c94c !important;
+}

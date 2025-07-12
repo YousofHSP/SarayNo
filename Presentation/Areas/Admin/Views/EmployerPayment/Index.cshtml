@@ -1,0 +1,166 @@
+@using Common.Utilities
+@using Domain
+@model List<Presentation.DTO.EmployerPaymentResDto>
+
+@{
+    ViewBag.Title = "دستمزد پیمانکار";
+    Layout = "_Layout";
+    var projects = ViewBag.Projects as List<Project>;
+    var projectId = ViewBag.ProjectId as int?;
+    var project = ViewBag.Project as Project;
+    var percentAmount = 0f;
+    if (project is not null)
+    {
+        var totalAmount = project.Activities.SelectMany(i => i.Details).Sum(i => i.Price);
+        totalAmount += project.UnverifiedInvoices.Sum(i => i.Amount);
+        percentAmount = totalAmount * (project.Percent / 100);
+    }
+}
+
+
+<div class="card">
+    <div class="card-body">
+
+        @if (projects is not null && projects.Any())
+        {
+            <div class="row gap-2">
+                @foreach (var item in projects)
+                {
+                    <a asp-action="Index" asp-route-projectId="@item.Id" class="card"
+                       style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Title</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@item.Percent %</h6>
+                            @* <p class="card-text">@project.</p> *@
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <h3>@project.Title</h3>
+            <h4>@project.Percent %</h4>
+            <h4>@percentAmount.ToNumeric()</h4>
+            <div class="d-flex mt-3 justify-content-between">
+                <button data-bs-toggle="modal" data-bs-target="#addModal" type="button" class="btn btn-primary">افزودن
+                </button>
+            </div>
+            <table class="table table-hover mt-2">
+                <tr>
+                    <th>ردیف</th>
+                    <th>تاریخ</th>
+                    <th>توضیحات</th>
+                    <th>مبلغ</th>
+                    <th>عملیات</th>
+                </tr>
+                @{
+                    var index = 1;
+                }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@(index++)</td>
+                        <td>@item.Date</td>
+                        <td>@item.Description</td>
+                        <td>@item.AmountNumeric</td>
+                        <td>
+
+                            <div class="dropdown d-inline-block">
+                                <a class="nav-link" style="padding: .5rem 1rem"
+                                   data-bs-toggle="dropdown"
+                                   href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                                    <i class="fa fa-ellipsis-v font-20 text-muted"></i>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
+                                     style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#uploadImageModal"
+                                       class="dropdown-item" data-bs-invoice-id="@item.Id">
+                                        <i
+                                            class="fa fa-image"></i>
+                                        آپلود تصویر
+                                    </a>
+                                    
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="3"></td>
+                    <td>مانده: @((percentAmount - Model.Sum(i => i.Amount)).ToNumeric())</td>
+                    <td></td>
+                </tr>
+            </table>
+        }
+    </div>
+</div>
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-between">
+                <h1 class="modal-title fs-5" id="addModalLabel">افزودن</h1>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Create" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="ProjectId" value="@projectId">
+                    <div class="form-group">
+                        <label class="form-label">تاریخ</label>
+                        <input type="text" class="form-control date-picker" name="Date">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">مبلغ</label>
+                        <input type="text" class="form-control numeric" name="AmountNumeric">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">توضیحات</label>
+                        <textarea name="Description" class="form-control"></textarea>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <button type="submit" class="btn btn-primary">ثبت</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="uploadImageModal" tabindex="-1" aria-labelby="uploadImageModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="uploadImageModalLabel">افزودن تصویر</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="AddImage" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" name="ModelId">
+                    <div class="form-group">
+                        <label class="form-label" for="Type">نوع</label>
+                        <select class="form-control" id="Type" name="Type">
+                            <option value="@UploadedFileType.Unknown">@UploadedFileType.Unknown.ToDisplay()</option>
+                            <option value="@UploadedFileType.Contract">@UploadedFileType.Contract.ToDisplay()</option>
+                            <option value="@UploadedFileType.OnAccount">@UploadedFileType.OnAccount.ToDisplay()</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="File">فایل</label>
+                        <input type="file" class="form-control" name="File" id="File" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="DescriptionImage">توضیحات</label>
+                        <textarea class="form-control" name="Description" id="DescriptionImage"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <button type="submit" class="btn btn-primary">ثبت</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

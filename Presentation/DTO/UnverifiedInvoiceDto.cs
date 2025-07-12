@@ -12,7 +12,7 @@ public class UnverifiedInvoiceDto : BaseDto<UnverifiedInvoiceDto, UnverifiedInvo
     public int CreditorId { get; set; }
     public float Amount { get; set; }
     public string Date { get; set; }
-    public string Description { get; set; }
+    public string? Description { get; set; } = "";
 
     protected override void CustomMappings(IMappingExpression<UnverifiedInvoiceDto, UnverifiedInvoice> mapping)
     {

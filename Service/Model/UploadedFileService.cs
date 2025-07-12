@@ -33,6 +33,14 @@ namespace Service.Model
             return GetFilePath(model, ct);
         }
 
+        public string GetUrl()
+        {
+            var request = _httpContextAccessor.HttpContext?.Request;
+            if (request is null)
+                return "";
+            return $"{request.Scheme}://{request.Host.Host}:{request.Host.Port}/uploads/";
+            
+        }
         public string GetFilePath(UploadedFile model, CancellationToken ct)
         {
             var request = _httpContextAccessor.HttpContext?.Request;
@@ -48,6 +56,19 @@ namespace Service.Model
         {
             var query = _repository.Table
                 .Where(i => i.ModelType == modelType)
+                .AsQueryable();
+            if (type is not null)
+                query = query.Where(i => i.Type == type);
+            if (modelIds.Any())
+                query = query
+                    .Where(i => modelIds.Contains(i.ModelId));
+            return await query.ToListAsync(ct);
+        }
+
+        public async Task<List<UploadedFile>> GetFiles(List<string> modelType, List<int> modelIds, UploadedFileType? type, CancellationToken ct)
+        {
+            var query = _repository.Table
+                .Where(i => modelType.Contains(i.ModelType))
                 .AsQueryable();
             if (type is not null)
                 query = query.Where(i => i.Type == type);
@@ -130,6 +151,11 @@ namespace Service.Model
             await _repository.AddAsync(uploadedFile, ct);
             _repository.Detach(uploadedFile);
             return filePath;
+        }
+
+        public async Task AddRangeAsync(List<UploadedFile> list, CancellationToken ct)
+        {
+            await _repository.AddRangeAsync(list, ct);
         }
 
         private async Task ValidateFile(IFormFile file)
