@@ -12,72 +12,63 @@
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 	<link rel="stylesheet" href="~/css/font.css"/>
-	<link rel="stylesheet" href="~/css/style.min.css"/>
-	<link rel="stylesheet" href="~/css/site.css"/>
 	<link rel="stylesheet" href="~/plugins/font-awesome-4/css/font-awesome.css"/>
-
+	<link rel="stylesheet" href="~/css/site.css"/>
+	<style>
+		body {
+			font-family: IRANSansWeb,'Vazir', sans-serif;
+			background-color: #f9f9f9;
+		}
+		.bg-gold { background-color: #d19c30; }
+		.text-gold { color: #d19c30; }
+		.hero {
+			background: linear-gradient(45deg, #d19c30, #293b63);
+			height: 500px;
+			color: #fff;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+		}
+		.hero h1 {
+			font-size: 3rem;
+			font-weight: bold;
+		}
+		.service-box {
+			transition: transform 0.3s ease;
+		}
+		.service-box:hover {
+			transform: translateY(-8px);
+		}
+		footer {
+			background-color: #293b63;
+			color: #fff;
+		}
+		.section-title {
+			font-size: 1.8rem;
+			font-weight: bold;
+			color: #293b63;
+			margin-bottom: 1.5rem;
+		}
+	</style>
 	@await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-<div class="blur-container">
 
-	<div class="blur-background"></div>
 
-	<div class="container-fluid">
-		<div class="row">
+<partial name="_UserMenu"/>
 
-			<!-- Sidebar -->
-			<nav class="col-md-2 p-0">
-				<!-- Toggle Button for Small Screens -->
-				<div class="d-flex justify-content-between align-items-center d-md-none bg-dark text-white p-3">
-					<h5 class="mb-0">منو</h5>
-					<button class="btn btn-outline-light" type="button" data-bs-toggle="collapse"
-					        data-bs-target="#sidebarMenu">
-						<i class="bi bi-list"></i>
-					</button>
-				</div>
-
-				<div class="sidebar collapse d-md-block" id="sidebarMenu">
-					<h4 class="mb-4">منو</h4>
-					<ul class="nav nav-pills flex-column gap-2">
-						<li class="nav-item">
-							<a asp-controller="Home" asp-action="Index"
-							   class="nav-link @(currentController == "Home" && currentAction == "Index" ? "active" : "")">
-								<i class="bi bi-speedometer2"></i> داشبورد
-							</a>
-						</li>
-						<li class="nav-item">
-							<a asp-controller="Exam" asp-action="Index"
-							   class="nav-link @(currentController == "Exam" && currentAction != "Taken" ? "active" : "")">
-								<i class="bi bi-journal-text"></i> آزمون‌ها
-							</a>
-						</li>
-						<li class="nav-item">
-							<a asp-controller="Exam" asp-action="Taken"
-							   class="nav-link @(currentController == "Exam" && currentAction == "Taken" ? "active" : "")">
-								<i class="bi bi-check2-square"></i> آزمون‌های شرکت کرده
-							</a>
-						</li>
-						<li class="nav-item">
-							<a asp-controller="Account" asp-action="Logout"
-							   class="nav-link @(currentController == "Account" && currentAction == "Logout" ? "active" : "")">
-								<i class="bi bi-box-arrow-left"></i> خروج
-							</a>
-						</li>
-					</ul>
-				</div>
-			</nav>
-
-			<!-- Main Content -->
-			<main class="col-md-10 p-4">
-				@RenderBody()
-			</main>
-
-		</div>
-	</div>
+<div>
+	@RenderBody()
 </div>
 
-
+<!-- Footer -->
+<footer class="py-4 mt-5">
+	<div class="container text-center">
+		<p class="mb-1">شرکت ساختمانی سرای نو | یزد، بلوار خامنه‌ای</p>
+		<p class="mb-0">تمامی حقوق محفوظ است © 2025</p>
+	</div>
+</footer>
 <script>
 	let datePickerConfigs = {
 		"inline": false,

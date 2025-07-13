@@ -1,0 +1,78 @@
+@{
+    ViewBag.Title = "تماس با ما";
+    Layout = "_UserLayout";
+}
+
+<!-- Header -->
+<header class="contact-header">
+    <h1 class="animate__animated animate__fadeInDown">تماس با ما</h1>
+    <p class="lead animate__animated animate__fadeInUp mt-2">همیشه پاسخگوی شما هستیم</p>
+</header>
+
+<!-- Contact Info -->
+<section class="container py-5" data-aos="fade-up">
+    <h2 class="section-title text-center">راه‌های ارتباطی</h2>
+    <div class="row text-center text-secondary">
+        <div class="col-md-4 mb-4">
+            <i class="fas fa-map-marker-alt fa-2x text-gold mb-2"></i>
+            <p>یزد، بلوار خامنه‌ای، شرکت سرای نو</p>
+        </div>
+        <div class="col-md-4 mb-4">
+            <i class="fas fa-phone fa-2x text-gold mb-2"></i>
+            <p>035-12345678</p>
+        </div>
+        <div class="col-md-4 mb-4">
+            <i class="fas fa-envelope fa-2x text-gold mb-2"></i>
+            <p>info@sarayeno.com</p>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Form -->
+<section class="container py-5" data-aos="fade-up">
+    <h2 class="section-title text-center">ارسال پیام</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form>
+                <div class="mb-3">
+                    <label class="form-label">نام و نام خانوادگی</label>
+                    <input type="text" class="form-control" placeholder="مثال: علی رضایی">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">ایمیل</label>
+                    <input type="email" class="form-control" placeholder="مثال: email@example.com">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">پیام شما</label>
+                    <textarea rows="5" class="form-control" placeholder="متن پیام..."></textarea>
+                </div>
+                <div class="text-center">
+                    <button class="btn bg-gold text-white px-4 py-2 rounded-pill" type="submit">ارسال پیام</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Google Map Placeholder -->
+<section class="container py-5" data-aos="fade-up">
+    <h2 class="section-title text-center">موقعیت ما</h2>
+    <div class="rounded overflow-hidden shadow-sm">
+        <img src="https://via.placeholder.com/1000x400?text=نقشه+موقعیت+شرکت" alt="نقشه" class="img-fluid w-100">
+        <!-- اگر خواستی iframe گوگل مپ واقعی اضافه کنی این خط را جایگزین کن -->
+        <!-- <iframe src="https://www.google.com/maps/embed?pb=..." width="100%" height="400" frameborder="0" allowfullscreen></iframe> -->
+    </div>
+</section>
+
+@section Styles
+{
+    <style>
+
+        .contact-header {
+            background: linear-gradient(45deg, #d19c30, #293b63);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+    </style>
+}

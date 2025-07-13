@@ -1,5 +1,6 @@
 @using Data.Contracts
 @using Domain
+@using Presentation.Helpers
 @model List<Presentation.DTO.ActivityResDto>
 @inject IRepository<CostGroup> CostGroupRepository;
 @inject IRepository<Creditor> CreditorRepository;
@@ -37,10 +38,15 @@
         }
         else
         {
-            <div class="d-flex justify-content-between">
-                <button data-bs-toggle="modal" data-bs-target="#addModal" type="button" class="btn btn-primary">افزودن
-                </button>
-            </div>
+            @if (CheckPermission.Check(User, "Activity.Create"))
+            {
+                <div class="d-flex justify-content-between">
+                    <button data-bs-toggle="modal" data-bs-target="#addModal" type="button" class="btn btn-primary">
+                        افزودن
+                    </button>
+                </div>
+            }
+
             <table class="table table-hover mt-2">
                 <tr>
                     <th>پروژه</th>
@@ -65,15 +71,18 @@
                                    href="#" role="button" aria-haspopup="false" aria-expanded="false">
                                     <i class="fa fa-ellipsis-v font-20 text-muted"></i>
                                 </a>
-                                <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
-                                     style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="dropdown-item" >
-                                        <i
-                                            class="fa fa-image"></i>
-                                        جزئیات
-                                    </a>
+                                @if (CheckPermission.Check(User, "Activity.Details"))
+                                {
+                                    <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
+                                         style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="dropdown-item">
+                                            <i
+                                                class="fa fa-list"></i>
+                                            جزئیات
+                                        </a>
 
-                                </div>
+                                    </div>
+                                }
                             </div>
                         </td>
                     </tr>

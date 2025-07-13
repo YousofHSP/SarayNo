@@ -100,7 +100,10 @@ public class EmployerPaymentController : Controller
                 Date = item.Date.ToShamsi(),
                 ProjectTitle = item.Project.Title,
                 AmountNumeric = item.Amount.ToNumeric(),
+                Amount = item.Amount,
                 CostGroupTitle = item.CostGroup.Title,
+                Type = "فاکتور تایید نشده",
+                PayType = "",
                 CreditorFullName = item.Creditor.FirstName + " " + item.Creditor.LastName
             });
         }
@@ -118,6 +121,9 @@ public class EmployerPaymentController : Controller
                     ProjectId = activity.ProjectId,
                     ProjectTitle = activity.Project.Title,
                     AmountNumeric = item.Price.ToNumeric(),
+                    Amount = item.Price,
+                    Type = "فعالیت",
+                    PayType = item.Type.ToDisplay(),
                     Date = item.Date.ToShamsi()
                 });
             }

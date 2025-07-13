@@ -7,6 +7,7 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Microsoft.EntityFrameworkCore
 @using Presentation.DTO
+@using Presentation.Helpers
 @using Service.Model.Contracts
 @model List<Domain.UnsettledInvoice>
 @inject IUploadedFileService UploadFileService
@@ -99,6 +100,7 @@
                                        data-bs-id="@item.Id" data-bs-activity-id="@item.ActivityId"
                                        data-bs-unverified-invoice-id="@item.UnverifiedInvoiceId"
                                        data-bs-cost-group="@item.CostGroup.Title"
+                                       data-bs-is-done="@(item.Status == UnsettledInvoiceStatus.Done)"
                                        data-bs-creditor="@item.Creditor.FirstName @item.Creditor.LastName"
                                        data-bs-description="@item.Description" data-bs-date="@item.Date.ToShamsi()"
                                        data-bs-paid-amount="@item.RemainAmount.ToNumeric()"
@@ -170,14 +172,17 @@
                                 <td><input type="text" class="form-control date-picker" name="date"></td>
                                 <td><input type="text" class="form-control numeric" name="price"></td>
                                 <td>
-                                    <button type="submit" class="btn btn-primary">ثبت</button>
+                                    @if (CheckPermission.Check(User, "UnsettledInvoice.AddPayoff"))
+                                    {
+                                        <button type="submit" class="btn btn-primary">ثبت</button>
+                                    }
                                 </td>
                             </tr>
                         </form>
                         <tbody id="payoffs-table">
-                        
+
                         </tbody>
-                        
+
                     </table>
                 </div>
                 <form asp-action="Update">
@@ -193,17 +198,21 @@
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="isDone" class="form-check-label">تسویه شده</label>
-                                    <input type="checkbox" class="form-check-input" id="isDone" name="isDone" >
+                                    <input type="checkbox" class="form-check-input" id="isDone" name="isDone"
+                                           value="true">
                                 </div>
                             </div>
                             <div class="col-md-1 text-left">
-                                <button type="submit" class="btn btn-primary">ثبت</button>
+                                @if (CheckPermission.Check(User, "UnsettledInvoice.Update"))
+                                {
+                                    <button type="submit" class="btn btn-primary">ثبت</button>
+                                }
                             </div>
                         </div>
                     </div>
-                    
+
                 </form>
-                
+
 
             </div>
         </div>

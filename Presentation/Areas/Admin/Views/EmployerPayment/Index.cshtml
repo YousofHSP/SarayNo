@@ -1,5 +1,6 @@
 @using Common.Utilities
 @using Domain
+@using Presentation.Helpers
 @model List<Presentation.DTO.EmployerPaymentResDto>
 
 @{
@@ -43,8 +44,12 @@
             <h4>@project.Percent %</h4>
             <h4>@percentAmount.ToNumeric()</h4>
             <div class="d-flex mt-3 justify-content-between">
-                <button data-bs-toggle="modal" data-bs-target="#addModal" type="button" class="btn btn-primary">افزودن
-                </button>
+                @if (CheckPermission.Check(User, "EmployerPayment.Create"))
+                {
+                    <button data-bs-toggle="modal" data-bs-target="#addModal" type="button" class="btn btn-primary">
+                        افزودن
+                    </button>
+                }
             </div>
             <table class="table table-hover mt-2">
                 <tr>
@@ -74,13 +79,16 @@
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
                                      style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#uploadImageModal"
-                                       class="dropdown-item" data-bs-invoice-id="@item.Id">
-                                        <i
-                                            class="fa fa-image"></i>
-                                        آپلود تصویر
-                                    </a>
-                                    
+                                    @if (CheckPermission.Check(User, "EmployerPayment.AddImage"))
+                                    {
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#uploadImageModal"
+                                           class="dropdown-item" data-bs-invoice-id="@item.Id">
+                                            <i
+                                                class="fa fa-image"></i>
+                                            آپلود تصویر
+                                        </a>
+                                    }
+
                                 </div>
                             </div>
                         </td>

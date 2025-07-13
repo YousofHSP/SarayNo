@@ -3,6 +3,7 @@
 @using Domain
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Newtonsoft.Json
+@using Presentation.Helpers
 @using Service.Model.Contracts
 @using JsonSerializer = System.Text.Json.JsonSerializer
 @model List<Domain.UnverifiedInvoice>
@@ -43,8 +44,12 @@
         else
         {
             <div class="d-flex justify-content-between">
-                <button data-bs-toggle="modal" data-bs-target="#addModal" type="button" class="btn btn-primary">افزودن
-                </button>
+                @if (CheckPermission.Check(User, "UnverifiedInvoice.Create"))
+                {
+                    <button data-bs-toggle="modal" data-bs-target="#addModal" type="button" class="btn btn-primary">
+                        افزودن
+                    </button>
+                }
             </div>
             <table class="table table-hover mt-2">
                 <thead>
@@ -85,38 +90,51 @@
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
                                      style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#updateModal"
-                                       data-id="@item.Id" data-cost-group-id="@item.CostGroupId"
-                                       data-creditor-id="@item.CreditorId" data-project-id="@item.ProjectId"
-                                       data-amount="@item.Amount" data-date="@item.Date.ToShamsi()"
-                                       data-description="@item.Description"
-                                       class="dropdown-item">
-                                        <i
-                                            class="fa fa-pencil"></i>
-                                        ویرایش
-                                    </a>
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#uploadImageModal"
-                                       class="dropdown-item" data-bs-invoice-id="@item.Id">
-                                        <i
-                                            class="fa fa-image"></i>
-                                        آپلود تصویر
-                                    </a>
-                                    @if (item.Status == UnverifiedInvoiceStatus.Pending)
+                                    @if (CheckPermission.Check(User, "UnverifiedInvoice.Update"))
                                     {
-                                        <a asp-action="ChangeStatus" asp-route-status="Approved" asp-route-id="@item.Id"
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#updateModal"
+                                           data-id="@item.Id" data-cost-group-id="@item.CostGroupId"
+                                           data-creditor-id="@item.CreditorId" data-project-id="@item.ProjectId"
+                                           data-amount="@item.Amount" data-date="@item.Date.ToShamsi()"
+                                           data-description="@item.Description"
+                                           class="dropdown-item">
+                                            <i
+                                                class="fa fa-pencil"></i>
+                                            ویرایش
+                                        </a>
+                                    }
+                                    @if (CheckPermission.Check(User, "UnverifiedInvoice.AddImage"))
+                                    {
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#uploadImageModal"
+                                           class="dropdown-item" data-bs-invoice-id="@item.Id">
+                                            <i
+                                                class="fa fa-image"></i>
+                                            آپلود تصویر
+                                        </a>
+                                    }
+
+                                    @if (CheckPermission.Check(User, "UnverifiedInvoice.ChangeStatusToApproved") && item.Status != UnverifiedInvoiceStatus.Approved)
+                                    {
+                                        <a asp-action="ChangeStatus" asp-route-status="Approved"
+                                           asp-route-id="@item.Id"
                                            asp-controller="UnverifiedInvoice"
                                            class="dropdown-item">
                                             <i class="fa fa-check"></i>
                                             تایید
                                         </a>
-                                        <a asp-action="ChangeStatus" asp-route-status="Rejected" asp-route-id="@item.Id"
+                                    }
+
+                                    @if (CheckPermission.Check(User, "UnverifiedInvoice.ChangeStatusToRejected") && item.Status != UnverifiedInvoiceStatus.Rejected)
+                                    {
+                                        <a asp-action="ChangeStatus" asp-route-status="Rejected"
+                                           asp-route-id="@item.Id"
                                            asp-controller="UnverifiedInvoice"
                                            class="dropdown-item">
                                             <i class="fa fa-close"></i>
                                             رد
                                         </a>
                                     }
-                                    else if (item.Status == UnverifiedInvoiceStatus.Approved && item.UnsettledInvoices.Count == 0)
+                                    @if (CheckPermission.Check(User, "UnverifiedInvoice.AddToUnsettledInvoice") && item.Status == UnverifiedInvoiceStatus.Approved && item.UnsettledInvoices.Count == 0)
                                     {
                                         <a asp-action="AddToUnsettledInvoice" asp-route-id="@item.Id"
                                            asp-controller="UnverifiedInvoice"
@@ -125,6 +143,7 @@
                                             ارسال به فاکتور های تسویه نشده
                                         </a>
                                     }
+
                                 </div>
                             </div>
                         </td>

@@ -103,6 +103,62 @@
 			left: auto;
 		}
 
+		.sidebar {
+			width: 260px;
+			min-height: 100vh;
+		}
+
+		.sidebar.collapsed {
+			width: 80px;
+		}
+
+		.sidebar .menu-text,
+		.sidebar .submenu {
+			transition: opacity 0.3s ease;
+		}
+
+		.sidebar.collapsed .menu-text,
+		.sidebar.collapsed .submenu {
+			display: none !important;
+		}
+
+		.menu-item {
+			cursor: pointer;
+			padding: 0.75rem 1rem;
+			transition: all 0.3s ease;
+		}
+
+		.menu-item:hover {
+			background-color: #f1f1f1;
+		}
+
+		.menu-item:hover i,
+		.menu-item:hover span {
+			color: #000 !important;
+		}
+
+		.submenu a {
+			display: block;
+			padding: 0.4rem 1.5rem;
+			color: #fff;
+			text-decoration: none;
+			font-size: 0.9rem;
+		}
+
+		.submenu a:hover {
+			background-color: #1f2e4c;
+			color: #000 !important;
+		}
+
+		.dropdown:hover .dropdown-menu {
+			display: block;
+		}
+
+		.dropdown-menu {
+			right: 0;
+			left: auto;
+		}
+
 	</style>
 </head>
 
@@ -123,7 +179,8 @@
 					</div>
 					<ul class="dropdown-menu dropdown-menu-end text-end">
 						<li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>پروفایل</a></li>
-						<li><a class="dropdown-item text-danger" asp-area="" asp-controller="Account" asp-action="Logout"><i
+						<li><a class="dropdown-item text-danger" asp-area="" asp-controller="Account"
+						       asp-action="Logout"><i
 									class="fas fa-sign-out-alt me-2"></i>خروج</a>
 						</li>
 					</ul>

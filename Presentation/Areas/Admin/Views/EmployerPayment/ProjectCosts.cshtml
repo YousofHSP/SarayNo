@@ -33,22 +33,36 @@
             
             <table class="table table-hover mt-2">
                 <tr>
+                    <th>ردیف</th>
                     <th>گروه هزینه</th>
                     <th>بستانکار</th>
                     <th>تاریخ</th>
                     <th>مبلغ</th>
+                    <th>نوع</th>
+                    <th>نوع پرداخت</th>
                     <th>توضیحات</th>
                 </tr>
+                @{
+                    var index = 1;
+                }
                 @foreach (var item in Model)
                 {
                     <tr>
+                        <td>@(index++)</td>
                         <td>@item.CostGroupTitle</td>
                         <td>@item.CreditorFullName</td>
                         <td>@item.Date</td>
                         <td>@item.AmountNumeric</td>
+                        <td>@item.Type</td>
+                        <td>@item.PayType</td>
                         <td>@item.Description</td>
                     </tr>
                 }
+                <tr>
+                    <td colspan="4"></td>
+                    <td>مجموع: @Model.Sum(i => i.Amount)</td>
+                    <td colspan="3"></td>
+                </tr>
 
             </table>
         }

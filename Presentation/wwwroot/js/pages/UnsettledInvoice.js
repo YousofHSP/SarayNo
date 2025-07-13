@@ -5,6 +5,7 @@ $('#detailModal').on('show.bs.modal', function (event) {
     const creditor = button.data('bs-creditor')
     const description = button.data('bs-description')
     const date = button.data('bs-date')
+    const isDone = button.data('bs-is-done')
     const paidAmount= button.data('bs-paid-amount')
     const activityId = button.data('bs-activity-id')
     const unverifiedInvoiceId = button.data('bs-unverified-invoice-id')
@@ -45,4 +46,13 @@ $('#detailModal').on('show.bs.modal', function (event) {
     modal.find('#date-el').text(date)
     modal.find('#creditor-el').text(creditor)
     modal.find('.id').val(id)
+    if(isDone === "True"){
+        modal.find('[name=isDone]').prop("checked", true);
+        modal.find('button').hide()
+        
+    }else{
+
+        modal.find('[name=isDone]').prop("checked", false);
+        modal.find('button').show()
+    }
 })

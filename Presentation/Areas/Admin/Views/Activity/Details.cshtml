@@ -1,6 +1,7 @@
 @using Common.Utilities
 @using DocumentFormat.OpenXml.Wordprocessing
 @using Domain
+@using Presentation.Helpers
 @using Service.Model.Contracts
 @model Domain.Activity
 @inject IUploadedFileService UploadedFileService
@@ -19,15 +20,29 @@
         @if (!Model.IsDone)
         {
             <div class="d-flex justify-content-start mt-3">
-                <a asp-action="AddDetail" asp-route-id="@Model.Id" asp-area="Admin" class="btn btn-primary">افزودن</a>
-                <button data-bs-toggle="modal" data-bs-target="#addImageModal" type="button"
-                        class="btn btn-primary me-2">افزودن
-                    تصویر
-                </button>
-                <button data-bs-toggle="modal" data-bs-target="#setAmountNumericModal" type="button"
-                        class="btn btn-primary me-2">ثبت مبلغ فاکتور
-                </button>
-                <a asp-action="Done" asp-route-id="@Model.Id" class="btn btn-primary me-2">اتمام فعالیت و ارسال به فاکتور تسویه نشده</a>
+                @if (CheckPermission.Check(User, "Activity.AddDetail"))
+                {
+                    <a asp-action="AddDetail" asp-route-id="@Model.Id" asp-area="Admin"
+                       class="btn btn-primary">افزودن</a>
+                }
+                @if (CheckPermission.Check(User, "Activity.AddImage"))
+                {
+                    <button data-bs-toggle="modal" data-bs-target="#addImageModal" type="button"
+                            class="btn btn-primary me-2">افزودن
+                        تصویر
+                    </button>
+                }
+                @if (CheckPermission.Check(User, "Activity.SetTotalAmount"))
+                {
+                    <button data-bs-toggle="modal" data-bs-target="#setAmountNumericModal" type="button"
+                            class="btn btn-primary me-2">ثبت مبلغ فاکتور
+                    </button>
+                }
+                @if (CheckPermission.Check(User, "Activity.Done"))
+                {
+                    <a asp-action="Done" asp-route-id="@Model.Id" class="btn btn-primary me-2">اتمام فعالیت و ارسال به
+                        فاکتور تسویه نشده</a>
+                }
             </div>
         }
         else
@@ -135,7 +150,8 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="setTotalAmountModal" tabindex="-1" aria-labelledby="setAmountNumericModal" aria-hidden="true">
+<div class="modal fade" id="setTotalAmountModal" tabindex="-1" aria-labelledby="setAmountNumericModal"
+     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header justify-content-between">
