@@ -54,6 +54,7 @@
                     <th>بستانکار</th>
                     <th>توضیحات</th>
                     <th>علی الحساب</th>
+                    <th>تاریخ</th>
                     <th>عملیات</th>
                 </tr>
                 @foreach (var item in Model)
@@ -64,6 +65,7 @@
                         <td>@item.CreditorFullName</td>
                         <td>@item.Description</td>
                         <td>@item.OnAccount</td>
+                        <td>@item.Date</td>
                         <td>
                             <div class="dropdown d-inline-block">
                                 <a class="nav-link" style="padding: .5rem 1rem"

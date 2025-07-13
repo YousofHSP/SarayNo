@@ -1,0 +1,60 @@
+@model List<Presentation.DTO.CreditorDebtDto>
+@using Domain
+
+@{
+    ViewBag.Title = "گرازش بدهی بستانکار";
+    Layout = "_Layout";
+    var projects = ViewBag.Projects as List<Project>;
+    var project = ViewBag.Project as Project;
+    var creditorId = ViewBag.CreditorId as int?;
+}
+@if (projects is not null && projects.Any())
+{
+    <div class="row gap-2">
+        @foreach (var item in projects)
+        {
+            <a asp-action="ProjectDebts" asp-route-id="@creditorId" asp-route-projectId="@item.Id" class="card"
+               style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Title</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">@item.Percent %</h6>
+                    @* <p class="card-text">@project.</p> *@
+                </div>
+            </a>
+        }
+    </div>
+}
+else
+{
+    <h4>پروژه: @project.Title</h4>
+    <table class="table table-hover mt-2">
+        
+        <tr>
+            <th>ردیف</th>
+            <th>بستانکار</th>
+            <th>گروه هزینه</th>
+            <th>مبلغ</th>
+            <th>تاریخ</th>
+            <th>توضیحات</th>
+        </tr>
+        @{
+            var index = 1;
+        }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@(index++)</td>
+                <td>@item.CreditorFullName</td>
+                <td>@item.Title</td>
+                <td>@item.AmountNumeric</td>
+                <td>@item.Date</td>
+                <td>@item.Description</td>
+            </tr>
+        }
+        <tr>
+            <td colspan="3"></td>
+            <td>مجموع: @Model.Sum(x => x.Amount)</td>
+            <td colspan="2"></td>
+        </tr>
+    </table>
+}

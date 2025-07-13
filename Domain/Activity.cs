@@ -10,7 +10,8 @@ public class Activity : BaseEntity
     public int CostGroupId { get; set; }
     public int CreditorId { get; set; }
     public float TotalAmount { get; set; }
-    public string Description { get; set; }
+    public DateTimeOffset Date{ get; set; }
+    public string? Description { get; set; }
     public bool IsDone { get; set; }
 
     public CostGroup CostGroup { get; set; }

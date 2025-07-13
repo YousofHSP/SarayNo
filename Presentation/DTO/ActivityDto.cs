@@ -28,6 +28,14 @@ public class ActivityDto : BaseDto<ActivityDto, Activity>
     [Required(ErrorMessage = "{0} را وارد کنید")]
     [Field(FieldType.Text)]
     public string Description { get; set; }
+    
+    public string Date { get; set; }
+    protected override void CustomMappings(IMappingExpression<ActivityDto, Activity> mapping)
+    {
+        mapping.ForMember(
+            m => m.Date,
+            s => s.MapFrom(d => d.Date.ToGregorian()));
+    }
 }
 
 public class ActivityResDto : BaseDto<ActivityResDto, Activity>
@@ -47,6 +55,7 @@ public class ActivityResDto : BaseDto<ActivityResDto, Activity>
     
     [Display(Name = "علی الحساب")]
     public string OnAccount { get; set; }
+    public string Date { get; set; }
 
     protected override void CustomMappings(IMappingExpression<Activity, ActivityResDto> mapping)
     {
@@ -56,6 +65,9 @@ public class ActivityResDto : BaseDto<ActivityResDto, Activity>
         mapping.ForMember(
             d => d.OnAccount,
             s => s.MapFrom(m => m.Details.Sum(i => i.Price).ToNumeric()));
+        mapping.ForMember(
+            d => d.Date,
+            s => s.MapFrom(m => m.Date.ToShamsi()));
     }
 }
 

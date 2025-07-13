@@ -99,7 +99,7 @@ public class ProjectController(
         await _projectDetailRepository.AddAsync(model, ct);
         if (model.Type == ProjectDetailType.Estimate)
             return RedirectToAction(nameof(EstimateDetails),
-                new { id = model.ProjectId, ct = new CancellationToken() });
-        return RedirectToAction(nameof(FinalDetails), new { id = model.ProjectId, ct = new CancellationToken() });
+                new { projectId = model.ProjectId });
+        return RedirectToAction(nameof(FinalDetails), new { projectId = model.ProjectId });
     }
 }

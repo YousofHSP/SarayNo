@@ -34,7 +34,7 @@
                 }
                 @if (CheckPermission.Check(User, "Activity.SetTotalAmount"))
                 {
-                    <button data-bs-toggle="modal" data-bs-target="#setAmountNumericModal" type="button"
+                    <button data-bs-toggle="modal" data-bs-target="#setTotalAmountModal" type="button"
                             class="btn btn-primary me-2">ثبت مبلغ فاکتور
                     </button>
                 }
@@ -150,7 +150,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="setTotalAmountModal" tabindex="-1" aria-labelledby="setAmountNumericModal"
+<div class="modal fade" id="setTotalAmountModal" tabindex="-1" aria-labelledby="setTotalAmountModal"
      aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

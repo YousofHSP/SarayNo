@@ -32,7 +32,7 @@ body, html {
 
 .sidebar {
     background-color: var(--color-navy);
-    color: var(--color-white);
+    color: var(--color-white)fff ;
     transition: width 0.3s;
 }
 
@@ -63,7 +63,7 @@ body, html {
 
 .sidebar .menu-item:hover,
 .sidebar .menu-item.active {
-    background-color: #1a2e52;
+    /*background-color: #1a2e52;*/
 }
 
 .text-gold {

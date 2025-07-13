@@ -11,6 +11,8 @@ public class Creditor : BaseEntity
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
+    public string? PhoneNumber { get; set; }
+    public string? CardNumber { get; set; }
     
     public List<Activity> Activities { get; set; }
     public List<UnverifiedInvoice> UnverifiedInvoices { get; set; }
