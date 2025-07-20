@@ -45,7 +45,6 @@ body, html {
 }
 
 .sidebar .logo {
-    background-color: var(--color-dark-navy);
     height: 80px;
     display: flex;
     align-items: center;

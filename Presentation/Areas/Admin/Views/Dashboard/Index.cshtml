@@ -3,49 +3,112 @@
 	Layout = "_Layout";
 }
 
-<div>
-	<div class="col-12 col-md-6 col-lg-3">
-		<div class="text-gold bg-dark text-center rounded-4 p-4 fw-bold fs-5">پروژه‌اعظام<br>3</div>
-	</div>
-	<div class="col-12 col-md-6 col-lg-3">
-		<div class="text-gold bg-white text-center rounded-4 p-4 fw-bold fs-5">خلاصه مالی<br>850,000,000</div>
-	</div>
-	<div class="col-12 col-md-6 col-lg-3">
-		<div class="bg-white rounded-4 p-4 text-end">
-			<h5 class="fw-bold text-dark mb-2">بروزرسانی‌های اخیر</h5>
-			<ul class="list-unstyled pe-3 small text-secondary">
-				<li>برووود ۸ آپدیت شد</li>
-				<li>فاکتر جدید بارگذاری شد</li>
-				<li>کامرخید اضافه شد</li>
-			</ul>
-		</div>
-	</div>
-	<div class="col-12 col-md-6 col-lg-3">
-		<div class="bg-dark rounded-4 p-4">
-			<h6 class="text-center fw-bold mb-3">نمودار پیشرفت پروژه</h6>
-			<div class="d-flex justify-content-between align-items-end h-100" style="height: 120px;">
-				<div class="text-center">
-					<div class="bg-gold progress-bar-column" style="height: 20%;"></div>
-					<div class="small mt-1">سنجش</div>
-				</div>
-				<div class="text-center">
-					<div class="bg-gold progress-bar-column" style="height: 40%;"></div>
-					<div class="small mt-1">فیشردن</div>
-				</div>
-				<div class="text-center">
-					<div class="bg-gold progress-bar-column" style="height: 60%;"></div>
-					<div class="small mt-1">صلب</div>
-				</div>
-				<div class="text-center">
-					<div class="bg-gold progress-bar-column" style="height: 80%;"></div>
-					<div class="small mt-1">پوشش</div>
-				</div>
-				<div class="text-center">
-					<div class="bg-gold progress-bar-column" style="height: 100%;"></div>
-					<div class="small mt-1">افز فرودن</div>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="container mb-5">
+  <div class="row g-4">
+
+    <!-- Card: تعداد کل پروژه‌ها -->
+    <div class="col-md-4">
+      <div class="card dashboard-card p-3 text-center">
+        <div class="section-title">تعداد کل پروژه‌ها</div>
+        <div class="stat-value">۱۲</div>
+      </div>
+    </div>
+
+    <!-- Card: پروژه‌های فعال -->
+    <div class="col-md-4">
+      <div class="card dashboard-card p-3 text-center">
+        <div class="section-title">پروژه‌های فعال</div>
+        <div class="stat-value text-success">۸</div>
+      </div>
+    </div>
+
+    <!-- Card: پروژه‌های تکمیل‌شده -->
+    <div class="col-md-4">
+      <div class="card dashboard-card p-3 text-center">
+        <div class="section-title">پروژه‌های تکمیل‌شده</div>
+        <div class="stat-value text-muted">۴</div>
+      </div>
+    </div>
+
+    <!-- Card: بودجه کل -->
+    <div class="col-md-6">
+      <div class="card dashboard-card p-3 text-center">
+        <div class="section-title">بودجه کل پروژه‌ها</div>
+        <div class="stat-value">۲۵۰٬۰۰۰٬۰۰۰٬۰۰۰ ریال</div>
+      </div>
+    </div>
+
+    <!-- Card: میزان پرداخت شده -->
+    <div class="col-md-6">
+      <div class="card dashboard-card p-3 text-center">
+        <div class="section-title">مبلغ پرداخت‌شده</div>
+        <div class="stat-value text-info">۱۵۰٬۰۰۰٬۰۰۰٬۰۰۰ ریال</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Progress Section -->
+  <div class="mt-5">
+    <h4 class="section-title">پیشرفت پروژه‌ها</h4>
+    <div class="card p-3">
+      <div class="mb-3">
+        <label class="form-label">پروژه مجتمع آزادی</label>
+        <div class="progress project-progress">
+          <div class="progress-bar bg-success" style="width: 75%;">۷۵٪</div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">پروژه برج زیتون</label>
+        <div class="progress project-progress">
+          <div class="progress-bar bg-warning" style="width: 45%;">۴۵٪</div>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">پروژه خانه‌های ویلایی</label>
+        <div class="progress project-progress">
+          <div class="progress-bar bg-primary" style="width: 90%;">۹۰٪</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </div>
+@section Styles{
+
+<style>
+  .dashboard-card {
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+  }
+
+  .dashboard-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    color: #003366;
+  }
+
+  .stat-value {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: #007bff;
+  }
+
+  .bg-gradient-header {
+    background: linear-gradient(135deg, #d4af37, #003366);
+    color: white;
+    padding: 2rem;
+    border-radius: 0 0 40px 40px;
+  }
+
+  .project-progress {
+    height: 10px;
+    border-radius: 5px;
+  }
+</style>}

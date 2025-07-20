@@ -171,18 +171,18 @@
 	<div id="main-content" class="flex-grow-1">
 		<main class="flex-grow-1 d-flex flex-column">
 			<!-- Header -->
-			<header class="bg-header text-white d-flex justify-end align-items-center px-4" style="height: 64px;">
+			<header class="bg-header text-white d-flex justify-end align-items-center px-4" style="height: 64px; direction: ltr">
 				<div class="dropdown">
 					<div class="d-flex align-items-center gap-2 dropdown-toggle" role="button"
 					     data-bs-toggle="dropdown">
-						<span>مدیر کل</span>
+						<span>@User.Identity.GetUserName()</span>
 						<i class="fas fa-user-circle fs-4"></i>
 					</div>
-					<ul class="dropdown-menu dropdown-menu-end text-end">
-						<li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>پروفایل</a></li>
+					<ul class="dropdown-menu dropdown-menu-end text-start" style="direction: rtl;right: -50px">
+						@* <li><a class="dropdown-item" href="#"><i class="fas fa-user ms-2"></i>پروفایل</a></li> *@
 						<li><a class="dropdown-item text-danger" asp-area="" asp-controller="Account"
 						       asp-action="Logout"><i
-									class="fas fa-sign-out-alt me-2"></i>خروج</a>
+									class="fas fa-sign-out-alt ms-2"></i>خروج</a>
 						</li>
 					</ul>
 				</div>

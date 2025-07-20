@@ -19,6 +19,7 @@ public class User : IdentityUser<int>, IEntity<int>
 
     public List<Role> Roles { get; set; }
     public List<UploadedFile> UploadedFiles { get; set; }
+    public List<Project> Projects { get; set; }
 }
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
@@ -33,6 +34,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithMany(r => r.Users)
             .UsingEntity<IdentityUserRole<int>>();
         builder.HasMany(i => i.UploadedFiles)
+            .WithOne(i => i.User)
+            .HasForeignKey(i => i.UserId);
+        builder.HasMany(i => i.Projects)
             .WithOne(i => i.User)
             .HasForeignKey(i => i.UserId);
     }

@@ -25,6 +25,10 @@ public class ProjectDto : BaseDto<ProjectDto, Project>
     [Field(FieldType.DateTime)]
     public string Date { get; set; }
 
+    [Display(Name = "کارفرما")]
+    [Required(ErrorMessage = "{0} را وارد کنید")]
+    [Field(FieldType.Select)]
+    public string UserId { get; set; }
     protected override void CustomMappings(IMappingExpression<ProjectDto, Project> mapping)
     {
         mapping.ForMember(
@@ -36,6 +40,7 @@ public class ProjectDto : BaseDto<ProjectDto, Project>
 public class ProjectResDto : BaseDto<ProjectResDto, Project>
 {
     [Display(Name = "عنوان")] public string Title { get; set; }
+    [Display(Name = "کارفرما")] public string UserFullName{ get; set; }
 
     [Display(Name = "درصد")] public float Percent { get; set; }
 
@@ -49,6 +54,9 @@ public class ProjectResDto : BaseDto<ProjectResDto, Project>
 
     protected override void CustomMappings(IMappingExpression<Project, ProjectResDto> mapping)
     {
+        mapping.ForMember(
+            d => d.UserFullName,
+            s => s.MapFrom(m => m.User.FirstName + " " + m.User.LastName));
         mapping.ForMember(
             d => d.Date,
             s => s.MapFrom(m => m.Date.ToShamsi()));

@@ -1,0 +1,266 @@
+@using System.Text.Json
+@using Common.Utilities
+@using Domain
+@using Presentation.Helpers
+@model Domain.Project
+
+@{
+    ViewBag.Title = "تخمین و برآورد";
+    Layout = "_Layout";
+    var projects = ViewBag.Projects as List<Project>;
+    var items = Model.Details.SelectMany(i => i.ProjectDetailItems).ToList();
+}
+<div class="card">
+    <div class="card-body">
+        @if (projects is not null && projects.Any())
+        {
+            <div class="row gap-2">
+                @foreach (var item in projects)
+                {
+                    <a asp-action="ProjectDetails" asp-route-projectId="@item.Id" class="card"
+                       style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Title</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@item.Percent %</h6>
+                            @* <p class="card-text">@project.</p> *@
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="d-flex justify-content-between mb-2">
+                @if (CheckPermission.Check(User, "ProjectDetail.Create"))
+                {
+                    <button type="button" class="btn btn-primary" data-bs-target="#addModal" data-bs-toggle="modal">
+                        افزودن
+                    </button>
+                }
+            </div>
+
+            <ul class="nav nav-tabs" id="projectDetailsTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="estimate-tab" data-bs-toggle="tab"
+                            data-bs-target="#estimate-tab-pane"
+                            type="button" role="tab" aria-controls="estimate-tab-pane" aria-selected="true">تخمین
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="final-tab" data-bs-toggle="tab" data-bs-target="#final-tab-pane"
+                            type="button" role="tab" aria-controls="final-tab-pane" aria-selected="false">برآورد
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content" id="projectDetailsTabContent">
+                <div class="tab-pane pt-2 fade show active" id="estimate-tab-pane" role="tabpanel"
+                     aria-labelledby="estimate-tab"
+                     tabindex="0">
+                    <h4>تخیمین</h4>
+                    <table class="table table-hover mt-2">
+                        <tr>
+                            <th>ردیف</th>
+                            <th>عنوان</th>
+                            <th>درصد انجام عملیات</th>
+                            <th>تاریخ</th>
+                            <th>قیمت کل</th>
+                            <th>عملیات</th>
+                        </tr>
+
+                        @{
+                            var index = 1;
+                        }
+                        @foreach (var item in Model.Details.ToList())
+                        {
+                            var totalAmount = item.ProjectDetailItems.Where(i => i.Type == ProjectDetailItemType.Estimate).Sum(i => i.TotalPrice);
+                            <tr>
+                                <td>@(index++)</td>
+                                <td>@item.Title</td>
+                                <td>@item.Percent</td>
+                                <td>@item.Date.ToShamsi()</td>
+                                <td>@totalAmount.ToNumeric()</td>
+                                <td>
+
+                                    <div class="dropdown d-inline-block">
+                                        <a class="nav-link" style="padding: .5rem 1rem"
+                                           data-bs-toggle="dropdown"
+                                           href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                                            <i class="fa fa-ellipsis-v font-20 text-muted"></i>
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
+                                             style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
+                                            @if (CheckPermission.Check(User, "ProjectDetail.Items"))
+                                            {
+                                                <a data-bs-target="#itemModal"
+                                                   data-bs-toggle="modal"
+                                                   data-bs-id="@item.Id"
+                                                   data-bs-type="@(nameof(ProjectDetailItemType.Estimate))"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-pencil"></i>
+                                                    جزئیات
+                                                </a>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+
+                </div>
+                <div class="tab-pane pt-2 fade" id="final-tab-pane" role="tabpanel" aria-labelledby="final-tab"
+                     tabindex="0">
+                    <h4>براآورد</h4>
+                    <table class="table table-hover mt-2">
+                        <tr>
+                            <th>ردیف</th>
+                            <th>عنوان</th>
+                            <th>درصد انجام عملیات</th>
+                            <th>تاریخ</th>
+                            <th>قیمت کل</th>
+                            <th>عملیات</th>
+                        </tr>
+
+                        @{
+                            index = 1;
+                        }
+                        @foreach (var item in Model.Details.ToList())
+                        {
+                            var totalAmount = item.ProjectDetailItems
+                                .Where(i => i.Type == ProjectDetailItemType.Final).Sum(i => i.TotalPrice);
+                            <tr>
+                                <td>@(index++)</td>
+                                <td>@item.Title</td>
+                                <td>@item.Percent</td>
+                                <td>@item.Date.ToShamsi()</td>
+                                <td>@totalAmount.ToNumeric()</td>
+                                <td>
+                                    <div class="dropdown d-inline-block">
+                                        <a class="nav-link" style="padding: .5rem 1rem"
+                                           data-bs-toggle="dropdown"
+                                           href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                                            <i class="fa fa-ellipsis-v font-20 text-muted"></i>
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
+                                             style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
+                                            @if (CheckPermission.Check(User, "ProjectDetail.Items"))
+                                            {
+                                                <a data-bs-target="#itemModal"
+                                                   data-bs-toggle="modal"
+                                                   data-bs-id="@item.Id"
+                                                   data-bs-type="@(nameof(ProjectDetailItemType.Final))"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-pencil"></i>
+                                                    جزئیات
+                                                </a>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-between">
+                <h1 class="modal-title fs-5" id="addModalLabel"> افزودن </h1>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="CreateProjectDetail" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="ProjectId" value="@Model.Id">
+                    <div class="form-group">
+                        <label class="form-label"> عنوان </label>
+                        <input type="text" class="form-control" name="Title">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"> درصد انجام عملیات</label>
+                        <input type="text" class="form-control" name="Percent">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"> تاریخ </label>
+                        <input type="text" class="form-control date-picker" name="Date">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"> توضیحات </label>
+                        <textarea name="Description" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> بستن</button>
+                    <button type="submit" class="btn btn-primary"> ثبت</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="itemModal" tabindex="-1" aria-labelledby="itemModal" aria-hidden="true">
+    <div class="modal-lg modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-between">
+                <h1 class="modal-title fs-5" id="itemModalLabel">جزئیات</h1>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form asp-action="CreateProjectDetailItem" method="post">
+                    <input type="hidden" name="ProjectId" value="@Model.Id">
+                    <input type="hidden" name="ProjectDetailId" value="">
+                    <input type="hidden" name="Type" value="">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>عنوان</th>
+                            <th>مقدار</th>
+                            <th>فی</th>
+                            <th>قیمت کل</th>
+                            <th></th>
+                        </tr>
+
+                        </thead>
+
+                        <tbody></tbody>
+                        <tfoot>
+                        <tr>
+                            <td><input type="text" placeholder="عنوان" class="form-control" name="Title"></td>
+                            <td><input type="number" placeholder="مقدار" class="form-control" name="Area"></td>
+                            <td><input type="number" placeholder="فی" class="form-control" name="UnitPrice"></td>
+                            <td><input type="text" placeholder="مبلغ کل" class="form-control numeric" name="TotalPrice"></td>
+                            <td>
+                                <button type="submit" class="btn btn-primary">ثبت</button>
+                            </td>
+                        </tr>
+
+                        </tfoot>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> بستن</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+
+
+
+
+
+
+
+{
+    <script>
+        let items = @Html.Raw(JsonSerializer.Serialize(items));
+    </script>
+    <script src="~/js/pages/project-details.js"></script>
+}

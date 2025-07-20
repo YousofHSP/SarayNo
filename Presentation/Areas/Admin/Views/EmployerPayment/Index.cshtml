@@ -7,11 +7,12 @@
     ViewBag.Title = "دستمزد پیمانکار";
     Layout = "_Layout";
     var projects = ViewBag.Projects as List<Project>;
-    var projectId = ViewBag.ProjectId as int?;
     var project = ViewBag.Project as Project;
     var percentAmount = 0f;
+    var projectId = 0;
     if (project is not null)
     {
+        projectId = project.Id;
         var totalAmount = project.Activities.SelectMany(i => i.Details).Sum(i => i.Price);
         totalAmount += project.UnverifiedInvoices.Sum(i => i.Amount);
         percentAmount = totalAmount * (project.Percent / 100);
@@ -119,7 +120,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">مبلغ</label>
-                        <input type="text" class="form-control numeric" name="AmountNumeric">
+                        <input type="text" class="form-control numeric" name="Amount">
                     </div>
                     <div class="form-group">
                         <label class="form-label">توضیحات</label>

@@ -17,7 +17,6 @@ using Presentation.Models;
 
 namespace Presentation.Areas.Admin.Controllers;
 
-[Authorize(Roles = "Admin")]
 [Area("Admin")]
 public class BaseController<TDto, TResDto, TEntity, TKey>(IRepository<TEntity> repository, IMapper mapper) : Controller
     where TEntity : class, IEntity<TKey>

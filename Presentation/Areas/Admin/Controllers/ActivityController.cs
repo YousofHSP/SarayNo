@@ -13,7 +13,7 @@ using Service.Model.Contracts;
 
 namespace Presentation.Areas.Admin.Controllers;
 
-[Area("Admin"), Authorize(Roles = "Admin")]
+[Area("Admin")]
 public class ActivityController(
     IRepository<Activity> repository,
     IRepository<Project> projectRepository,

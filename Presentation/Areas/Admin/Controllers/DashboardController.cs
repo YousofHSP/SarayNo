@@ -6,7 +6,6 @@ using Presentation.Models;
 namespace Presentation.Areas.Admin.Controllers;
 
 [Area("Admin")]
-[Authorize(Roles = "Admin")]
 public class DashboardController : Controller
 {
     private readonly ILogger<DashboardController> _logger;

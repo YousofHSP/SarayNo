@@ -84,29 +84,13 @@ namespace Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CardNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Creditors", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Projects",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Percent = table.Column<float>(type: "real", nullable: false),
-                    Date = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    EstimatePrice = table.Column<float>(type: "real", nullable: false),
-                    FinalPrice = table.Column<float>(type: "real", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Projects", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -216,14 +200,71 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Projects",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Percent = table.Column<float>(type: "real", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    EstimatePrice = table.Column<float>(type: "real", nullable: false),
+                    FinalPrice = table.Column<float>(type: "real", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Projects", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Projects_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UploadedFiles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SavedName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OriginalName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MimeType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ModelType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ModelId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: ""),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UploadedFiles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UploadedFiles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Activities",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    ProjectId = table.Column<int>(type: "int", nullable: false),
                     CostGroupId = table.Column<int>(type: "int", nullable: false),
                     CreditorId = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TotalAmount = table.Column<float>(type: "real", nullable: false, defaultValue: 0f),
+                    Date = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDone = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
@@ -241,6 +282,35 @@ namespace Data.Migrations
                         principalTable: "Creditors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Activities_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmployerPayments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    Amount = table.Column<float>(type: "real", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProjectId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmployerPayments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmployerPayments_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -251,11 +321,9 @@ namespace Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProjectId = table.Column<int>(type: "int", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UnitPrice = table.Column<float>(type: "real", nullable: true),
-                    Area = table.Column<float>(type: "real", nullable: true),
-                    TotalPrice = table.Column<float>(type: "real", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
+                    Percent = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    Descriptin = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
@@ -263,6 +331,44 @@ namespace Data.Migrations
                     table.PrimaryKey("PK_ProjectDetails", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ProjectDetails_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UnverifiedInvoices",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProjectId = table.Column<int>(type: "int", nullable: false),
+                    CostGroupId = table.Column<int>(type: "int", nullable: false),
+                    CreditorId = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<float>(type: "real", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 2),
+                    Date = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UnverifiedInvoices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UnverifiedInvoices_CostGroups_CostGroupId",
+                        column: x => x.CostGroupId,
+                        principalTable: "CostGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UnverifiedInvoices_Creditors_CreditorId",
+                        column: x => x.CreditorId,
+                        principalTable: "Creditors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UnverifiedInvoices_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
                         principalColumn: "Id",
@@ -294,6 +400,100 @@ namespace Data.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ProjectDetailItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UnitPrice = table.Column<float>(type: "real", nullable: true),
+                    Area = table.Column<float>(type: "real", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TotalPrice = table.Column<float>(type: "real", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    ProjectDetailId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectDetailItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectDetailItems_ProjectDetails_ProjectDetailId",
+                        column: x => x.ProjectDetailId,
+                        principalTable: "ProjectDetails",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UnsettledInvoices",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ActivityId = table.Column<int>(type: "int", nullable: true),
+                    UnverifiedInvoiceId = table.Column<int>(type: "int", nullable: true),
+                    CostGroupId = table.Column<int>(type: "int", nullable: false),
+                    CreditorId = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    RemainAmount = table.Column<float>(type: "real", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Discount = table.Column<float>(type: "real", nullable: false, defaultValue: 0f),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UnsettledInvoices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UnsettledInvoices_Activities_ActivityId",
+                        column: x => x.ActivityId,
+                        principalTable: "Activities",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UnsettledInvoices_CostGroups_CostGroupId",
+                        column: x => x.CostGroupId,
+                        principalTable: "CostGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UnsettledInvoices_Creditors_CreditorId",
+                        column: x => x.CreditorId,
+                        principalTable: "Creditors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UnsettledInvoices_UnverifiedInvoices_UnverifiedInvoiceId",
+                        column: x => x.UnverifiedInvoiceId,
+                        principalTable: "UnverifiedInvoices",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Payoffs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UnsettledInvoiceId = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<float>(type: "real", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Number = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: ""),
+                    Date = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payoffs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Payoffs_UnsettledInvoices_UnsettledInvoiceId",
+                        column: x => x.UnsettledInvoiceId,
+                        principalTable: "UnsettledInvoices",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Activities_CostGroupId",
                 table: "Activities",
@@ -303,6 +503,11 @@ namespace Data.Migrations
                 name: "IX_Activities_CreditorId",
                 table: "Activities",
                 column: "CreditorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Activities_ProjectId",
+                table: "Activities",
+                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActivityDetails_ActivityId",
@@ -355,9 +560,69 @@ namespace Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EmployerPayments_ProjectId",
+                table: "EmployerPayments",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Payoffs_UnsettledInvoiceId",
+                table: "Payoffs",
+                column: "UnsettledInvoiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectDetailItems_ProjectDetailId",
+                table: "ProjectDetailItems",
+                column: "ProjectDetailId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProjectDetails_ProjectId",
                 table: "ProjectDetails",
                 column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Projects_UserId",
+                table: "Projects",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UnsettledInvoices_ActivityId",
+                table: "UnsettledInvoices",
+                column: "ActivityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UnsettledInvoices_CostGroupId",
+                table: "UnsettledInvoices",
+                column: "CostGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UnsettledInvoices_CreditorId",
+                table: "UnsettledInvoices",
+                column: "CreditorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UnsettledInvoices_UnverifiedInvoiceId",
+                table: "UnsettledInvoices",
+                column: "UnverifiedInvoiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UnverifiedInvoices_CostGroupId",
+                table: "UnverifiedInvoices",
+                column: "CostGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UnverifiedInvoices_CreditorId",
+                table: "UnverifiedInvoices",
+                column: "CreditorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UnverifiedInvoices_ProjectId",
+                table: "UnverifiedInvoices",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UploadedFiles_UserId",
+                table: "UploadedFiles",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -382,25 +647,43 @@ namespace Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "EmployerPayments");
+
+            migrationBuilder.DropTable(
+                name: "Payoffs");
+
+            migrationBuilder.DropTable(
+                name: "ProjectDetailItems");
+
+            migrationBuilder.DropTable(
+                name: "UploadedFiles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "UnsettledInvoices");
+
+            migrationBuilder.DropTable(
                 name: "ProjectDetails");
 
             migrationBuilder.DropTable(
                 name: "Activities");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "Projects");
+                name: "UnverifiedInvoices");
 
             migrationBuilder.DropTable(
                 name: "CostGroups");
 
             migrationBuilder.DropTable(
                 name: "Creditors");
+
+            migrationBuilder.DropTable(
+                name: "Projects");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

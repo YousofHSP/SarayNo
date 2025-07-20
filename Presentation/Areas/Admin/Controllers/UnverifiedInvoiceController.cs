@@ -10,7 +10,6 @@ using Service.Model.Contracts;
 
 namespace Presentation.Areas.Admin.Controllers;
 
-[Authorize(Roles = "Admin")]
 [Area("Admin")]
 public class UnverifiedInvoiceController : Controller
 {
@@ -78,7 +77,7 @@ public class UnverifiedInvoiceController : Controller
             return NotFound();
         model = dto.ToEntity(model, _mapper);
         await _repository.UpdateAsync(model, ct);
-        return RedirectToAction("Index", "UnverifiedInvoice", new { ct });
+        return RedirectToAction("Index", "UnverifiedInvoice", new { projectId = model.ProjectId });
     }
 
     [HttpPost]
@@ -98,7 +97,7 @@ public class UnverifiedInvoiceController : Controller
             return NotFound();
         model.Status = status;
         await _repository.UpdateAsync(model, ct);
-        return RedirectToAction("Index");
+        return RedirectToAction("Index", new {projectId = model.ProjectId});
     }
 
     [HttpGet]
@@ -139,6 +138,6 @@ public class UnverifiedInvoiceController : Controller
             await _unsettledInvoiceRepository.AddAsync(unsettledInvoice, ct);
         }
 
-        return RedirectToAction("Index");
+        return RedirectToAction("Index", new {projectId = model.ProjectId});
     }
 }

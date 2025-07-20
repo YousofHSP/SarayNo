@@ -50,6 +50,8 @@ public static class Permissions
         new() { Controller = "Project", Action = "FinalDetails", ControllerLabel = "پروژه", ActionLabel = "متراژ و قیمت اجرا شده" },
         new() { Controller = "Project", Action = "AddEstimateDetail", ControllerLabel = "پروژه", ActionLabel = "افزودن برآورد و تخمین" },
         new() { Controller = "Project", Action = "AddFinalDetail", ControllerLabel = "پروژه", ActionLabel = "افزودن متراژ و قیمت اجرا شده" },
+        new() { Controller = "Project", Action = "Images", ControllerLabel = "پروژه", ActionLabel = "گالری" },
+        new() { Controller = "Project", Action = "AddImages", ControllerLabel = "پروژه", ActionLabel = "افزودن تصویر" },
         
         new() { Controller = "UnsettledInvoice", Action = "Index", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "نمایش" },
         new() { Controller = "UnsettledInvoice", Action = "Edit", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "ویرایش" },
@@ -59,7 +61,7 @@ public static class Permissions
         new() { Controller = "UnverifiedInvoice", Action = "Create", ControllerLabel = "فاکتورهای تایید نشده", ActionLabel = "ایجاد" },
         new() { Controller = "UnverifiedInvoice", Action = "Edit", ControllerLabel = "فاکتورهای تایید نشده", ActionLabel = "ویرایش" },
         new() { Controller = "UnverifiedInvoice", Action = "Delete", ControllerLabel = "فاکتورهای تایید نشده", ActionLabel = "حذف" },
-        new() { Controller = "UnverifiedInvoice", Action = "AddImage", ControllerLabel = "فاکتورهای تایید نشده", ActionLabel = "" },
+        new() { Controller = "UnverifiedInvoice", Action = "AddImage", ControllerLabel = "فاکتورهای تایید نشده", ActionLabel = "افزودن عکس" },
         new() { Controller = "UnverifiedInvoice", Action = "ChangeStatusToApproved", ControllerLabel = "فاکتورهای تایید نشده", ActionLabel = "تایید" },
         new() { Controller = "UnverifiedInvoice", Action = "ChangeStatusToRejected", ControllerLabel = "فاکتورهای تایید نشده", ActionLabel = "رد" },
         new() { Controller = "UnverifiedInvoice", Action = "AddToUnsettledInvoice", ControllerLabel = "فاکتورهای تایید نشده", ActionLabel = "افزودن به فاکتور های تسویه نشده" },

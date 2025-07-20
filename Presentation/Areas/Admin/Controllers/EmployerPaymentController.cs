@@ -11,7 +11,6 @@ using Service.Model.Contracts;
 
 namespace Presentation.Areas.Admin.Controllers;
 
-[Authorize(Roles = "Admin")]
 [Area("Admin")]
 public class EmployerPaymentController : Controller
 {

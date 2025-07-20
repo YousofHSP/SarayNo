@@ -1,0 +1,100 @@
+@using Common.Utilities
+@using Domain
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Presentation.Helpers
+@using Service.Model.Contracts
+@model List<Domain.UploadedFile>
+@inject IUploadedFileService UploadedFileService
+
+@{
+    ViewBag.Title = "گالری";
+    Layout = "_Layout";
+    var projects = ViewBag.Projects as List<Project>;
+    var projectId = ViewBag.ProjectId as int?;
+}
+
+<div class="card">
+    <div class="card-body">
+        @if (projects is not null && projects.Any())
+        {
+            <div class="row gap-2">
+                @foreach (var item in projects)
+                {
+                    <a asp-action="Images" asp-route-projectId="@item.Id" class="card"
+                       style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Title</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@item.Percent %</h6>
+                            @* <p class="card-text">@project.</p> *@
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="d-flex justify-content-between mb-2">
+                @if (CheckPermission.Check(User, "Project.AddImage"))
+                {
+                    <button data-bs-target="#addImageModal" data-bs-toggle="modal" type="button"
+                            class="btn btn-primary">
+                        افزودن
+                    </button>
+                }
+            </div>
+            <div class="row gap-1">
+                @foreach (var image in Model)
+                {
+                    <div class="col-md-3">
+                        <div class="card">
+                            <img src="@UploadedFileService.GetFilePath(image, default)" class="card-img-top"
+                                 alt="@image.Type.ToString()"/>
+                            <div class="card-body">
+                                <h5>@image.Type.ToDisplay()</h5>
+                                <p class="card-text">@image.Description</p>
+                                <p class="card-text">@(image.ModelType is nameof(Activity) ? "فعالیت" : "فاکتور")</p>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+</div>
+<div class="modal fade" id="addImageModal" tabindex="-1" aria-labelledby="addImageModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h1 class="modal-title fs-5" id="addImageModalLabel">افزودن تصویر</h1>
+            </div>
+            <form asp-action="AddImage" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="ModelId" value="@projectId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="Type">نوع</label>
+                        <select class="form-control" id="Type" name="Type">
+                            <option value="@UploadedFileType.Unknown">@UploadedFileType.Unknown.ToDisplay()</option>
+                            <option value="@UploadedFileType.Contract">@UploadedFileType.Contract.ToDisplay()</option>
+                            <option value="@UploadedFileType.OnAccount">@UploadedFileType.OnAccount.ToDisplay()</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="File">فایل</label>
+                        <input type="file" class="form-control" name="File" id="File" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="Description">توضیحات</label>
+                        <textarea class="form-control" name="Description" id="Description"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <button type="submit" class="btn btn-primary">ثبت</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -11,7 +11,6 @@ using Presentation.DTO;
 namespace Presentation.Areas.Admin.Controllers;
 
 [Area("Admin")]
-[Authorize(Roles = "Admin")]
 public class RoleController(IRepository<Role> repository, RoleManager<Role> roleManager, IMapper mapper) : BaseController<RoleDto, RoleResDto, Role>(repository, mapper)
 {
     public override async Task Configure(string method, CancellationToken ct)

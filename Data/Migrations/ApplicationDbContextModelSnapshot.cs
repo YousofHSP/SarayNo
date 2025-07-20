@@ -249,12 +249,51 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("Domain.ProjectDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("Date")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Descriptin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Percent")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectDetails");
+                });
+
+            modelBuilder.Entity("Domain.ProjectDetailItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -268,10 +307,10 @@ namespace Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset>("Date")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProjectId")
+                    b.Property<int>("ProjectDetailId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -289,9 +328,9 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("ProjectDetailId");
 
-                    b.ToTable("ProjectDetails");
+                    b.ToTable("ProjectDetailItems");
                 });
 
             modelBuilder.Entity("Domain.Role", b =>
@@ -745,6 +784,17 @@ namespace Data.Migrations
                     b.Navigation("UnsettledInvoice");
                 });
 
+            modelBuilder.Entity("Domain.Project", b =>
+                {
+                    b.HasOne("Domain.User", "User")
+                        .WithMany("Projects")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.ProjectDetail", b =>
                 {
                     b.HasOne("Domain.Project", "Project")
@@ -754,6 +804,17 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("Domain.ProjectDetailItem", b =>
+                {
+                    b.HasOne("Domain.ProjectDetail", "ProjectDetail")
+                        .WithMany("ProjectDetailItems")
+                        .HasForeignKey("ProjectDetailId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ProjectDetail");
                 });
 
             modelBuilder.Entity("Domain.UnsettledInvoice", b =>
@@ -912,6 +973,11 @@ namespace Data.Migrations
                     b.Navigation("UnverifiedInvoices");
                 });
 
+            modelBuilder.Entity("Domain.ProjectDetail", b =>
+                {
+                    b.Navigation("ProjectDetailItems");
+                });
+
             modelBuilder.Entity("Domain.UnsettledInvoice", b =>
                 {
                     b.Navigation("Payoffs");
@@ -924,6 +990,8 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Domain.User", b =>
                 {
+                    b.Navigation("Projects");
+
                     b.Navigation("UploadedFiles");
                 });
 #pragma warning restore 612, 618
