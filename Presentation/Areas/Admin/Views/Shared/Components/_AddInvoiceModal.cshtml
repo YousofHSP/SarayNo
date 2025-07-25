@@ -1,0 +1,57 @@
+@using Data.Contracts
+@using Domain
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.EntityFrameworkCore
+@inject IRepository<Creditor> CreditorRepository
+@inject IRepository<CostGroup> CostGroupRepository; 
+@{
+
+    var creditors = await CreditorRepository.TableNoTracking
+        .Select(i => new SelectListItem(i.FirstName + " " + i.LastName, i.Id.ToString()))
+        .ToListAsync();
+    var costGroups = await CostGroupRepository.GetSelectListItems();
+    
+}
+<div class="modal fade" id="addInvoiceModal" tabindex="-1" aria-labelledby="addInvoiceModal"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h1 class="modal-title fs-5" id="addInvoiceModalLabel">افزودن جزییات</h1>
+            </div>
+            <div class="modal-body invoice-modal-body">
+                <input type="hidden" name="ProjectId" value="">
+                <input type="hidden" name="Type" value="">
+                
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="CostGroupId">گروه هزینه</label>
+                        <select name="CostGroupId" id="CostGroupId" class="form-control select2"
+                                asp-items="costGroups"></select>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="CreditorId">بستانکار</label>
+                        <select name="CreditorId" id="CreditorId" class="form-control select2"
+                                asp-items="creditors"></select>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="Amount">مبلغ</label>
+                        <input name="Amount" id="Amount" type="text" class="form-control numeric"/>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="Date">تاریخ</label>
+                        <input name="Date" id="Date" type="text" class="form-control date-picker" autocomplete="off"/>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="form-label" for="Description">توضیحات</label>
+                        <textarea name="Description" id="Description" class="form-control"></textarea>
+                    </div>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                <button type="button" class="btn btn-primary" id="addInvoice">ثبت</button>
+            </div>
+        </div>
+    </div>
+</div>

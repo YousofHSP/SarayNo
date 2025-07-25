@@ -7,6 +7,8 @@ namespace Domain
 {
     public class UploadedFile : BaseEntity
     {
+
+        public int? AlbumId { get; set; }
         public string SavedName { get; set; }
         public string OriginalName { get; set; }
         public string MimeType { get; set; }
@@ -18,6 +20,7 @@ namespace Domain
         public string Description { get; set; }
 
         public User User { get; set; }
+        public Album? Album{ get; set; }
     }
     
     public class UploadedFileConfiguration : IEntityTypeConfiguration<UploadedFile>
@@ -28,6 +31,9 @@ namespace Domain
             builder.HasOne(i => i.User)
                 .WithMany(i => i.UploadedFiles)
                 .HasForeignKey(i => i.UserId);
+            builder.HasOne(i => i.Album)
+                .WithMany(i => i.UploadedFiles)
+                .HasForeignKey(i => i.AlbumId);
         }
     }
 
@@ -36,13 +42,7 @@ namespace Domain
         [Display(Name = "مشخص نشده")]
         Unknown,
         [Display(Name = "پروفایل")]
-        Avatar,
-        [Display(Name = "قرارداد")]
-        Contract,
-        [Display(Name = "علی الحساب")]
-        OnAccount,
-        [Display(Name = "گزارش")]
-        Report
+        Avatar
     }
 }
 

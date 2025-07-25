@@ -13,71 +13,41 @@ namespace Presentation.Areas.Admin.Controllers;
 [Area("Admin")]
 public class UnsettledInvoiceController : Controller
 {
-    private readonly IRepository<UnsettledInvoice> _repository;
+    private readonly IRepository<Invoice> _invoiceRepository;
     private readonly IRepository<Project> _projectRepository;
     private readonly IMapper _mapper;
     private readonly IRepository<Payoff> _payoffRepository; 
 
-    public UnsettledInvoiceController(IRepository<UnsettledInvoice> repository, IRepository<Project> projectRepository, IMapper mapper, IRepository<Payoff> payoffRepository)
+    public UnsettledInvoiceController(IRepository<Project> projectRepository, IMapper mapper, IRepository<Payoff> payoffRepository, IRepository<Invoice> invoiceRepository)
     {
-        _repository = repository;
         _projectRepository = projectRepository;
         _mapper = mapper;
         _payoffRepository = payoffRepository;
+        _invoiceRepository = invoiceRepository;
     }
 
     public async Task<IActionResult> Index(int? projectId, CancellationToken ct)
     {
         if (projectId is null or 0)
         {
-            var projects = await _projectRepository.TableNoTracking.ToListAsync(ct);
+            var projects = await _projectRepository.TableNoTracking
+                .Include(i => i.User)
+                .ToListAsync(ct);
             ViewBag.Projects = projects;
             return View();
         }
         ViewBag.ProjectId = projectId;
-        var list = await _repository.TableNoTracking
-            .Where(i => i.Activity.ProjectId == projectId || i.UnverifiedInvoice.ProjectId == projectId)
+        var list = await _invoiceRepository.TableNoTracking
+            .Where(i => i.ProjectId == projectId)
+            .Where(i => i.Type == InvoiceType.Unsettled)
             .Include(i => i.CostGroup)
             .Include(i => i.Creditor)
-            .Include(i => i.Activity)
-            .ThenInclude(i => i.Project)
-            .Include(i => i.UnverifiedInvoice)
-            .ThenInclude(i => i.Project)
+            .Include(i => i.Project)
+            .Include(i => i.InvoiceDetails)
             .ToListAsync(ct);
 
         return View(list);
     }
 
 
-    [HttpPost]
-    public async Task<IActionResult> AddPayoff(PayoffDto dto, CancellationToken ct)
-    {
-        var model = dto.ToEntity(_mapper);
-        
-        await _payoffRepository.AddAsync(model, ct);
-        return RedirectToAction("Index", new {projectId = dto.ProjectId});
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Update(UnsettledInvoiceDto dto, CancellationToken ct)
-    {
-        var model = await _repository
-            .Table
-            .Include(i => i.Activity)
-            .Include(i => i.UnverifiedInvoice)
-            .FirstOrDefaultAsync(i => i.Id == dto.Id, ct);
-        if (model is null)
-            return NotFound();
-        if (dto.IsDone)
-            model.Status = UnsettledInvoiceStatus.Done;
-        model.Discount = dto.Discount;
-        await _repository.UpdateAsync(model, ct);
-        var projectId = 0;
-        if (model.Activity is not null)
-            projectId = model.Activity.ProjectId;
-        else if (model.UnverifiedInvoice is not null)
-            projectId = model.UnverifiedInvoice.ProjectId;
-        return RedirectToAction("Index", new {projectId});
-
-    }
 }

@@ -49,7 +49,7 @@ public class CreditorDebtDto
 {
     public string CreditorFullName { get; set; }
     public string Title { get; set; }
-    public float Amount { get; set; }
+    public decimal Amount { get; set; }
     public string AmountNumeric { get; set; }
     public string Description{ get; set; }
     public string Date { get; set; }

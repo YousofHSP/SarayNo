@@ -26,7 +26,7 @@ public class EmployerPaymentResDto : BaseDto<EmployerPaymentResDto, EmployerPaym
     public string? Description{ get; set; }
     public string Date { get; set; }
     public string AmountNumeric { get; set; }
-    public float Amount { get; set; }
+    public decimal Amount { get; set; }
 
     protected override void CustomMappings(IMappingExpression<EmployerPayment, EmployerPaymentResDto> mapping)
     {

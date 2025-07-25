@@ -2,25 +2,19 @@
 @using Data.Contracts
 @using Domain
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@using Newtonsoft.Json
 @using Presentation.Helpers
 @using Service.Model.Contracts
 @using JsonSerializer = System.Text.Json.JsonSerializer
-@model List<Domain.UnverifiedInvoice>
-@inject IRepository<CostGroup> CostGroupRepository
-@inject IRepository<Creditor> CreditorRepository
-@inject IRepository<Project> ProjectRepository
+@model List<Invoice>
 @inject IUploadedFileService UploadFileService
 
 @{
     ViewBag.Title = "قاکتور های تایید نشده";
     Layout = "_Layout";
-    var creditors = await CreditorRepository.GetSelectListItems(nameof(Creditor.LastName));
-    var costGroups = await CostGroupRepository.GetSelectListItems();
-    var projectsSelectList = await ProjectRepository.GetSelectListItems();
     var files = await UploadFileService.GetFiles(nameof(UnverifiedInvoice), [], null, default);
     var url = UploadFileService.GetUrl();
     var projects = ViewBag.Projects as List<Project>;
+    var projectId = ViewBag.ProjectId as int?;
 }
 
 <div class="card">
@@ -28,14 +22,13 @@
         @if (projects is not null && projects.Any())
         {
             <div class="row gap-2">
-                @foreach (var project in projects)
+                @foreach (var item in projects)
                 {
-                    <a asp-action="Index" asp-route-projectId="@project.Id" class="card"
+                    <a asp-action="Index" asp-route-projectId="@item.Id" class="card"
                        style="width: 18rem;">
                         <div class="card-body">
-                            <h5 class="card-title">@project.Title</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">@project.Percent %</h6>
-                            @* <p class="card-text">@project.</p> *@
+                            <h5 class="card-title">@item.Title</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@item.User.GetFullName()</h6>
                         </div>
                     </a>
                 }
@@ -46,7 +39,7 @@
             <div class="d-flex justify-content-between">
                 @if (CheckPermission.Check(User, "UnverifiedInvoice.Create"))
                 {
-                    <button data-bs-toggle="modal" data-bs-target="#addModal" type="button" class="btn btn-primary">
+                    <button data-bs-toggle="modal" data-bs-target="#addInvoiceModal" data-project-id="@projectId" data-type="@InvoiceType.Unverified" type="button" class="btn btn-primary">
                         افزودن
                     </button>
                 }
@@ -105,7 +98,7 @@
                                     }
                                     @if (CheckPermission.Check(User, "UnverifiedInvoice.AddImage"))
                                     {
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#uploadImageModal"
+                                        <a href="#" data-bs-toggle="modal" data-id="@item.Id" data-bs-target="#addImageModal"
                                            class="dropdown-item" data-bs-invoice-id="@item.Id">
                                             <i
                                                 class="fa fa-image"></i>
@@ -113,32 +106,24 @@
                                         </a>
                                     }
 
-                                    @if (CheckPermission.Check(User, "UnverifiedInvoice.ChangeStatusToApproved") && item.Status != UnverifiedInvoiceStatus.Approved)
+                                    @if (CheckPermission.Check(User, "UnverifiedInvoice.ChangeStatusToApproved") && item.Status != InvoiceStatus.Approved)
                                     {
-                                        <a asp-action="ChangeStatus" asp-route-status="Approved"
-                                           asp-route-id="@item.Id"
-                                           asp-controller="UnverifiedInvoice"
-                                           class="dropdown-item">
+                                        <a href="#" class="dropdown-item changeStatus" data-id="@item.Id" data-status="@((int)InvoiceStatus.Approved)">
                                             <i class="fa fa-check"></i>
                                             تایید
                                         </a>
                                     }
 
-                                    @if (CheckPermission.Check(User, "UnverifiedInvoice.ChangeStatusToRejected") && item.Status != UnverifiedInvoiceStatus.Rejected)
+                                    @if (CheckPermission.Check(User, "UnverifiedInvoice.ChangeStatusToRejected") && item.Status != InvoiceStatus.Rejected)
                                     {
-                                        <a asp-action="ChangeStatus" asp-route-status="Rejected"
-                                           asp-route-id="@item.Id"
-                                           asp-controller="UnverifiedInvoice"
-                                           class="dropdown-item">
+                                        <a href="#" class="dropdown-item changeStatus" data-id="@item.Id" data-status="@((int)InvoiceStatus.Rejected)">
                                             <i class="fa fa-close"></i>
                                             رد
                                         </a>
                                     }
-                                    @if (CheckPermission.Check(User, "UnverifiedInvoice.AddToUnsettledInvoice") && item.Status == UnverifiedInvoiceStatus.Approved && item.UnsettledInvoices.Count == 0)
+                                    @if (CheckPermission.Check(User, "UnverifiedInvoice.AddToUnsettledInvoice") && item is { Status: InvoiceStatus.Approved, InvoiceDetails.Count: 0 })
                                     {
-                                        <a asp-action="AddToUnsettledInvoice" asp-route-id="@item.Id"
-                                           asp-controller="UnverifiedInvoice"
-                                           class="dropdown-item">
+                                        <a href="#" class="dropdown-item changeType" data-id="@item.Id"  data-type="@InvoiceType.Unsettled">
                                             <i class="fa fa-send"></i>
                                             ارسال به فاکتور های تسویه نشده
                                         </a>
@@ -156,138 +141,9 @@
 
     </div>
 </div>
-<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header justify-content-between">
-                <h1 class="modal-title fs-5" id="addModalLabel">ثبت فاکتور</h1>
-                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-action="Create" method="post">
-                <input type="hidden" name="Id" value="0">
-                <div class="modal-body">
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="CostGroupId">گروه هزینه</label>
-                        <select name="CostGroupId" id="CostGroupId" class="form-control select2"
-                                asp-items="costGroups"></select>
-                    </div>
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="CreditorId">بستانکار</label>
-                        <select name="CreditorId" id="CreditorId" class="form-control select2"
-                                asp-items="creditors"></select>
-                    </div>
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="ProjectId">پروژه</label>
-                        <select name="ProjectId" id="ProjectId" class="form-control select2"
-                                asp-items="projectsSelectList"></select>
-                    </div>
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="Amount">مبلغ</label>
-                        <input name="Amount" id="Amount" type="text" class="form-control numeric"/>
-                    </div>
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="Date">تاریخ</label>
-                        <input name="Date" id="Date" type="text" class="form-control date-picker" autocomplete="off"/>
-                    </div>
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="Description">توضیحات</label>
-                        <textarea name="Description" id="Description" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
-                    <button type="submit" class="btn btn-primary">ثبت</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="uploadImageModal" tabindex="-1" aria-labelby="uploadImageModal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="uploadImageModalLabel">افزودن تصویر</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-action="AddImage" method="post" enctype="multipart/form-data">
-                <div class="modal-body">
-                    <input type="hidden" name="ModelId">
-                    <div class="form-group">
-                        <label class="form-label" for="Type">نوع</label>
-                        <select class="form-control" id="Type" name="Type">
-                            <option value="@UploadedFileType.Unknown">@UploadedFileType.Unknown.ToDisplay()</option>
-                            <option value="@UploadedFileType.Contract">@UploadedFileType.Contract.ToDisplay()</option>
-                            <option value="@UploadedFileType.OnAccount">@UploadedFileType.OnAccount.ToDisplay()</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="File">فایل</label>
-                        <input type="file" class="form-control" name="File" id="File" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="DescriptionImage">توضیحات</label>
-                        <textarea class="form-control" name="Description" id="DescriptionImage"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
-                    <button type="submit" class="btn btn-primary">ثبت</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-<div class="modal  fade" id="updateModal" tabindex="-1" aria-labelledby="updateModal" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header justify-content-between">
-                <h1 class="modal-title fs-5" id="updateModalLabel">ویرایش</h1>
-                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+<partial name="Components/_AddInvoiceModal"/>
+<partial name="Components/_AddImageModal"/>
 
-            <form asp-action="Update" method="post">
-                <input type="hidden" name="Id" value="">
-                <div class="modal-body">
-                    <div class="images row gap-2">
-
-                    </div>
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="CostGroupIdUpdate">گروه هزینه</label>
-                        <select name="CostGroupId" id="CostGroupIdUpdate" class="form-control select2"
-                                asp-items="costGroups"></select>
-                    </div>
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="CreditorIdUpdate">بستانکار</label>
-                        <select name="CreditorId" id="CreditorIdUpdate" class="form-control select2"
-                                asp-items="creditors"></select>
-                    </div>
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="ProjectIdUpdate">پروژه</label>
-                        <select name="ProjectId" id="ProjectIdUpdate" class="form-control select2"
-                                asp-items="projectsSelectList"></select>
-                    </div>
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="AmountUpdate">مبلغ</label>
-                        <input name="Amount" id="AmountUpdate" type="text" class="form-control numeric"/>
-                    </div>
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="DateUpdate">تاریخ</label>
-                        <input name="Date" id="DateUpdate" type="text" class="form-control date-picker"
-                               autocomplete="off"/>
-                    </div>
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="DescriptionUpdate">توضیحات</label>
-                        <textarea name="Description" id="DescriptionUpdate" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
-                    <button type="submit" class="btn btn-primary">ثبت</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 @section Scripts{
     <script>

@@ -5,20 +5,17 @@ $('#detailModal').on('show.bs.modal', function (event) {
     const creditor = button.data('bs-creditor')
     const description = button.data('bs-description')
     const date = button.data('bs-date')
-    const isDone = button.data('bs-is-done')
     const paidAmount= button.data('bs-paid-amount')
-    const activityId = button.data('bs-activity-id')
-    const unverifiedInvoiceId = button.data('bs-unverified-invoice-id')
     const modal = $(this)
-    const modelFiles = files.filter(i => i.ModelId == activityId || i.ModelId == unverifiedInvoiceId);
-    const modelPayoffs = payoffs.filter(i => i.UnsettledInvoiceId == id);
+    const modelFiles = files.filter(i => i.ModelId == id);
+    const modelPayoffs = payoffs.filter(i => i.InvoiceId == id);
     let payoffsEl = ``;
     let el =``;
     modelPayoffs.forEach(item => {
         payoffsEl += `
             <tr>
                 <td>${item.TypeDisplay}</td>
-                <td>${item.Number}</td>
+                <td>${item.Description}</td>
                 <td>${item.Date}</td>
                 <td colspan="2">${item.Price}</td>
             </tr>
@@ -46,13 +43,5 @@ $('#detailModal').on('show.bs.modal', function (event) {
     modal.find('#date-el').text(date)
     modal.find('#creditor-el').text(creditor)
     modal.find('.id').val(id)
-    if(isDone === "True"){
-        modal.find('[name=isDone]').prop("checked", true);
-        modal.find('button').hide()
-        
-    }else{
-
-        modal.find('[name=isDone]').prop("checked", false);
-        modal.find('button').show()
-    }
+    modal.find('[name=isDone]').prop("checked", false);
 })

@@ -15,13 +15,14 @@ namespace Presentation.Areas.Admin.Controllers;
 public class EmployerPaymentController : Controller
 {
     private readonly IRepository<EmployerPayment> _repository;
+    private readonly IRepository<Invoice> _invoiceRepository;
     private readonly IRepository<Project> _projectRepository;
     private readonly IRepository<Activity> _activityRepository;
     private readonly IRepository<UnverifiedInvoice> _unverifiedInvoiceRepository;
     private readonly IUploadedFileService _uploadedFileService;
     private readonly IMapper _mapper;
 
-    public EmployerPaymentController(IRepository<EmployerPayment> repository, IRepository<Project> projectRepository, IMapper mapper, IUploadedFileService uploadedFileService, IRepository<Activity> activityRepository, IRepository<UnverifiedInvoice> unverifiedInvoiceRepository)
+    public EmployerPaymentController(IRepository<EmployerPayment> repository, IRepository<Project> projectRepository, IMapper mapper, IUploadedFileService uploadedFileService, IRepository<Activity> activityRepository, IRepository<UnverifiedInvoice> unverifiedInvoiceRepository, IRepository<Invoice> invoiceRepository)
     {
         _repository = repository;
         _projectRepository = projectRepository;
@@ -29,22 +30,22 @@ public class EmployerPaymentController : Controller
         _uploadedFileService = uploadedFileService;
         _activityRepository = activityRepository;
         _unverifiedInvoiceRepository = unverifiedInvoiceRepository;
+        _invoiceRepository = invoiceRepository;
     }
 
     public async Task<IActionResult> Index([FromQuery] int? projectId, CancellationToken ct)
     {
         if (projectId is null or 0)
         {
-            var projects = await _projectRepository.TableNoTracking.ToListAsync(ct);
+            var projects = await _projectRepository.TableNoTracking
+                .Include(i => i.User)
+                .ToListAsync(ct);
             ViewBag.Projects = projects;
             return View();
         }
 
         var project = await _projectRepository.TableNoTracking
             .Include(i => i.Details)
-            .Include(i => i.Activities)
-            .ThenInclude(i => i.Details)
-            .Include(i => i.UnverifiedInvoices)
             .FirstOrDefaultAsync(i => i.Id == projectId, ct);
         if (project is null)
             return NotFound();
@@ -75,21 +76,15 @@ public class EmployerPaymentController : Controller
         if (project is null)
             return NotFound();
         ViewBag.Project = project;
-        var activityList = await _activityRepository.TableNoTracking
-            .Where(i => i.ProjectId == projectId)
-            .Include(i => i.Project)
-            .Include(i => i.Creditor)
-            .Include(i => i.CostGroup)
-            .Include(i => i.Details)
-            .ToListAsync(ct);
-        var unverifiedInvoices = await _unverifiedInvoiceRepository.TableNoTracking
+        var invoices = await _invoiceRepository.TableNoTracking
             .Where(i => i.ProjectId == projectId)
             .Include(i => i.Project)
             .Include(i => i.CostGroup)
             .Include(i => i.Creditor)
+            .Include(i => i.InvoiceDetails)
             .ToListAsync(ct);
         var list = new List<ProjectCostDto>();
-        foreach (var item in unverifiedInvoices)
+        foreach (var item in invoices)
         {
             list.Add(new ()
             {
@@ -101,31 +96,10 @@ public class EmployerPaymentController : Controller
                 AmountNumeric = item.Amount.ToNumeric(),
                 Amount = item.Amount,
                 CostGroupTitle = item.CostGroup.Title,
-                Type = "فاکتور تایید نشده",
+                Type = item.Type.ToDisplay(),
                 PayType = "",
                 CreditorFullName = item.Creditor.FirstName + " " + item.Creditor.LastName
             });
-        }
-
-        foreach (var activity in activityList)
-        {
-            foreach (var item in activity.Details)
-            {
-                list.Add(new()
-                {
-                    CostGroupTitle = activity.CostGroup.Title,
-                    CreditorFullName = activity.Creditor.FirstName + " " + activity.Creditor.LastName,
-                    Description = activity.Description ?? "",
-                    Number = item.Number,
-                    ProjectId = activity.ProjectId,
-                    ProjectTitle = activity.Project.Title,
-                    AmountNumeric = item.Price.ToNumeric(),
-                    Amount = item.Price,
-                    Type = "فعالیت",
-                    PayType = item.Type.ToDisplay(),
-                    Date = item.Date.ToShamsi()
-                });
-            }
         }
         return View(list);
 
@@ -145,7 +119,7 @@ public class EmployerPaymentController : Controller
     public async Task<IActionResult> AddImage(AddImageDto dto, CancellationToken ct)
     {
         var userId = User.Identity!.GetUserId<int>();
-        await _uploadedFileService.UploadFileAsync(dto.File, dto.Type, nameof(EmployerPayment),
+        await _uploadedFileService.UploadFileAsync(dto.File, dto.AlbumId, nameof(EmployerPayment),
             dto.ModelId, userId, ct, dto.Description);
         return RedirectToAction("Index");
         

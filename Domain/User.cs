@@ -20,6 +20,11 @@ public class User : IdentityUser<int>, IEntity<int>
     public List<Role> Roles { get; set; }
     public List<UploadedFile> UploadedFiles { get; set; }
     public List<Project> Projects { get; set; }
+    public List<InvoiceLog>? InvoiceLogs { get; set; }
+    public string GetFullName()
+    {
+        return FirstName + " " + LastName;
+    }
 }
 
 public class UserConfiguration : IEntityTypeConfiguration<User>

@@ -6,11 +6,10 @@ namespace Presentation.DTO;
 
 public class PayoffDto : BaseDto<PayoffDto, Payoff>
 {
-    public int UnsettledInvoiceId { get; set; }
-    public int ProjectId { get; set; }
-    public float Price { get; set; }
-    public PayoffType Type { get; set; }
-    public string Number { get; set; }
+    public int InvoiceId { get; set; }
+    public string Price { get; set; }
+    public string Type { get; set; }
+    public string? Description{ get; set; }
     public string Date { get; set; }
 
     protected override void CustomMappings(IMappingExpression<PayoffDto, Payoff> mapping)
@@ -23,9 +22,9 @@ public class PayoffDto : BaseDto<PayoffDto, Payoff>
 
 public class PayoffResDto : BaseDto<PayoffResDto, Payoff>
 {
-    public int UnsettledInvoiceId { get; set; }
-    public string Number { get; set; }
+    public int InvoiceId { get; set; }
     public string Price { get; set; }
+    public string? Description { get; set; }
     public string TypeDisplay { get; set; }
     public string Date { get; set; }
     protected override void CustomMappings(IMappingExpression<Payoff, PayoffResDto> mapping)

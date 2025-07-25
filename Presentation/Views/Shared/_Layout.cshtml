@@ -182,7 +182,7 @@
 						@* <li><a class="dropdown-item" href="#"><i class="fas fa-user ms-2"></i>پروفایل</a></li> *@
 						<li><a class="dropdown-item text-danger" asp-area="" asp-controller="Account"
 						       asp-action="Logout"><i
-									class="fas fa-sign-out-alt ms-2"></i>خروج</a>
+							                           class="fas fa-sign-out-alt ms-2"></i>خروج</a>
 						</li>
 					</ul>
 				</div>
@@ -192,6 +192,29 @@
 				@RenderBody()
 			</section>
 		</main>
+	</div>
+</div>
+
+<div class="modal fade" id="changeStatusModal" tabindex="-1" aria-labelby="changeStatusModal" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="changeStatusModalLabel">تغییر وضعیت</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+				<div class="modal-body change-status-modal-body">
+					<input type="hidden" name="Id">
+					<input type="hidden" name="Status">
+					<div class="form-group">
+						<label class="form-label" for="DescriptionImage">توضیحات</label>
+						<textarea class="form-control" name="Description" id="DescriptionImage"></textarea>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+					<button type="button" id="changeStatusBtn" class="btn btn-primary">ثبت</button>
+				</div>
+		</div>
 	</div>
 </div>
 <script>
@@ -369,5 +392,9 @@
 
 
 </script>
+<script src="~/js/components/app.js"></script>
+<script src="~/js/components/addInvoiceDetailModal.js"></script>
+<script src="~/js/components/addInvoiceModal.js"></script>
+<script src="~/js/components/addImageModal.js"></script>
 </body>
 </html>

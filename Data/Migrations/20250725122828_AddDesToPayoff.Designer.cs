@@ -4,6 +4,7 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250725122828_AddDesToPayoff")]
+    partial class AddDesToPayoff
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,26 +103,6 @@ namespace Data.Migrations
                     b.HasIndex("ActivityId");
 
                     b.ToTable("ActivityDetails");
-                });
-
-            modelBuilder.Entity("Domain.Album", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Albums");
                 });
 
             modelBuilder.Entity("Domain.CostGroup", b =>
@@ -607,9 +590,6 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AlbumId")
-                        .HasColumnType("int");
-
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -648,8 +628,6 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AlbumId");
 
                     b.HasIndex("UserId");
 
@@ -1071,17 +1049,11 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Domain.UploadedFile", b =>
                 {
-                    b.HasOne("Domain.Album", "Album")
-                        .WithMany("UploadedFiles")
-                        .HasForeignKey("AlbumId");
-
                     b.HasOne("Domain.User", "User")
                         .WithMany("UploadedFiles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Album");
 
                     b.Navigation("User");
                 });
@@ -1142,11 +1114,6 @@ namespace Data.Migrations
                     b.Navigation("Details");
 
                     b.Navigation("UnsettledInvoices");
-                });
-
-            modelBuilder.Entity("Domain.Album", b =>
-                {
-                    b.Navigation("UploadedFiles");
                 });
 
             modelBuilder.Entity("Domain.CostGroup", b =>

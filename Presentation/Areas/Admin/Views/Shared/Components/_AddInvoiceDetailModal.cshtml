@@ -1,0 +1,40 @@
+@using Common.Utilities
+@using Domain
+<div class="modal fade" id="addInvoiceDetailModal" tabindex="-1" aria-labelledby="addInvoiceDetailModal"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h1 class="modal-title fs-5" id="addInvoiceDetailModalLabel">افزودن جزییات</h1>
+            </div>
+            <div class="modal-body invoice-detail-modal-body">
+                <input type="hidden" name="InvoiceId" value="">
+                <div class="form-group">
+                    <label class="form-label">نوع</label>
+                    <select class="form-control select2" name="Type">
+                        <option value="@InvoiceDetailType.Check">@InvoiceDetailType.Check.ToDisplay()</option>
+                        <option value="@InvoiceDetailType.EmployerPayment">@InvoiceDetailType.EmployerPayment.ToDisplay()</option>
+                        <option value="@InvoiceDetailType.TrustFund">@InvoiceDetailType.TrustFund.ToDisplay()</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">مبلغ</label>
+                    <input type="text" class="form-control numeric" name="Price">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">تاریخ</label>
+                    <input type="text" class="form-control date-picker" name="Date">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">توضیحات</label>
+                    <textarea name="Description" class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                <button type="button" class="btn btn-primary" id="addInvoiceDetail">ثبت</button>
+            </div>
+        </div>
+    </div>
+</div>

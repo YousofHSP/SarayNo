@@ -17,7 +17,7 @@
                style="width: 18rem;">
                 <div class="card-body">
                     <h5 class="card-title">@item.Title</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">@item.Percent %</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">@(item.User.FirstName + " " + item.User.LastName)</h6>
                     @* <p class="card-text">@project.</p> *@
                 </div>
             </a>

@@ -1,30 +1,37 @@
 @using Common.Utilities
+@using Data.Contracts
 @using Domain
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Presentation.Helpers
 @using Service.Model.Contracts
 @model List<Domain.UploadedFile>
 @inject IUploadedFileService UploadedFileService
+@inject IRepository<Album> AlbumRepository;
 
 @{
     ViewBag.Title = "گالری";
     Layout = "_Layout";
-    var projects = ViewBag.Projects as List<Project>;
-    var projectId = ViewBag.ProjectId as int?;
+    var albums = ViewBag.Albums as List<Album>;
+    var albumId = ViewBag.AlbumId as int?;
+    var albumSelectList = await AlbumRepository.GetSelectListItems();
 }
 
 <div class="card">
     <div class="card-body">
-        @if (projects is not null && projects.Any())
+        @if (albumId == 0)
         {
-            <div class="row gap-2">
-                @foreach (var item in projects)
+            <button data-bs-target="#addAlbumModal" data-bs-toggle="modal" type="button"
+                    class="btn btn-primary">
+                افزودن آلبوم
+            </button>
+            <div class="row gap-2 mt-3">
+                @foreach (var item in albums)
                 {
-                    <a asp-action="Images" asp-route-projectId="@item.Id" class="card"
+                    <a asp-action="Images" asp-route-albumId="@item.Id" class="card"
                        style="width: 18rem;">
                         <div class="card-body">
                             <h5 class="card-title">@item.Title</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">@item.Percent %</h6>
+                            @* <h6 class="card-subtitle mb-2 text-muted">@(item.User.FirstName + " " + item.User.LastName)</h6> *@
                             @* <p class="card-text">@project.</p> *@
                         </div>
                     </a>
@@ -63,6 +70,28 @@
 
     </div>
 </div>
+<div class="modal fade" id="addAlbumModal" tabindex="-1" aria-labelledby="addAlbumModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h1 class="modal-title fs-5" id="addAlbumModalLabel">افزودن تصویر</h1>
+            </div>
+            <form asp-action="AddAlbum" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">عنوان</label>
+                        <input type="text" name="Title" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <button type="submit" class="btn btn-primary">ثبت</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="addImageModal" tabindex="-1" aria-labelledby="addImageModal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -71,16 +100,9 @@
                 <h1 class="modal-title fs-5" id="addImageModalLabel">افزودن تصویر</h1>
             </div>
             <form asp-action="AddImage" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="ModelId" value="@projectId">
+                <input type="hidden" name="ModelId" value="@albumId">
+                <input type="hidden" name="AlbumId" value="@albumId">
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label" for="Type">نوع</label>
-                        <select class="form-control" id="Type" name="Type">
-                            <option value="@UploadedFileType.Unknown">@UploadedFileType.Unknown.ToDisplay()</option>
-                            <option value="@UploadedFileType.Contract">@UploadedFileType.Contract.ToDisplay()</option>
-                            <option value="@UploadedFileType.OnAccount">@UploadedFileType.OnAccount.ToDisplay()</option>
-                        </select>
-                    </div>
                     <div class="form-group">
                         <label class="form-label" for="File">فایل</label>
                         <input type="file" class="form-control" name="File" id="File" required>

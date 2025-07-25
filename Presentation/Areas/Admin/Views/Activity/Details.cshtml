@@ -3,7 +3,7 @@
 @using Domain
 @using Presentation.Helpers
 @using Service.Model.Contracts
-@model Domain.Activity
+@model Invoice
 @inject IUploadedFileService UploadedFileService
 
 @{
@@ -17,38 +17,34 @@
     <div class="card-body">
         <h2>جزئیات فعالیت</h2>
 
-        @if (!Model.IsDone)
-        {
-            <div class="d-flex justify-content-start mt-3">
-                @if (CheckPermission.Check(User, "Activity.AddDetail"))
-                {
-                    <a asp-action="AddDetail" asp-route-id="@Model.Id" asp-area="Admin"
-                       class="btn btn-primary">افزودن</a>
-                }
-                @if (CheckPermission.Check(User, "Activity.AddImage"))
-                {
-                    <button data-bs-toggle="modal" data-bs-target="#addImageModal" type="button"
-                            class="btn btn-primary me-2">افزودن
-                        تصویر
-                    </button>
-                }
-                @if (CheckPermission.Check(User, "Activity.SetTotalAmount"))
-                {
-                    <button data-bs-toggle="modal" data-bs-target="#setTotalAmountModal" type="button"
-                            class="btn btn-primary me-2">ثبت مبلغ فاکتور
-                    </button>
-                }
-                @if (CheckPermission.Check(User, "Activity.Done"))
-                {
-                    <a asp-action="Done" asp-route-id="@Model.Id" class="btn btn-primary me-2">اتمام فعالیت و ارسال به
-                        فاکتور تسویه نشده</a>
-                }
-            </div>
-        }
-        else
-        {
-            <h4>اتمام فعالیت و ارسال به فاکتور تسویه نشده</h4>
-        }
+        <div class="d-flex justify-content-start mt-3">
+            @if (CheckPermission.Check(User, "Activity.AddDetail"))
+            {
+                <button data-bs-toggle="modal" data-bs-target="#addInvoiceDetailModal" data-type="0"
+                        data-invoice-id="@Model.Id" type="button"
+                        class="btn btn-primary me-2">افزودن
+                </button>
+            }
+            @if (CheckPermission.Check(User, "Activity.AddImage"))
+            {
+                <button data-bs-toggle="modal" data-bs-target="#addImageModal" data-id="@Model.Id" type="button"
+                        class="btn btn-primary me-2">افزودن
+                    تصویر
+                </button>
+            }
+            @if (CheckPermission.Check(User, "Activity.SetTotalAmount"))
+            {
+                <button data-bs-toggle="modal" data-bs-target="#setTotalAmountModal" type="button"
+                        class="btn btn-primary me-2">ثبت مبلغ فاکتور
+                </button>
+            }
+            @if (CheckPermission.Check(User, "Activity.Done"))
+            {
+                <button type="button" data-id="@Model.Id" data-type="@(InvoiceType.Unverified)"
+                        class="changeType btn btn-primary"> اتمام فعالیت و ارسال به فاکتور تایید نشده
+                </button>
+            }
+        </div>
         <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
 
             @foreach (var image in images)
@@ -70,20 +66,20 @@
         <table class="table table-hover mt-2">
             <tr>
                 <th>نوع</th>
-                <th>شماره</th>
                 <th>تاریخ</th>
                 <th>مبلغ</th>
+                <th>شرح</th>
                 <th>عملیات</th>
             </tr>
-            @foreach (var item in Model.Details)
+            @foreach (var item in Model.InvoiceDetails)
             {
                 <tr>
                     <td>@item.Type.ToDisplay()</td>
-                    <td>@item.Number</td>
                     <td>@item.Date.ToShamsi()</td>
                     <td>@item.Price.ToNumeric()</td>
+                    <td>@item.Description</td>
                     <td>
-                        @if (item.Status == ActivityDetailStatus.Pending)
+                        @if (item.Status == InvoiceDetailStatus.Pending)
                         {
                             <a asp-controller="Activity" asp-action="ApprovedDetail" asp-route-id="@item.Id"
                                class="btn btn-primary">تایید</a>
@@ -97,7 +93,7 @@
             }
             <tfoot>
             @{
-                var totalPrice = Model.Details.Sum(i => i.Price);
+                var totalPrice = Model.InvoiceDetails.Sum(i => i.Price);
             }
             <tr>
                 <td colspan="3"></td>
@@ -105,51 +101,19 @@
             </tr>
             <tr>
                 <td colspan="3"></td>
-                <td colspan="2">مبلغ کل فاکتور: @Model.TotalAmount.ToNumeric()</td>
+                <td colspan="2">مبلغ کل فاکتور: @Model.Amount.ToNumeric()</td>
             </tr>
             <tr>
                 <td colspan="3"></td>
-                <td colspan="2">مانده نهایی: @((Model.TotalAmount - totalPrice).ToNumeric()) </td>
+                <td colspan="2">مانده نهایی: @((Model.Amount - totalPrice).ToNumeric()) </td>
             </tr>
             </tfoot>
         </table>
     </div>
 </div>
-<div class="modal fade" id="addImageModal" tabindex="-1" aria-labelledby="addImageModal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                <h1 class="modal-title fs-5" id="addImageModalLabel">افزودن تصویر</h1>
-            </div>
-            <form asp-action="AddImage" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="ModelId" value="@Model.Id">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label" for="Type">نوع</label>
-                        <select class="form-control" id="Type" name="Type">
-                            <option value="@UploadedFileType.Unknown">@UploadedFileType.Unknown.ToDisplay()</option>
-                            <option value="@UploadedFileType.Contract">@UploadedFileType.Contract.ToDisplay()</option>
-                            <option value="@UploadedFileType.OnAccount">@UploadedFileType.OnAccount.ToDisplay()</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="File">فایل</label>
-                        <input type="file" class="form-control" name="File" id="File" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="Description">توضیحات</label>
-                        <textarea class="form-control" name="Description" id="Description"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
-                    <button type="submit" class="btn btn-primary">ثبت</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+
+<partial name="Components/_AddInvoiceDetailModal"/>
+<partial name="Components/_AddImageModal"/>
 <div class="modal fade" id="setTotalAmountModal" tabindex="-1" aria-labelledby="setTotalAmountModal"
      aria-hidden="true">
     <div class="modal-dialog">
@@ -164,7 +128,7 @@
                     <div class="form-group">
                         <label class="form-label" for="totalAmount">مبلغ کل فاکتور</label>
                         <input type="text" class="form-control numeric" name="totalAmount" id="totalAmount"
-                               value="@Model.TotalAmount" required>
+                               value="@Model.Amount" required>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -9,7 +9,7 @@
 @using Presentation.DTO
 @using Presentation.Helpers
 @using Service.Model.Contracts
-@model List<Domain.UnsettledInvoice>
+@model List<Invoice>
 @inject IUploadedFileService UploadFileService
 @inject IRepository<Payoff> PayoffRepository
 @inject IMapper Mapper; 
@@ -20,7 +20,7 @@
     var projects = ViewBag.Projects as List<Project>;
     var projectId = ViewBag.ProjectId as int?;
     var url = UploadFileService.GetUrl();
-    var files = await UploadFileService.GetFiles([nameof(UnsettledInvoice), nameof(Activity)], [], null, default);
+    var files = await UploadFileService.GetFiles(nameof(Invoice), [], null, default);
     var payoffs = await PayoffRepository.TableNoTracking
         .ProjectTo<PayoffResDto>(Mapper.ConfigurationProvider)
         .ToListAsync();
@@ -32,13 +32,13 @@
         @if (projects is not null && projects.Any())
         {
             <div class="row gap-2">
-                @foreach (var project in projects)
+                @foreach (var item in projects)
                 {
-                    <a asp-action="Index" asp-route-projectId="@project.Id" class="card"
+                    <a asp-action="Index" asp-route-projectId="@item.Id" class="card"
                        style="width: 18rem;">
                         <div class="card-body">
-                            <h5 class="card-title">@project.Title</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">@project.Percent %</h6>
+                            <h5 class="card-title">@item.Title</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@(item.User.FirstName + " " + item.User.LastName)</h6>
                             @* <p class="card-text">@project.</p> *@
                         </div>
                     </a>
@@ -51,7 +51,6 @@
                 <thead>
                 <tr>
                     <td>ردیف</td>
-                    <td>پروژه</td>
                     <td>گروه هزینه</td>
                     <td>بستانکار</td>
                     <td>تاریخ</td>
@@ -67,24 +66,13 @@
                 }
                 @foreach (var item in Model)
                 {
-                    var projectTitle = "";
-                    if (item.ActivityId is not null)
-                    {
-                        projectTitle = item.Activity?.Project.Title ?? "";
-                    }
-                    else if (item.UnverifiedInvoiceId is not null)
-                    {
-                        projectTitle = item.UnverifiedInvoice?.Project.Title ?? "";
-                    }
-
                     <tr>
                         <td>@(++index)</td>
-                        <td>@projectTitle</td>
                         <td>@item.CostGroup.Title</td>
                         <td>@item.Creditor.FirstName @item.Creditor.LastName</td>
                         <td>@item.Date.ToShamsi()</td>
                         <td>@item.Description</td>
-                        <td>@item.RemainAmount.ToNumeric()</td>
+                        <td>@item.Amount.ToNumeric()</td>
                         <td>@item.Status.ToDisplay()</td>
                         <td>
 
@@ -97,13 +85,11 @@
                                 <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
                                      style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
                                     <a href="#" data-bs-toggle="modal" data-bs-target="#detailModal"
-                                       data-bs-id="@item.Id" data-bs-activity-id="@item.ActivityId"
-                                       data-bs-unverified-invoice-id="@item.UnverifiedInvoiceId"
+                                       data-bs-id="@item.Id"
                                        data-bs-cost-group="@item.CostGroup.Title"
-                                       data-bs-is-done="@(item.Status == UnsettledInvoiceStatus.Done)"
                                        data-bs-creditor="@item.Creditor.FirstName @item.Creditor.LastName"
                                        data-bs-description="@item.Description" data-bs-date="@item.Date.ToShamsi()"
-                                       data-bs-paid-amount="@item.RemainAmount.ToNumeric()"
+                                       data-bs-paid-amount="@item.Amount.ToNumeric()"
                                        class="dropdown-item">
                                         <i
                                             class="fa fa-list"></i>
@@ -151,69 +137,61 @@
                     <table class="table">
                         <tr>
                             <th>نوع پرداخت</th>
-                            <th>شماره</th>
+                            <th>شرح</th>
                             <th>تاریخ</th>
                             <th>مبلغ</th>
                             <th>عملیات</th>
                         </tr>
-                        <form asp-action="AddPayoff" method="post">
-                            <input type="hidden" class="id" name="UnsettledInvoiceId" value="0">
-                            <input type="hidden" name="ProjectId" value="@projectId">
-                            <tr>
-                                <td>
-                                    <select name="type" class="select2">
-                                        <option value="@PayoffType.Cash">@PayoffType.Cash.ToDisplay()</option>
-                                        <option value="@PayoffType.Check">@PayoffType.Check.ToDisplay()</option>
-                                        <option
-                                            value="@PayoffType.EmployerPayment">@PayoffType.EmployerPayment.ToDisplay()</option>
-                                    </select>
-                                </td>
-                                <td><input type="number" class="form-control " name="number"></td>
-                                <td><input type="text" class="form-control date-picker" name="date"></td>
-                                <td><input type="text" class="form-control numeric" name="price"></td>
-                                <td>
-                                    @if (CheckPermission.Check(User, "UnsettledInvoice.AddPayoff"))
-                                    {
-                                        <button type="submit" class="btn btn-primary">ثبت</button>
-                                    }
-                                </td>
-                            </tr>
-                        </form>
+                        <tr id="addPayoffForm">
+                            <td>
+                                <input type="hidden" class="id" name="InvoiceId" value="0">
+                                <select name="type" class="select2">
+                                    <option value="@PayoffType.Cash">@PayoffType.Cash.ToDisplay()</option>
+                                    <option value="@PayoffType.Check">@PayoffType.Check.ToDisplay()</option>
+                                    <option
+                                        value="@PayoffType.EmployerPayment">@PayoffType.EmployerPayment.ToDisplay()</option>
+                                </select>
+                            </td>
+                            <td><textarea name="description" class="form-control"></textarea></td>
+                            <td><input type="text" class="form-control date-picker" name="date"></td>
+                            <td><input type="text" class="form-control numeric" name="price"></td>
+                            <td>
+                                @if (CheckPermission.Check(User, "UnsettledInvoice.AddPayoff"))
+                                {
+                                    <button type="button" id="addPayoff" class="btn btn-primary">ثبت</button>
+                                }
+                            </td>
+                        </tr>
                         <tbody id="payoffs-table">
 
                         </tbody>
 
                     </table>
                 </div>
-                <form asp-action="Update">
-                    <input type="hidden" class="id" name="Id" value="0">
-                    <div class="mt-3">
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label for="discount" class="form-label">تخفیف</label>
-                                    <input type="text" class="form-control numeric" id="discount" name="discount">
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label for="isDone" class="form-check-label">تسویه شده</label>
-                                    <input type="checkbox" class="form-check-input" id="isDone" name="isDone"
-                                           value="true">
-                                </div>
-                            </div>
-                            <div class="col-md-1 text-left">
-                                @if (CheckPermission.Check(User, "UnsettledInvoice.Update"))
-                                {
-                                    <button type="submit" class="btn btn-primary">ثبت</button>
-                                }
+                <input type="hidden" class="id" name="Id" value="0">
+                <div class="mt-3">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label for="discount" class="form-label">تخفیف</label>
+                                <input type="text" class="form-control numeric" id="discount" name="discount">
                             </div>
                         </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label for="isDone" class="form-check-label">تسویه شده</label>
+                                <input type="checkbox" class="form-check-input" id="isDone" name="isDone"
+                                       value="true">
+                            </div>
+                        </div>
+                        <div class="col-md-1 text-left">
+                            @if (CheckPermission.Check(User, "UnsettledInvoice.Update"))
+                            {
+                                <button type="button" class="btn btn-primary">ثبت</button>
+                            }
+                        </div>
                     </div>
-
-                </form>
-
-
+                </div>
             </div>
         </div>
     </div>

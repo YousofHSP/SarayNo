@@ -1,7 +1,9 @@
+@using Common.Utilities
 @using Data.Contracts
 @using Domain
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Presentation.Helpers
-@model List<Presentation.DTO.ActivityResDto>
+@model List<Invoice>
 @inject IRepository<CostGroup> CostGroupRepository;
 @inject IRepository<Creditor> CreditorRepository;
 
@@ -29,7 +31,7 @@
                        style="width: 18rem;">
                         <div class="card-body">
                             <h5 class="card-title">@item.Title</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">@item.Percent %</h6>
+                            <h6 class="card-subtitle mb-2 text-muted">@item.User.GetFullName()</h6>
                             @* <p class="card-text">@project.</p> *@
                         </div>
                     </a>
@@ -41,7 +43,7 @@
             @if (CheckPermission.Check(User, "Activity.Create"))
             {
                 <div class="d-flex justify-content-between">
-                    <button data-bs-toggle="modal" data-bs-target="#addModal" type="button" class="btn btn-primary">
+                    <button data-bs-toggle="modal" data-bs-target="#addInvoiceModal" data-project-id="@projectId" data-type="@InvoiceType.Activity" type="button" class="btn btn-primary">
                         افزودن
                     </button>
                 </div>
@@ -49,7 +51,6 @@
 
             <table class="table table-hover mt-2">
                 <tr>
-                    <th>پروژه</th>
                     <th>گروه هزینه</th>
                     <th>بستانکار</th>
                     <th>توضیحات</th>
@@ -60,12 +61,11 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@item.ProjectTitle</td>
-                        <td>@item.CostGroupTitle</td>
-                        <td>@item.CreditorFullName</td>
+                        <td>@item.CostGroup.Title</td>
+                        <td>@item.Creditor.GetFullName()</td>
                         <td>@item.Description</td>
-                        <td>@item.OnAccount</td>
-                        <td>@item.Date</td>
+                        <td>@item.InvoiceDetails.Sum(i => i.Price).ToNumeric()</td>
+                        <td>@item.Date.ToShamsi()</td>
                         <td>
                             <div class="dropdown d-inline-block">
                                 <a class="nav-link" style="padding: .5rem 1rem"
@@ -93,41 +93,5 @@
         }
     </div>
 </div>
-<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header justify-content-between">
-                <h1 class="modal-title fs-5" id="addModalLabel">ثبت فاکتور</h1>
-                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-action="Create" method="post">
-                <input type="hidden" name="Id" value="0">
-                <input type="hidden" name="ProjectId" value="@projectId">
-                <div class="modal-body">
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="CostGroupId">گروه هزینه</label>
-                        <select name="CostGroupId" id="CostGroupId" class="form-control select2"
-                                asp-items="costGroups"></select>
-                    </div>
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="CreditorId">بستانکار</label>
-                        <select name="CreditorId" id="CreditorId" class="form-control select2"
-                                asp-items="creditors"></select>
-                    </div>
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="Date">تاریخ</label>
-                        <input name="Date" id="Date" type="text" class="form-control date-picker" autocomplete="off"/>
-                    </div>
-                    <div class="form-group mt-2">
-                        <label class="form-label" for="Description">توضیحات</label>
-                        <textarea name="Description" id="Description" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
-                    <button type="submit" class="btn btn-primary">ثبت</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<partial name="Components/_AddInvoiceModal"/>
+

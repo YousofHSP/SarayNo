@@ -26,19 +26,6 @@ public class UnverifiedInvoiceConfiguration : IEntityTypeConfiguration<Unverifie
 {
     public void Configure(EntityTypeBuilder<UnverifiedInvoice> builder)
     {
-        builder.Property(i => i.Status).HasDefaultValue(UnverifiedInvoiceStatus.Pending);
-        builder.HasOne(i => i.Project)
-            .WithMany(i => i.UnverifiedInvoices)
-            .HasForeignKey(i => i.ProjectId);
-        builder.HasOne(i => i.CostGroup)
-            .WithMany(i => i.UnverifiedInvoices)
-            .HasForeignKey(i => i.CostGroupId);
-        builder.HasOne(i => i.Creditor)
-            .WithMany(i => i.UnverifiedInvoices)
-            .HasForeignKey(i => i.CreditorId);
-        builder.HasMany(i => i.UnsettledInvoices)
-            .WithOne(i => i.UnverifiedInvoice)
-            .HasForeignKey(i => i.UnverifiedInvoiceId);
     }
 }
 

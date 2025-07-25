@@ -29,6 +29,10 @@ namespace Common.Utilities
         {
             return value.ToString("N0");
         }
+        public static string ToNumeric(this decimal value)
+        {
+            return value.ToString("N0");
+        }
         public static string ToCurrency(this int value)
         {
             return value.ToString("C0");

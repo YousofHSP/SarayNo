@@ -12,6 +12,7 @@ namespace Presentation.Areas.Admin.Controllers;
 [Area("Admin")]
 public class CreditorController(
     IRepository<Creditor> repository,
+    IRepository<Invoice> invoiceRepository,
     IRepository<Project> projectRepository,
     IMapper mapper
 ) : BaseController<CreditorDto, CreditorResDto, Creditor>(repository, mapper)
@@ -29,7 +30,9 @@ public class CreditorController(
         ViewBag.CreditorId = id;
         if (projectId is null)
         {
-            var projects = await projectRepository.TableNoTracking.ToListAsync(ct);
+            var projects = await projectRepository.TableNoTracking
+                .Include(i => i.User)
+                .ToListAsync(ct);
             ViewBag.Projects = projects;
             return View();
         }
@@ -40,22 +43,21 @@ public class CreditorController(
         ViewBag.Project = project;
 
         var creditor = await repository.TableNoTracking
-            .Include(i => i.UnverifiedInvoices.Where(u => u.ProjectId == projectId))
-            .ThenInclude(i => i.CostGroup)
-            .Include(i => i.Activities.Where(a => a.ProjectId == projectId))
-            .ThenInclude(i => i.Details)
-            .Include(i => i.Activities.Where(a => a.ProjectId == projectId))
-            .ThenInclude(i => i.CostGroup)
             .FirstOrDefaultAsync(i => i.Id == id, ct);
         if (creditor is null)
             return NotFound();
-        var activities = creditor.Activities;
-        var unverifiedInvoices = creditor.UnverifiedInvoices;
+        var invoices = await invoiceRepository.TableNoTracking
+            .Where(i => i.CreditorId == creditor.Id)
+            .Include(i => i.CostGroup)
+            .Include(i => i.Creditor)
+            .Include(i => i.Project)
+            .Include(i => i.InvoiceDetails)
+            .ToListAsync(ct);
         
         var list = new List<CreditorDebtDto>();
-        foreach (var item in activities)
+        foreach (var item in invoices)
         {
-            var amount = item.Details.Sum(i => i.Price);
+            var amount = item.InvoiceDetails.Sum(i => i.Price);
             list.Add(new()
             {
                 CreditorFullName= creditor.FirstName + " " + creditor.LastName,
@@ -65,23 +67,6 @@ public class CreditorController(
                 Description = item.Description ?? "",
                 Date = item.Date.ToShamsi(),
                 DateTime = item.Date
-            });
-        }
-
-        foreach (var item in unverifiedInvoices)
-        {
-            
-            list.Add(new()
-            {
-                
-                CreditorFullName= creditor.FirstName + " " + creditor.LastName,
-                Title = "فاکتور تایید نشده - " + item.CostGroup.Title,
-                Amount = item.Amount,
-                AmountNumeric = item.Amount.ToNumeric(),
-                Description = item.Description ?? "",
-                Date = item.Date.ToShamsi(),
-                DateTime = item.Date
-                
             });
         }
 

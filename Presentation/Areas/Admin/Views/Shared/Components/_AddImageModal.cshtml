@@ -1,0 +1,40 @@
+@using Common.Utilities
+@using Data.Contracts
+@using Domain
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IRepository<Album> AlbumRepository
+@{
+    var albums = await AlbumRepository.GetSelectListItems();   
+}
+<div class="modal fade" id="addImageModal" tabindex="-1" aria-labelby="addImageModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="addImageModalLabel">افزودن تصویر</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Invoice" asp-action="AddImage" method="post" enctype="multipart/form-data">
+                <div class="modal-body add-image-modal-body">
+                    <input type="hidden" name="ModelId">
+                    <div class="form-group">
+                        <label class="form-label" for="AlbumId">آلبوم</label>
+                        <select class="form-control" id="AlbumId" name="AlbumId" asp-items="albums"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="File">فایل</label>
+                        <input type="file" class="form-control" name="File" id="File" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="DescriptionImage">توضیحات</label>
+                        <textarea class="form-control" name="Description" id="DescriptionImage"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <button type="submit" class="btn btn-primary">ثبت</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

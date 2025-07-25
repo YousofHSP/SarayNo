@@ -8,13 +8,12 @@
     Layout = "_Layout";
     var projects = ViewBag.Projects as List<Project>;
     var project = ViewBag.Project as Project;
-    var percentAmount = 0f;
+    var percentAmount = 0m;
     var projectId = 0;
     if (project is not null)
     {
         projectId = project.Id;
-        var totalAmount = project.Activities.SelectMany(i => i.Details).Sum(i => i.Price);
-        totalAmount += project.UnverifiedInvoices.Sum(i => i.Amount);
+        var totalAmount = project.Invoices.SelectMany(i => i.InvoiceDetails).Sum(i => i.Price);
         percentAmount = totalAmount * (project.Percent / 100);
     }
 }
@@ -32,7 +31,7 @@
                        style="width: 18rem;">
                         <div class="card-body">
                             <h5 class="card-title">@item.Title</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">@item.Percent %</h6>
+                            <h6 class="card-subtitle mb-2 text-muted">@(item.User.FirstName + " " + item.User.LastName)</h6>
                             @* <p class="card-text">@project.</p> *@
                         </div>
                     </a>
@@ -82,7 +81,7 @@
                                      style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
                                     @if (CheckPermission.Check(User, "EmployerPayment.AddImage"))
                                     {
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#uploadImageModal"
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#addImageModal"
                                            class="dropdown-item" data-bs-invoice-id="@item.Id">
                                             <i
                                                 class="fa fa-image"></i>
@@ -152,8 +151,6 @@
                         <label class="form-label" for="Type">نوع</label>
                         <select class="form-control" id="Type" name="Type">
                             <option value="@UploadedFileType.Unknown">@UploadedFileType.Unknown.ToDisplay()</option>
-                            <option value="@UploadedFileType.Contract">@UploadedFileType.Contract.ToDisplay()</option>
-                            <option value="@UploadedFileType.OnAccount">@UploadedFileType.OnAccount.ToDisplay()</option>
                         </select>
                     </div>
                     <div class="form-group">

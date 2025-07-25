@@ -37,21 +37,5 @@ public class UnsettledInvoiceConfiguration : IEntityTypeConfiguration<UnsettledI
     public void Configure(EntityTypeBuilder<UnsettledInvoice> builder)
     {
 
-        builder.Property(i => i.Discount).HasDefaultValue(0);
-        builder.HasOne(i => i.CostGroup)
-            .WithMany(i => i.UnsettledInvoices)
-            .HasForeignKey(i => i.CostGroupId);
-        builder.HasOne(i => i.Creditor)
-            .WithMany(i => i.UnsettledInvoices)
-            .HasForeignKey(i => i.CreditorId);
-        builder.HasOne(i => i.Activity)
-            .WithMany(i => i.UnsettledInvoices)
-            .HasForeignKey(i => i.ActivityId);
-        builder.HasOne(i => i.UnverifiedInvoice)
-            .WithMany(i => i.UnsettledInvoices)
-            .HasForeignKey(i => i.UnverifiedInvoiceId);
-        builder.HasMany(i => i.Payoffs)
-            .WithOne(i => i.UnsettledInvoice)
-            .HasForeignKey(i => i.UnsettledInvoiceId);
     }
 }

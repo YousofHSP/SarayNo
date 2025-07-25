@@ -8,17 +8,14 @@ public class Project : BaseEntity
 {
 
     public string Title { get; set; }
-    public float Percent { get; set; }
+    public decimal Percent { get; set; }
     public int UserId { get; set; }
     public DateTimeOffset Date { get; set; }
-    public float EstimatePrice { get; set; }
-    public float FinalPrice { get; set; }
-
     public List<ProjectDetail> Details { get; set; } = new();
-    public List<Activity> Activities { get; set; }
-    public List<UnverifiedInvoice> UnverifiedInvoices { get; set; }
     public List<EmployerPayment> EmployerPayments{ get; set; }
+    public List<Invoice> Invoices { get; set; } = new();
     public User User { get; set; }
+
 }
 public class ProjectConfiguration : IEntityTypeConfiguration<Project>
 {
@@ -27,10 +24,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.HasMany(i => i.Details)
             .WithOne(i => i.Project)
             .HasForeignKey(i => i.ProjectId);
-        builder.HasMany(i => i.Activities)
-            .WithOne(i => i.Project)
-            .HasForeignKey(i => i.ProjectId);
-        builder.HasMany(i => i.UnverifiedInvoices)
+        builder.HasMany(i => i.Invoices)
             .WithOne(i => i.Project)
             .HasForeignKey(i => i.ProjectId);
         builder.HasMany(i => i.EmployerPayments)

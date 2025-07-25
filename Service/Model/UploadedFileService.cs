@@ -78,6 +78,15 @@ namespace Service.Model
             return await query.ToListAsync(ct);
         }
 
+        public async Task<List<UploadedFile>> GetFiles(int albumId, CancellationToken ct)
+        {
+            var res = await _repository.TableNoTracking
+                .Where(i => i.AlbumId == albumId)
+                .ToListAsync(ct);
+
+            return res;
+        }
+
         public async Task<UploadedFile> GetFile(int id, CancellationToken ct)
         {
             var model = await _repository.TableNoTracking.FirstOrDefaultAsync(i => i.Id == id, ct);
@@ -115,7 +124,7 @@ namespace Service.Model
             await _repository.UpdateRangeAsync(list, ct);
         }
 
-        public async Task<string> UploadFileAsync(IFormFile file, UploadedFileType type
+        public async Task<string> UploadFileAsync(IFormFile file,int? albumId 
             , string modelType, int modelId, int userId, CancellationToken ct, string description = "")
         {
             if (file == null || file.Length == 0)
@@ -139,7 +148,7 @@ namespace Service.Model
             {
                 SavedName = savedName,
                 OriginalName = file.FileName,
-                Type = type,
+                Type = UploadedFileType.Unknown,
                 MimeType = file.ContentType,
                 ModelType = modelType,
                 ModelId = modelId,

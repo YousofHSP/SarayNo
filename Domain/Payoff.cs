@@ -7,23 +7,22 @@ namespace Domain;
 
 public class Payoff : BaseEntity
 {
-    public int UnsettledInvoiceId { get; set; }
-    public float Price { get; set; }
+    public int InvoiceId { get; set; }
+    public decimal Price { get; set; }
+    public string? Description { get; set; }
     public PayoffType Type { get; set; }
-    public string Number { get; set; }
     public DateTimeOffset Date { get; set; }
     
-    public UnsettledInvoice UnsettledInvoice { get; set; }
+    public Invoice Invoice{ get; set; }
     
 }
 public class PayoffConfiguration : IEntityTypeConfiguration<Payoff>
 {
     public void Configure(EntityTypeBuilder<Payoff> builder)
     {
-        builder.Property(i => i.Number).HasDefaultValue("");
-        builder.HasOne(i => i.UnsettledInvoice)
+        builder.HasOne(i => i.Invoice)
             .WithMany(i => i.Payoffs)
-            .HasForeignKey(i => i.UnsettledInvoiceId);
+            .HasForeignKey(i => i.InvoiceId);
 
     }
 }

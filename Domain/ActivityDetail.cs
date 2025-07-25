@@ -8,7 +8,7 @@ using Microsoft.Identity.Client;
 namespace Domain;
 
 
-public class ActivityDetail : BaseEntity
+public class ActivityDetail :BaseEntity
 {
 
     public int ActivityId { get; set; }

@@ -14,6 +14,7 @@ namespace Presentation.Areas.Admin.Controllers;
 [Area("Admin")]
 public class ProjectController(
     IRepository<Project> repository,
+    IRepository<Album> albumRepository,
     IRepository<User> userRepository,
     IRepository<ProjectDetail> projectDetailRepository,
     IRepository<ProjectDetailItem> projectDetailItemRepository,
@@ -75,35 +76,23 @@ public class ProjectController(
         return RedirectToAction("ProjectDetails", new { projectId = dto.ProjectId });
     }
 
-    public async Task<IActionResult> Images([FromQuery] int? projectId, CancellationToken ct)
+    public async Task<IActionResult> Images([FromQuery] int? albumId, CancellationToken ct)
     {
 
-        if (projectId is null)
+        if (albumId is null)
         {
-            var projects = await _repository.TableNoTracking.ToListAsync(ct);
-            ViewBag.Projects = projects;
-            ViewBag.ProjectId = 0;
+            var albums = await albumRepository.TableNoTracking.ToListAsync(ct);
+            ViewBag.Albums = albums;
+            ViewBag.AlbumId = 0;
             return View(new List<UploadedFile>());
         }
 
-        var project = await _repository.TableNoTracking
-            .Include(i => i.Activities)
-            .Include(i => i.UnverifiedInvoices)
-            .FirstOrDefaultAsync(i => i.Id == projectId, ct);
-        if (project is null)
+        var album = await albumRepository.TableNoTracking
+            .FirstOrDefaultAsync(i => i.Id == albumId, ct);
+        if (album is null)
             return NotFound();
-        ViewBag.ProjectId = projectId;
-        var activityFiles = await uploadedFileService
-            .GetFiles(nameof(Activity), project.Activities.Select(i => i.Id).ToList(), null, ct);
-        var invoicesFiles = await uploadedFileService
-            .GetFiles(nameof(UnverifiedInvoice), project.UnverifiedInvoices.Select(i => i.Id).ToList(), null, ct);
-        var projectFiles = await uploadedFileService
-            .GetFiles(nameof(Project), [project.Id], null, ct);
-
-        var files = new List<UploadedFile>();
-        files.AddRange(activityFiles);
-        files.AddRange(invoicesFiles);
-        files.AddRange(projectFiles);
+        ViewBag.AlbumId = album.Id;
+        var files = await uploadedFileService.GetFiles(album.Id, ct);
         return View(files);
     }
     
@@ -112,8 +101,17 @@ public class ProjectController(
     public async Task<IActionResult> AddImage(AddImageDto dto, CancellationToken ct)
     {
         var userId = User.Identity!.GetUserId<int>();
-        await uploadedFileService.UploadFileAsync(dto.File, dto.Type, nameof(Project), dto.ModelId, userId, ct, dto.Description);
+        await uploadedFileService.UploadFileAsync(dto.File, dto.AlbumId, nameof(Album), dto.ModelId, userId, ct, dto.Description);
 
         return RedirectToAction("Images", new { projectId = dto.ModelId});
     }
+
+    [HttpPost]
+    public async Task<IActionResult> AddAlbum(AlbumDto dto, CancellationToken ct)
+    {
+        var model = dto.ToEntity(_mapper);
+        await albumRepository.AddAsync(model, ct);
+        return RedirectToAction("Images", new { albumId = model.Id});
+    }
+    
 }

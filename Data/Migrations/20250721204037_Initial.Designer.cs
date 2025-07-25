@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250714141934_Initial")]
+    [Migration("20250721204037_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -49,17 +49,13 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDone")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                        .HasColumnType("bit");
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
                     b.Property<float>("TotalAmount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("real")
-                        .HasDefaultValue(0f);
+                        .HasColumnType("real");
 
                     b.HasKey("Id");
 
@@ -120,6 +116,9 @@ namespace Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -167,8 +166,8 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<float>("Amount")
-                        .HasColumnType("real");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
@@ -189,6 +188,123 @@ namespace Data.Migrations
                     b.ToTable("EmployerPayments");
                 });
 
+            modelBuilder.Entity("Domain.Invoice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("CostGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("CreditorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("Date")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CostGroupId");
+
+                    b.HasIndex("CreditorId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("Domain.InvoiceDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("Date")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.ToTable("InvoiceDetails");
+                });
+
+            modelBuilder.Entity("Domain.InvoiceLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("CreatorUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorUserId");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.ToTable("InvoiceLogs");
+                });
+
             modelBuilder.Entity("Domain.Payoff", b =>
                 {
                     b.Property<int>("Id")
@@ -203,6 +319,9 @@ namespace Data.Migrations
                     b.Property<DateTimeOffset>("Date")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Number")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -215,10 +334,12 @@ namespace Data.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.Property<int>("UnsettledInvoiceId")
+                    b.Property<int?>("UnsettledInvoiceId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
 
                     b.HasIndex("UnsettledInvoiceId");
 
@@ -239,14 +360,8 @@ namespace Data.Migrations
                     b.Property<DateTimeOffset>("Date")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<float>("EstimatePrice")
-                        .HasColumnType("real");
-
-                    b.Property<float>("FinalPrice")
-                        .HasColumnType("real");
-
-                    b.Property<float>("Percent")
-                        .HasColumnType("real");
+                    b.Property<decimal>("Percent")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -403,9 +518,7 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("Discount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("real")
-                        .HasDefaultValue(0f);
+                        .HasColumnType("real");
 
                     b.Property<float>("RemainAmount")
                         .HasColumnType("real");
@@ -459,9 +572,7 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(2);
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -730,19 +841,19 @@ namespace Data.Migrations
             modelBuilder.Entity("Domain.Activity", b =>
                 {
                     b.HasOne("Domain.CostGroup", "CostGroup")
-                        .WithMany("Activities")
+                        .WithMany()
                         .HasForeignKey("CostGroupId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Creditor", "Creditor")
-                        .WithMany("Activities")
+                        .WithMany()
                         .HasForeignKey("CreditorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Project", "Project")
-                        .WithMany("Activities")
+                        .WithMany()
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -776,15 +887,76 @@ namespace Data.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("Domain.Payoff", b =>
+            modelBuilder.Entity("Domain.Invoice", b =>
                 {
-                    b.HasOne("Domain.UnsettledInvoice", "UnsettledInvoice")
-                        .WithMany("Payoffs")
-                        .HasForeignKey("UnsettledInvoiceId")
+                    b.HasOne("Domain.CostGroup", "CostGroup")
+                        .WithMany("Invoices")
+                        .HasForeignKey("CostGroupId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("UnsettledInvoice");
+                    b.HasOne("Domain.Creditor", "Creditor")
+                        .WithMany("Invoices")
+                        .HasForeignKey("CreditorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Project", "Project")
+                        .WithMany("Invoices")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CostGroup");
+
+                    b.Navigation("Creditor");
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("Domain.InvoiceDetail", b =>
+                {
+                    b.HasOne("Domain.Invoice", "Invoice")
+                        .WithMany("InvoiceDetails")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+                });
+
+            modelBuilder.Entity("Domain.InvoiceLog", b =>
+                {
+                    b.HasOne("Domain.User", "User")
+                        .WithMany("InvoiceLogs")
+                        .HasForeignKey("CreatorUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Invoice", "Invoice")
+                        .WithMany("InvoiceLogs")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Payoff", b =>
+                {
+                    b.HasOne("Domain.Invoice", "Invoice")
+                        .WithMany("Payoffs")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.UnsettledInvoice", null)
+                        .WithMany("Payoffs")
+                        .HasForeignKey("UnsettledInvoiceId");
+
+                    b.Navigation("Invoice");
                 });
 
             modelBuilder.Entity("Domain.Project", b =>
@@ -827,13 +999,13 @@ namespace Data.Migrations
                         .HasForeignKey("ActivityId");
 
                     b.HasOne("Domain.CostGroup", "CostGroup")
-                        .WithMany("UnsettledInvoices")
+                        .WithMany()
                         .HasForeignKey("CostGroupId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Creditor", "Creditor")
-                        .WithMany("UnsettledInvoices")
+                        .WithMany()
                         .HasForeignKey("CreditorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -854,19 +1026,19 @@ namespace Data.Migrations
             modelBuilder.Entity("Domain.UnverifiedInvoice", b =>
                 {
                     b.HasOne("Domain.CostGroup", "CostGroup")
-                        .WithMany("UnverifiedInvoices")
+                        .WithMany()
                         .HasForeignKey("CostGroupId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Creditor", "Creditor")
-                        .WithMany("UnverifiedInvoices")
+                        .WithMany()
                         .HasForeignKey("CreditorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Project", "Project")
-                        .WithMany("UnverifiedInvoices")
+                        .WithMany()
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -949,31 +1121,30 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Domain.CostGroup", b =>
                 {
-                    b.Navigation("Activities");
-
-                    b.Navigation("UnsettledInvoices");
-
-                    b.Navigation("UnverifiedInvoices");
+                    b.Navigation("Invoices");
                 });
 
             modelBuilder.Entity("Domain.Creditor", b =>
                 {
-                    b.Navigation("Activities");
+                    b.Navigation("Invoices");
+                });
 
-                    b.Navigation("UnsettledInvoices");
+            modelBuilder.Entity("Domain.Invoice", b =>
+                {
+                    b.Navigation("InvoiceDetails");
 
-                    b.Navigation("UnverifiedInvoices");
+                    b.Navigation("InvoiceLogs");
+
+                    b.Navigation("Payoffs");
                 });
 
             modelBuilder.Entity("Domain.Project", b =>
                 {
-                    b.Navigation("Activities");
-
                     b.Navigation("Details");
 
                     b.Navigation("EmployerPayments");
 
-                    b.Navigation("UnverifiedInvoices");
+                    b.Navigation("Invoices");
                 });
 
             modelBuilder.Entity("Domain.ProjectDetail", b =>
@@ -993,6 +1164,8 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Domain.User", b =>
                 {
+                    b.Navigation("InvoiceLogs");
+
                     b.Navigation("Projects");
 
                     b.Navigation("UploadedFiles");
