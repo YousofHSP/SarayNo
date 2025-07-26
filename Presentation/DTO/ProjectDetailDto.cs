@@ -31,6 +31,7 @@ public class ProjectDetailItemDto : BaseDto<ProjectDetailItemDto, ProjectDetailI
     public float? UnitPrice { get; set; }
     public float? Area { get; set; }
     public float TotalPrice{ get; set; }
+    public string? Description{ get; set; }
     public ProjectDetailItemType Type { get; set; }
     
 }

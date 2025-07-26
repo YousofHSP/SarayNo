@@ -77,12 +77,17 @@
                                 {
                                     <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
                                          style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="dropdown-item">
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#updateInvoiceModal" data-id="@item.Id" class="dropdown-item">
                                             <i
                                                 class="fa fa-list"></i>
                                             جزئیات
                                         </a>
 
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="dropdown-item">
+                                            <i
+                                                class="fa fa-list"></i>
+                                            جزئیات
+                                        </a>
                                     </div>
                                 }
                             </div>

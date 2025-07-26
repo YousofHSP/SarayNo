@@ -47,7 +47,7 @@ namespace Service.Model
             if (request is null)
                 return "";
             if (model is not null)
-                return $"{request.Scheme}://{request.Host.Host}:{request.Host.Port}/uploads/{model.SavedName}";
+                return $"{request.Scheme}://{request.Host.Host}/uploads/{model.SavedName}";
             return "";
         }
 

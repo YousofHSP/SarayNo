@@ -21,7 +21,7 @@
                        style="width: 18rem;">
                         <div class="card-body">
                             <h5 class="card-title">@item.Title</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">@item.Percent %</h6>
+                            <h6 class="card-subtitle mb-2 text-muted">@(item.User.FirstName + " " + item.User.LastName)</h6>
                             @* <p class="card-text">@project.</p> *@
                         </div>
                     </a>
@@ -203,7 +203,7 @@
 </div>
 
 <div class="modal fade" id="itemModal" tabindex="-1" aria-labelledby="itemModal" aria-hidden="true">
-    <div class="modal-lg modal-dialog">
+    <div class="modal-xl modal-dialog">
         <div class="modal-content">
             <div class="modal-header justify-content-between">
                 <h1 class="modal-title fs-5" id="itemModalLabel">جزئیات</h1>
@@ -222,6 +222,7 @@
                             <th>مقدار</th>
                             <th>فی</th>
                             <th>قیمت کل</th>
+                            <th>شرح</th>
                             <th></th>
                         </tr>
 
@@ -234,6 +235,7 @@
                             <td><input type="number" placeholder="مقدار" class="form-control" name="Area"></td>
                             <td><input type="number" placeholder="فی" class="form-control" name="UnitPrice"></td>
                             <td><input type="text" placeholder="مبلغ کل" class="form-control numeric" name="TotalPrice"></td>
+                            <td><input type="text" placeholder="شرح" class="form-control" name="Description"></td>
                             <td>
                                 <button type="submit" class="btn btn-primary">ثبت</button>
                             </td>

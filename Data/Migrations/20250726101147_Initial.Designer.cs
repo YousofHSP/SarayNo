@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250721204037_Initial")]
+    [Migration("20250726101147_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -103,6 +103,26 @@ namespace Data.Migrations
                     b.HasIndex("ActivityId");
 
                     b.ToTable("ActivityDetails");
+                });
+
+            modelBuilder.Entity("Domain.Album", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Albums");
                 });
 
             modelBuilder.Entity("Domain.CostGroup", b =>
@@ -319,17 +339,14 @@ namespace Data.Migrations
                     b.Property<DateTimeOffset>("Date")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("InvoiceId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
-                        .HasDefaultValue("");
-
-                    b.Property<float>("Price")
-                        .HasColumnType("real");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -593,6 +610,9 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AlbumId")
+                        .HasColumnType("int");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
@@ -632,6 +652,8 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AlbumId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("UploadedFiles");
@@ -647,6 +669,9 @@ namespace Data.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -1052,11 +1077,17 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Domain.UploadedFile", b =>
                 {
+                    b.HasOne("Domain.Album", "Album")
+                        .WithMany("UploadedFiles")
+                        .HasForeignKey("AlbumId");
+
                     b.HasOne("Domain.User", "User")
                         .WithMany("UploadedFiles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Album");
 
                     b.Navigation("User");
                 });
@@ -1117,6 +1148,11 @@ namespace Data.Migrations
                     b.Navigation("Details");
 
                     b.Navigation("UnsettledInvoices");
+                });
+
+            modelBuilder.Entity("Domain.Album", b =>
+                {
+                    b.Navigation("UploadedFiles");
                 });
 
             modelBuilder.Entity("Domain.CostGroup", b =>

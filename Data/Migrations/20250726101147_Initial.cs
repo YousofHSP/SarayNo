@@ -12,6 +12,20 @@ namespace Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Albums",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Albums", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
@@ -38,6 +52,7 @@ namespace Data.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NationalCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Gender = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     LastLoginDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
@@ -229,6 +244,7 @@ namespace Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    AlbumId = table.Column<int>(type: "int", nullable: true),
                     SavedName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OriginalName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MimeType = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -243,6 +259,11 @@ namespace Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UploadedFiles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UploadedFiles_Albums_AlbumId",
+                        column: x => x.AlbumId,
+                        principalTable: "Albums",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UploadedFiles_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -570,9 +591,9 @@ namespace Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     InvoiceId = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<float>(type: "real", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Type = table.Column<int>(type: "int", nullable: false),
-                    Number = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: ""),
                     Date = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     UnsettledInvoiceId = table.Column<int>(type: "int", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
@@ -754,6 +775,11 @@ namespace Data.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UploadedFiles_AlbumId",
+                table: "UploadedFiles",
+                column: "AlbumId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UploadedFiles_UserId",
                 table: "UploadedFiles",
                 column: "UserId");
@@ -809,6 +835,9 @@ namespace Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "ProjectDetails");
+
+            migrationBuilder.DropTable(
+                name: "Albums");
 
             migrationBuilder.DropTable(
                 name: "Activities");

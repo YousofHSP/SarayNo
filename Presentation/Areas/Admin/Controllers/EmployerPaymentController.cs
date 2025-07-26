@@ -78,6 +78,7 @@ public class EmployerPaymentController : Controller
         ViewBag.Project = project;
         var invoices = await _invoiceRepository.TableNoTracking
             .Where(i => i.ProjectId == projectId)
+            .Where(i => i.Type == InvoiceType.Unsettled || i.Type == InvoiceType.Settled)
             .Include(i => i.Project)
             .Include(i => i.CostGroup)
             .Include(i => i.Creditor)

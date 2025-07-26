@@ -14,6 +14,10 @@ public class CostGroupDto : BaseDto<CostGroupDto, CostGroup>
     [Field(FieldType.Text )]
     public string Title { get; set; }
     
+    [Display(Name = "شرح")]
+    [Field(FieldType.Text )]
+    public string? Description { get; set; }
+    
 }
 
 public class CostGroupResDto : BaseDto<CostGroupResDto, CostGroup>

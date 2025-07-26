@@ -20,7 +20,7 @@ public class CreditorController(
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
-        AddListAction("بدهی ها", "fa fa-dollar", "ProjectDebts", "Creditor");
+        AddListAction("مانده حساب", "fa fa-dollar", "ProjectDebts", "Creditor");
     }
 
     [HttpGet("[action]/{id:int}")]

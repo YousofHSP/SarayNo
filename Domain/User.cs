@@ -12,6 +12,7 @@ public class User : IdentityUser<int>, IEntity<int>
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public string NationalCode { get; set; }
+    public string? Address { get; set; }
     public GenderType Gender { get; set; }
     public UserStatus Status { get; set; }
     public DateTimeOffset LastLoginDate { get; set; } = DateTimeOffset.Now;

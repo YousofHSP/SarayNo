@@ -20,6 +20,10 @@ public class UserDto : BaseDto<UserDto, User>
     [Field(FieldType.Text )]
     public string LastName { get; set; }
 
+    [Display(Name = "آدرس")]
+    [Field(FieldType.Text )]
+    public string? Address{ get; set; }
+
     [Display(Name = "کدملی")]
     [Field(FieldType.Text)]
     [Required(ErrorMessage = "{0} را وارد کنید")]
