@@ -77,4 +77,5 @@ public class AddImageDto
     public int? AlbumId { get; set; }
     public IFormFile File { get; set; }
     public string Description { get; set; }
+    public string? ReturnUrl{ get; set; }
 }

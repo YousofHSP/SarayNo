@@ -1,5 +1,18 @@
+@using Data.Contracts
+@using Domain
+@using Microsoft.EntityFrameworkCore
+@inject IRepository<Invoice> InvoiceRepository;
+@inject IRepository<Project> ProjectRepository;
 
 @{
+  var projects = await ProjectRepository.TableNoTracking
+    .Include(i => i.Invoices)
+    .ToListAsync();
+  var doneProjects = projects.Where(i => i.Invoices.All(n => n.Type == InvoiceType.Settled)).ToList();
+  var activeProjects = projects.Where(i => i.Invoices.Any(n => n.Type != InvoiceType.Settled)).ToList();
+  var allProjectsCost = projects.SelectMany(i => i.Invoices).Where(i => i.Type == InvoiceType.Settled).Sum(i => i.Amount);
+  var allUnsetteldAmount = projects.SelectMany(i => i.Invoices).Where(i => i.Type == InvoiceType.Unsettled).Sum(i => i.Amount);
+
 	Layout = "_Layout";
 }
 
@@ -10,7 +23,7 @@
     <div class="col-md-4">
       <div class="card dashboard-card p-3 text-center">
         <div class="section-title">تعداد کل پروژه‌ها</div>
-        <div class="stat-value">۱۲</div>
+        <div class="stat-value">@projects.Count</div>
       </div>
     </div>
 
@@ -18,7 +31,7 @@
     <div class="col-md-4">
       <div class="card dashboard-card p-3 text-center">
         <div class="section-title">پروژه‌های فعال</div>
-        <div class="stat-value text-success">۸</div>
+        <div class="stat-value text-success">@activeProjects.Count</div>
       </div>
     </div>
 
@@ -26,23 +39,23 @@
     <div class="col-md-4">
       <div class="card dashboard-card p-3 text-center">
         <div class="section-title">پروژه‌های تکمیل‌شده</div>
-        <div class="stat-value text-muted">۴</div>
+        <div class="stat-value text-muted">@doneProjects.Count</div>
       </div>
     </div>
 
     <!-- Card: بودجه کل -->
     <div class="col-md-6">
       <div class="card dashboard-card p-3 text-center">
-        <div class="section-title">بودجه کل پروژه‌ها</div>
-        <div class="stat-value">۲۵۰٬۰۰۰٬۰۰۰٬۰۰۰ ریال</div>
+        <div class="section-title">مجموع کل هزینه پروژه ها</div>
+        <div class="stat-value">@allProjectsCost</div>
       </div>
     </div>
 
     <!-- Card: میزان پرداخت شده -->
     <div class="col-md-6">
       <div class="card dashboard-card p-3 text-center">
-        <div class="section-title">مبلغ پرداخت‌شده</div>
-        <div class="stat-value text-info">۱۵۰٬۰۰۰٬۰۰۰٬۰۰۰ ریال</div>
+        <div class="section-title">مبلغ های تسویه نشده</div>
+        <div class="stat-value text-info">@allUnsetteldAmount</div>
       </div>
     </div>
 

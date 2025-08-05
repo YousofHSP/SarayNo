@@ -29,7 +29,7 @@ $("#addInvoice").click(function (){
                 type: "success",
                 title: "ثبت شد",
                 text: "اطلاعات با موفقیت ثبت شد"
-            });
+            }).then(() => location.reload());;
         }
     })
 

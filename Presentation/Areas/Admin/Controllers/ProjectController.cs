@@ -1,9 +1,11 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Common.Exceptions;
 using Common.Utilities;
 using Data.Contracts;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Presentation.DTO;
 using Presentation.Models;
@@ -29,7 +31,7 @@ public class ProjectController(
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
-        var users = await userRepository.GetSelectListItems("LastName", ct:ct);
+        var users = await userRepository.TableNoTracking.Select(i => new SelectListItem(i.FirstName + " " + i.LastName, i.Id.ToString())).ToListAsync(ct);
         SetIncludes(nameof(Project.User));
         AddOptions(nameof(ProjectDto.UserId), users);
     }
@@ -47,7 +49,9 @@ public class ProjectController(
     {
         if (projectId is null)
         {
-            var projects = await _repository.TableNoTracking.ToListAsync(ct);
+            var projects = await _repository.TableNoTracking
+                .Include(i => i.User)
+                .ToListAsync(ct);
             ViewBag.Projects = projects;
             return View(new Project());
         }
@@ -84,7 +88,8 @@ public class ProjectController(
             var albums = await albumRepository.TableNoTracking.ToListAsync(ct);
             ViewBag.Albums = albums;
             ViewBag.AlbumId = 0;
-            return View(new List<UploadedFile>());
+            var files2 = await uploadedFileService.GetFiles(null, ct);
+            return View(files2);
         }
 
         var album = await albumRepository.TableNoTracking
@@ -113,5 +118,29 @@ public class ProjectController(
         await albumRepository.AddAsync(model, ct);
         return RedirectToAction("Images", new { albumId = model.Id});
     }
-    
+
+    public override async Task<IActionResult> Delete(int id, CancellationToken ct)
+    {
+        var model = await _repository.Table
+            .Include(i => i.EmployerPayments)
+            .Include(i => i.Invoices)
+            .Include(i => i.Details)
+            .FirstOrDefaultAsync(i => i.Id == id, ct);
+        if (model is null)
+        {
+            TempData["ErrorMessage"] = "پروژه پیدا نشد";
+            return RedirectToAction("Index");
+        }
+        var hasItems = model.EmployerPayments.Count != 0 || model.Details.Count != 0 || model.Invoices.Count != 0;
+        if (hasItems)
+        {
+            TempData["ErrorMessage"] = "برای این پروژه داده ثبت شده";
+            return RedirectToAction("Index");
+        }
+
+        await _repository.DeleteAsync(model, ct);
+        TempData["SuccessMessage"] = "پروژه با موفقیت حذف شد";
+        return RedirectToAction("Index");
+
+    }
 }

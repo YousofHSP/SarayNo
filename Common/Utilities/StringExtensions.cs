@@ -13,34 +13,42 @@ namespace Common.Utilities
         {
             return ignoreWhiteSpace ? !string.IsNullOrWhiteSpace(value) : !string.IsNullOrEmpty(value);
         }
+
         public static int ToInt(this string value)
         {
             return Convert.ToInt32(value);
         }
+
         public static decimal ToDecimal(this string value)
         {
             return Convert.ToDecimal(value);
         }
+
         public static string ToNumeric(this int value)
         {
             return value.ToString("N0"); // "123,456"
         }
+
         public static string ToNumeric(this float value)
         {
             return value.ToString("N0");
         }
+
         public static string ToNumeric(this decimal value)
         {
             return value.ToString("N0");
         }
+
         public static string ToCurrency(this int value)
         {
             return value.ToString("C0");
         }
+
         public static string ToCurrency(this decimal value)
         {
             return value.ToString("C0");
         }
+
         public static string En2Fa(this string str)
         {
             return str.Replace("0", "۰")
@@ -54,6 +62,7 @@ namespace Common.Utilities
                 .Replace("8", "۸")
                 .Replace("9", "۹");
         }
+
         public static string Fa2En(this string str)
         {
             return str.Replace("۰", "0")
@@ -67,18 +76,22 @@ namespace Common.Utilities
                 .Replace("۸", "8")
                 .Replace("۹", "9");
         }
+
         public static string FixPersianChars(this string str)
         {
             return str;
         }
+
         public static string CleanString(this string str)
         {
             return str.Trim().FixPersianChars().Fa2En().NullIfEmpty();
         }
+
         public static string NullIfEmpty(this string str)
         {
             return str?.Length == 0 ? null : str;
         }
+
         public static string ToShamsi(this DateTime dateTime)
         {
             PersianCalendar persianCalendar = new PersianCalendar();
@@ -89,9 +102,8 @@ namespace Common.Utilities
             int minute = dateTime.Minute;
 
             return $"{hour.ToString("00")}:{minute.ToString("00")} {year}/{month.ToString("00")}/{day.ToString("00")}";
-
-
         }
+
         public static string ToShamsi(this DateTimeOffset dateTimeOffset)
         {
             PersianCalendar persianCalendar = new PersianCalendar();
@@ -103,29 +115,48 @@ namespace Common.Utilities
             int minute = dateTime.Minute;
 
             return $"{hour.ToString("00")}:{minute.ToString("00")} {year}/{month.ToString("00")}/{day.ToString("00")}";
-
-
         }
-        public static DateTime ToGregorian (this string shamsiString)
+
+        public static DateTimeOffset ToGregorian(this string shamsiString)
         {
-            
-                if (shamsiString == "")
-                    return new DateTime();
-                shamsiString = shamsiString.Fa2En();
-                var parts = shamsiString.Split(' ');
-                var timeParts = parts[0].Split(':');
-                var dateParts = parts[1].Split('/');
-                
-                // Convert to integer
-                var year = int.Parse(dateParts[0]);
-                var month = int.Parse(dateParts[1]);
-                var day = int.Parse(dateParts[2]);
-                var hour = int.Parse(timeParts[0]);
-                var minute = int.Parse(timeParts[1]);
-                
-                // Use PersianCalendar to convert
-                var persianCalendar = new PersianCalendar();
-                return persianCalendar.ToDateTime(year, month, day, hour, minute, 0, 0);
+            if (shamsiString == "")
+                return new DateTimeOffset();
+            shamsiString = shamsiString.Fa2En();
+            var parts = shamsiString.Split(' ');
+            var timeParts = parts[0].Split(':');
+            var dateParts = parts[1].Split('/');
+
+            // Convert to integer
+            var year = int.Parse(dateParts[0]);
+            var month = int.Parse(dateParts[1]);
+            var day = int.Parse(dateParts[2]);
+            var hour = int.Parse(timeParts[0]);
+            var minute = int.Parse(timeParts[1]);
+
+            // Use PersianCalendar to convert
+            var persianCalendar = new PersianCalendar();
+            return persianCalendar.ToDateTime(year, month, day, hour, minute, 0, 0);
+        }
+
+        public static DateTimeOffset? ToGregorianN(this string? shamsiString)
+        {
+            if (string.IsNullOrEmpty(shamsiString))
+                return null;
+            shamsiString = shamsiString.Fa2En();
+            var parts = shamsiString.Split(' ');
+            var timeParts = parts[0].Split(':');
+            var dateParts = parts[1].Split('/');
+
+            // Convert to integer
+            var year = int.Parse(dateParts[0]);
+            var month = int.Parse(dateParts[1]);
+            var day = int.Parse(dateParts[2]);
+            var hour = int.Parse(timeParts[0]);
+            var minute = int.Parse(timeParts[1]);
+
+            // Use PersianCalendar to convert
+            var persianCalendar = new PersianCalendar();
+            return persianCalendar.ToDateTime(year, month, day, hour, minute, 0, 0);
         }
     }
 }

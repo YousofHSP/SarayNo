@@ -78,7 +78,7 @@ namespace Service.Model
             return await query.ToListAsync(ct);
         }
 
-        public async Task<List<UploadedFile>> GetFiles(int albumId, CancellationToken ct)
+        public async Task<List<UploadedFile>> GetFiles(int? albumId, CancellationToken ct)
         {
             var res = await _repository.TableNoTracking
                 .Where(i => i.AlbumId == albumId)
@@ -147,6 +147,7 @@ namespace Service.Model
             var uploadedFile = new UploadedFile
             {
                 SavedName = savedName,
+                AlbumId = albumId,
                 OriginalName = file.FileName,
                 Type = UploadedFileType.Unknown,
                 MimeType = file.ContentType,

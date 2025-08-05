@@ -40,6 +40,7 @@ public class UnsettledInvoiceController : Controller
         var list = await _invoiceRepository.TableNoTracking
             .Where(i => i.ProjectId == projectId)
             .Where(i => i.Type == InvoiceType.Unsettled)
+            .Include(i => i.Payoffs)
             .Include(i => i.CostGroup)
             .Include(i => i.Creditor)
             .Include(i => i.Project)

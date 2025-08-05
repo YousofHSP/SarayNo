@@ -11,7 +11,7 @@ $('#itemModal').on('show.bs.modal', function (event) {
             <td>${item.Area}</td>
             <td>${item.UnitPrice}</td>
             <td>${item.TotalPrice}</td>
-            <td></td>
+            <td>${item.Description}</td>
         </tr>`
     })
     modal.find('table tbody').html(el)

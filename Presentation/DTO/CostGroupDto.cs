@@ -24,4 +24,7 @@ public class CostGroupResDto : BaseDto<CostGroupResDto, CostGroup>
 {
     [Display(Name = "عنوان")]
     public string Title { get; set; }
+    
+    [Display(Name = "شرح")]
+    public string? Description { get; set; }
 }

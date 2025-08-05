@@ -1,4 +1,3 @@
-@using Common.Utilities
 @using Data.Contracts
 @using Domain
 @using Microsoft.AspNetCore.Mvc.TagHelpers
@@ -16,6 +15,7 @@
             <form asp-controller="Invoice" asp-action="AddImage" method="post" enctype="multipart/form-data">
                 <div class="modal-body add-image-modal-body">
                     <input type="hidden" name="ModelId">
+                    <input type="hidden" name="ReturnUrl">
                     <div class="form-group">
                         <label class="form-label" for="AlbumId">آلبوم</label>
                         <select class="form-control" id="AlbumId" name="AlbumId" asp-items="albums"></select>

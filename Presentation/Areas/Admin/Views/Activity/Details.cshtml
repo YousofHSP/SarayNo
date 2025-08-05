@@ -20,9 +20,10 @@
         <div class="d-flex justify-content-start mt-3">
             @if (CheckPermission.Check(User, "Activity.AddDetail"))
             {
-                <button data-bs-toggle="modal" data-bs-target="#addInvoiceDetailModal" data-type="0"
+                <button data-bs-toggle="modal" data-bs-target="#addPayoffModal"
                         data-invoice-id="@Model.Id" type="button"
-                        class="btn btn-primary me-2">پراخت علی الحساب</button>
+                        class="btn btn-primary me-2">پراخت علی الحساب
+                </button>
             }
             @if (CheckPermission.Check(User, "Activity.AddImage"))
             {
@@ -70,49 +71,51 @@
                 <th>شرح</th>
                 <th>عملیات</th>
             </tr>
-            @foreach (var item in Model.InvoiceDetails)
+            @if (Model.Payoffs is not null)
             {
+                @foreach (var item in Model.Payoffs)
+                {
+                    <tr>
+                        <td>@item.Type.ToDisplay()</td>
+                        <td>@item.Date.ToShamsi()</td>
+                        <td>@item.Price.ToNumeric()</td>
+                        <td>@item.Description</td>
+                        <td>
+                            @if (item.Status == PayoffStatus.Pending)
+                            {
+                                <a asp-controller="Activity" asp-action="ApprovePayoff" asp-route-id="@item.Id"
+                                   class="btn btn-primary">تایید</a>
+                            }
+                            else
+                            {
+                                <span>تایید شده</span>
+                            }
+                        </td>
+                    </tr>
+                }
+
+                <tfoot>
+                @{
+                    var totalPrice = Model.Payoffs.Sum(i => i.Price);
+                }
                 <tr>
-                    <td>@item.Type.ToDisplay()</td>
-                    <td>@item.Date.ToShamsi()</td>
-                    <td>@item.Price.ToNumeric()</td>
-                    <td>@item.Description</td>
-                    <td>
-                        @if (item.Status == InvoiceDetailStatus.Pending)
-                        {
-                            <a asp-controller="Activity" asp-action="ApprovedDetail" asp-route-id="@item.Id"
-                               class="btn btn-primary">تایید</a>
-                        }
-                        else
-                        {
-                            <span>تایید شده</span>
-                        }
-                    </td>
+                    <td colspan="3"></td>
+                    <td colspan="2">جمع پرداختی: @totalPrice.ToNumeric()</td>
                 </tr>
+                <tr>
+                    <td colspan="3"></td>
+                    <td colspan="2">مبلغ کل فاکتور: @Model.Amount.ToNumeric()</td>
+                </tr>
+                <tr>
+                    <td colspan="3"></td>
+                    <td colspan="2">مانده نهایی: @((Model.Amount - totalPrice).ToNumeric()) </td>
+                </tr>
+                </tfoot>
             }
-            <tfoot>
-            @{
-                var totalPrice = Model.InvoiceDetails.Sum(i => i.Price);
-            }
-            <tr>
-                <td colspan="3"></td>
-                <td colspan="2">جمع پرداختی: @totalPrice.ToNumeric()</td>
-            </tr>
-            <tr>
-                <td colspan="3"></td>
-                <td colspan="2">مبلغ کل فاکتور: @Model.Amount.ToNumeric()</td>
-            </tr>
-            <tr>
-                <td colspan="3"></td>
-                <td colspan="2">مانده نهایی: @((Model.Amount - totalPrice).ToNumeric()) </td>
-            </tr>
-            </tfoot>
         </table>
     </div>
 </div>
 
-<partial name="Components/_AddInvoiceDetailModal"/>
-<partial name="Components/_AddImageModal"/>
 <div class="modal fade" id="setTotalAmountModal" tabindex="-1" aria-labelledby="setTotalAmountModal"
      aria-hidden="true">
     <div class="modal-dialog">
@@ -138,3 +141,6 @@
         </div>
     </div>
 </div>
+<partial name="Components/_AddInvoiceDetailModal"/>
+<partial name="Components/_AddPayoffModal"/>
+<partial name="Components/_AddImageModal"/>
