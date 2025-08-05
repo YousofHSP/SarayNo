@@ -21,7 +21,9 @@ $('#detailModal').on('show.bs.modal', function (event) {
                 <td>${item.TypeDisplay}</td>
                 <td>${item.Description}</td>
                 <td>${item.Date}</td>
-                <td colspan="2">${item.Price}</td>
+                <td>${item.DueDate}</td>
+                <td>${item.Price}</td>
+                <td> <button type="button" class="btn btn-danger deletePayoff" data-id="${item.Id}"> حذف</button></td>
             </tr>
         `
     })

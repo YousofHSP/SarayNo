@@ -1,5 +1,6 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Common.Exceptions;
 using Common.Utilities;
 using Data.Contracts;
 using Domain;
@@ -117,5 +118,29 @@ public class ProjectController(
         await albumRepository.AddAsync(model, ct);
         return RedirectToAction("Images", new { albumId = model.Id});
     }
-    
+
+    public override async Task<IActionResult> Delete(int id, CancellationToken ct)
+    {
+        var model = await _repository.Table
+            .Include(i => i.EmployerPayments)
+            .Include(i => i.Invoices)
+            .Include(i => i.Details)
+            .FirstOrDefaultAsync(i => i.Id == id, ct);
+        if (model is null)
+        {
+            TempData["ErrorMessage"] = "پروژه پیدا نشد";
+            return RedirectToAction("Index");
+        }
+        var hasItems = model.EmployerPayments.Count != 0 || model.Details.Count != 0 || model.Invoices.Count != 0;
+        if (hasItems)
+        {
+            TempData["ErrorMessage"] = "برای این پروژه داده ثبت شده";
+            return RedirectToAction("Index");
+        }
+
+        await _repository.DeleteAsync(model, ct);
+        TempData["SuccessMessage"] = "پروژه با موفقیت حذف شد";
+        return RedirectToAction("Index");
+
+    }
 }

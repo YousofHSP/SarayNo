@@ -43,6 +43,7 @@ $("#addPayoffModalBtn").click(function (){
         price: modalBody.find("[name=Price]").val(),
         description: modalBody.find("[name=Description]").val(),
         date : modalBody.find("[name=Date]").val(),
+        dueDate: modalBody.find("[name=DueDate]").val(),
         type : modalBody.find("[name=Type]").val(),
     }
 

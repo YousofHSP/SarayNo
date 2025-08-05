@@ -5,7 +5,7 @@
 @model Domain.Project
 
 @{
-    ViewBag.Title = "تخمین و برآورد";
+    ViewBag.Title = "متراژ و برآورد";
     Layout = "_Layout";
     var projects = ViewBag.Projects as List<Project>;
     var items = Model.Details.SelectMany(i => i.ProjectDetailItems).ToList();
@@ -57,7 +57,7 @@
                 <div class="tab-pane pt-2 fade show active" id="estimate-tab-pane" role="tabpanel"
                      aria-labelledby="estimate-tab"
                      tabindex="0">
-                    <h4>تخیمین</h4>
+                    <h4>تخمین</h4>
                     <table class="table table-hover mt-2">
                         <tr>
                             <th>ردیف</th>
@@ -151,7 +151,7 @@
                                                    data-bs-id="@item.Id"
                                                    data-bs-type="@(nameof(ProjectDetailItemType.Final))"
                                                    class="dropdown-item">
-                                                    <i class="fa fa-pencil"></i>
+                                                    <i class="fa fa-list"></i>
                                                     جزئیات
                                                 </a>
                                             }

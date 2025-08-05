@@ -1,4 +1,5 @@
 using AutoMapper;
+using Common.Exceptions;
 using Common.Utilities;
 using Data.Contracts;
 using Domain;
@@ -139,5 +140,14 @@ public class InvoiceController : Controller
         await _payoffRepository.AddAsync(model, ct);
         var res = PayoffResDto.FromEntity(model, _mapper);
         return Ok(res);
+    }
+    [HttpPost("[area]/api/[controller]/[action]/{id:int}")]
+    public async Task<IActionResult> DeletePayoff([FromRoute] int id, CancellationToken ct)
+    {
+        var model = await _payoffRepository.GetByIdAsync(ct, id);
+        if (model is null)
+            throw new NotFoundException("پرداخت پیدا نشد");
+        await _payoffRepository.DeleteAsync(model, ct);
+        return Ok();
     }
 }

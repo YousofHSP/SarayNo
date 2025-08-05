@@ -13,6 +13,7 @@ public class Payoff : BaseEntity
     public PayoffType Type { get; set; }
     public PayoffStatus Status{ get; set; }
     public DateTimeOffset Date { get; set; }
+    public DateTimeOffset? DueDate { get; set; }
     
     public Invoice Invoice{ get; set; }
     

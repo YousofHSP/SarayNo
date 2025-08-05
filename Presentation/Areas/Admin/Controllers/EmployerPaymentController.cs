@@ -125,4 +125,18 @@ public class EmployerPaymentController : Controller
         return RedirectToAction("Index");
         
     }
+
+    public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken ct)
+    {
+        var model = await _repository.GetByIdAsync(ct, id);
+        if (model is null)
+        {
+            TempData["ErrorMessage"] = "پروژه پیدا نشد";
+            return RedirectToAction("Index");
+        }
+
+        await _repository.DeleteAsync(model, ct);
+        TempData["SuccessMessage"] = "پروژه با موفقیت حذف شد";
+        return RedirectToAction("Index");
+    }
 }

@@ -90,7 +90,6 @@
                                         <i
                                             class="fa fa-list"></i>
                                         جزئیات
-                                        
                                     </a>
                                     @if (CheckPermission.Check(User, "EmployerPayment.AddImage"))
                                     {
@@ -99,6 +98,16 @@
                                             <i
                                                 class="fa fa-image"></i>
                                             آپلود تصویر
+                                        </a>
+                                    }
+                                    @if (CheckPermission.Check(User, "EmployerPayment.Delete"))
+                                    {
+                                        <a asp-area="Admin" asp-controller="EmployerPayment" asp-action="Delete"
+                                           asp-route-id="@item.Id"
+                                           class="dropdown-item">
+                                            <i
+                                                class="fa fa-trash"></i>
+                                            حذف
                                         </a>
                                     }
 
@@ -162,6 +171,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
                 </div>
+
         </div>
     </div>
 </div>
@@ -201,7 +211,6 @@
         $('#imagesModal').on('show.bs.modal', function (event) {
             const button = $(event.relatedTarget)
             const id = button.data('id')
-            
             let modelFiles = files.filter(i => i.ModelId == id);
 
             let url = "@url";
@@ -228,6 +237,6 @@
             $("[name=ModelId]").val(id);
 
         })
-    
+
     </script>
 }

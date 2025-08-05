@@ -141,6 +141,7 @@
                             <th>نوع پرداخت</th>
                             <th>شرح</th>
                             <th>تاریخ</th>
+                            <th>تاریخ سررسید</th>
                             <th>مبلغ</th>
                             <th>عملیات</th>
                         </tr>
@@ -156,6 +157,7 @@
                             </td>
                             <td><input type="text" class="form-control" name="description"></td>
                             <td><input type="text" class="form-control date-picker" name="date"></td>
+                            <td><input type="text" class="form-control date-picker" name="dueDate"></td>
                             <td><input type="text" class="form-control numeric" name="price"></td>
                             <td>
                                 @if (CheckPermission.Check(User, "UnsettledInvoice.AddPayoff"))
