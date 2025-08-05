@@ -51,12 +51,19 @@ $("#addPayoff").click(function () {
     let date = form.find("[name=date]").val();
     let price = form.find("[name=price]").val();
     let data = {invoiceId, type, description, date, price};
+    const modal = $("#detailModal")
     $.ajax({
         url: `/Admin/api/Invoice/AddPayoff`,
         contentType: 'application/json',
         data: JSON.stringify(data),
         method: "post",
         success: (res) => {
+            let remainStr = modal.find("#remain-amount-el").text()
+            let remain = parseInt(remainStr.replace(/,/g, ''));
+            let price = parseInt(res.price.replace(/,/g, ''));
+            
+            remain -= price;
+            modal.find("#remain-amount-el").text(remain.toLocaleString("en-US"))
             let payoffsEl = `
             <tr>
                 <td>${res.typeDisplay}</td>

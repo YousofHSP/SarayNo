@@ -61,7 +61,7 @@ public class InvoiceController : Controller
         model.Discount = decimal.Parse(dto.Discount);
         if(dto.IsDone)
             model.Type = InvoiceType.Settled;
-        await _invoiceRepository.AddAsync(model, ct);
+        await _invoiceRepository.UpdateAsync(model, ct);
         return Ok();
     }
     [HttpPost("[area]/api/[controller]/[action]")]
@@ -72,15 +72,6 @@ public class InvoiceController : Controller
         await _invoiceDetailRepository.AddAsync(model, ct);
         return Ok();
     }
-    [HttpPost("[area]/api/[controller]/[action]")]
-    public async Task<IActionResult> AddImage(AddImageDto dto, CancellationToken ct)
-    {
-        var userId = User.Identity!.GetUserId<int>();
-        await _uploadedFileService.UploadFileAsync(dto.File, dto.AlbumId, nameof(Invoice),
-            dto.ModelId, userId, ct, dto.Description);
-        return Ok();
-    }
-
     [HttpPost("[area]/api/[controller]/[action]")]
     public async Task<IActionResult> ChangeStatus(InvoiceChangeStatusDto dto, CancellationToken ct)
     {
@@ -144,6 +135,7 @@ public class InvoiceController : Controller
         if (invoice is null)
             return NotFound();
         var model = dto.ToEntity(_mapper);
+        model.Status = PayoffStatus.Pending;
         await _payoffRepository.AddAsync(model, ct);
         var res = PayoffResDto.FromEntity(model, _mapper);
         return Ok(res);

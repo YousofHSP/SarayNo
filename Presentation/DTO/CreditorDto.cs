@@ -27,10 +27,9 @@ public class CreditorDto : BaseDto<CreditorDto, Creditor>
     public string PhoneNumber { get; set; }
     
     [Display(Name = "شماره کارت")]
-    [Required(ErrorMessage = "{0} را وارد کنید")]
     [MaxLength(100)]
     [Field(FieldType.Text )]
-    public string CardNumber { get; set; }
+    public string? CardNumber { get; set; }
 }
 
 public class CreditorResDto : BaseDto<CreditorResDto, Creditor>

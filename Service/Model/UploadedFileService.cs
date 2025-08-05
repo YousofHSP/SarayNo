@@ -10,14 +10,13 @@ namespace Service.Model
 {
     public class UploadedFileService : IUploadedFileService
     {
-        private readonly IWebHostEnvironment _env;
+        //private readonly IWebHostEnvironment _env;
         private readonly IRepository<UploadedFile> _repository;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UploadedFileService(IWebHostEnvironment environment, IRepository<UploadedFile> repository,
+        public UploadedFileService(IRepository<UploadedFile> repository,
             IHttpContextAccessor httpContextAccessor)
         {
-            _env = environment;
             _repository = repository;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -78,7 +77,7 @@ namespace Service.Model
             return await query.ToListAsync(ct);
         }
 
-        public async Task<List<UploadedFile>> GetFiles(int albumId, CancellationToken ct)
+        public async Task<List<UploadedFile>> GetFiles(int? albumId, CancellationToken ct)
         {
             var res = await _repository.TableNoTracking
                 .Where(i => i.AlbumId == albumId)
@@ -98,7 +97,7 @@ namespace Service.Model
         public async Task RemoveFile(UploadedFile model, CancellationToken ct)
         {
             
-            var filePath = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads", model.SavedName);
+            var filePath = Path.Combine("wwwroot", "uploads", model.SavedName);
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
@@ -131,7 +130,7 @@ namespace Service.Model
                 throw new BadRequestException("فایل وارد نشد");
             await ValidateFile(file);
 
-            var uploadsFolder = Path.Combine(_env.WebRootPath ?? "wwwroot", "uploads");
+            var uploadsFolder = Path.Combine("wwwroot", "uploads");
             Directory.CreateDirectory(uploadsFolder);
 
             var savedName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
@@ -147,6 +146,7 @@ namespace Service.Model
             var uploadedFile = new UploadedFile
             {
                 SavedName = savedName,
+                AlbumId = albumId,
                 OriginalName = file.FileName,
                 Type = UploadedFileType.Unknown,
                 MimeType = file.ContentType,

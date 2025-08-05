@@ -4,6 +4,7 @@ using Common.Utilities;
 using Data.Contracts;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Presentation.DTO;
 using Presentation.Models;
@@ -29,7 +30,7 @@ public class ProjectController(
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
-        var users = await userRepository.GetSelectListItems("LastName", ct:ct);
+        var users = await userRepository.TableNoTracking.Select(i => new SelectListItem(i.FirstName + " " + i.LastName, i.Id.ToString())).ToListAsync(ct);
         SetIncludes(nameof(Project.User));
         AddOptions(nameof(ProjectDto.UserId), users);
     }
@@ -47,7 +48,9 @@ public class ProjectController(
     {
         if (projectId is null)
         {
-            var projects = await _repository.TableNoTracking.ToListAsync(ct);
+            var projects = await _repository.TableNoTracking
+                .Include(i => i.User)
+                .ToListAsync(ct);
             ViewBag.Projects = projects;
             return View(new Project());
         }
@@ -84,7 +87,8 @@ public class ProjectController(
             var albums = await albumRepository.TableNoTracking.ToListAsync(ct);
             ViewBag.Albums = albums;
             ViewBag.AlbumId = 0;
-            return View(new List<UploadedFile>());
+            var files2 = await uploadedFileService.GetFiles(null, ct);
+            return View(files2);
         }
 
         var album = await albumRepository.TableNoTracking

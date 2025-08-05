@@ -42,13 +42,9 @@ public class ProjectResDto : BaseDto<ProjectResDto, Project>
     [Display(Name = "عنوان")] public string Title { get; set; }
     [Display(Name = "کارفرما")] public string UserFullName{ get; set; }
 
-    [Display(Name = "درصد")] public float Percent { get; set; }
+    [Display(Name = "درصد")] public decimal Percent { get; set; }
 
     [Display(Name = "تاریخ")] public string Date { get; set; }
-
-    [Display(Name = "قیمت تخمینی")] public float EstimatePrice { get; set; }
-
-    [Display(Name = "قیمت نهایی")] public float FinalPrice { get; set; }
 
     [Display(Name = "جزئیات")] public List<ProjectDetail> Details { get; set; }
 

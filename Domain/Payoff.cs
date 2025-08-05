@@ -11,6 +11,7 @@ public class Payoff : BaseEntity
     public decimal Price { get; set; }
     public string? Description { get; set; }
     public PayoffType Type { get; set; }
+    public PayoffStatus Status{ get; set; }
     public DateTimeOffset Date { get; set; }
     
     public Invoice Invoice{ get; set; }
@@ -27,6 +28,13 @@ public class PayoffConfiguration : IEntityTypeConfiguration<Payoff>
     }
 }
 
+public enum PayoffStatus
+{
+    [Display(Name = "در انتظار تایید")]
+    Pending,
+    [Display(Name = "تایید شده")]
+    Approved
+}
 public enum PayoffType
 {
     [Display(Name = "نقدی")]

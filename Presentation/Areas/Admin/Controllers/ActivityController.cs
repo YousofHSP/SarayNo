@@ -16,6 +16,7 @@ namespace Presentation.Areas.Admin.Controllers;
 [Area("Admin")]
 public class ActivityController(
     IRepository<Invoice> invoiceRepository,
+    IRepository<Payoff> payoffRepository,
     IRepository<Project> projectRepository) : Controller 
 {
     [HttpGet("[area]/[controller]")]
@@ -27,7 +28,7 @@ public class ActivityController(
                 .Include(i => i.User)
                 .ToListAsync(ct);
             ViewBag.Projects = projects;
-            return View();
+            return View(new List<Invoice>());
         }
 
         var project = await projectRepository.TableNoTracking.FirstOrDefaultAsync(i => i.Id == projectId, ct);
@@ -35,6 +36,7 @@ public class ActivityController(
         var list = await invoiceRepository.TableNoTracking
             .Where(i => i.ProjectId == projectId)
             .Where(i => i.Type == InvoiceType.Activity)
+            .Include(i => i.Payoffs)
             .Include(i => i.InvoiceDetails)
             .Include(i => i.CostGroup)
             .Include(i => i.Creditor)
@@ -47,6 +49,7 @@ public class ActivityController(
     public async Task<IActionResult> Details([FromRoute] int id, CancellationToken ct)
     {
         var model = await invoiceRepository.TableNoTracking
+            .Include(i => i.Payoffs)
             .Include(i => i.InvoiceDetails)
             .FirstOrDefaultAsync(i => i.Id == id, ct);
         if (model is null)
@@ -56,6 +59,16 @@ public class ActivityController(
     }
 
 
+    [HttpGet("[area]/[controller]/[action]/{id:int}")]
+    public async Task<IActionResult> ApprovePayoff([FromRoute] int id,CancellationToken ct)
+    {
+        var model = await payoffRepository.GetByIdAsync(ct, id);
+        if (model is null)
+            return NotFound();
+        model.Status = PayoffStatus.Approved;
+        await payoffRepository.UpdateAsync(model, ct);
+        return RedirectToAction("Details", new { id = model.InvoiceId});
+    }
     [HttpPost("[area]/[controller]/[action]/{id:int}")]
     public async Task<IActionResult> SetTotalAmount([FromRoute] int id, decimal totalAmount, CancellationToken ct)
     {

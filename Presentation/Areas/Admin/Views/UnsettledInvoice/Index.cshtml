@@ -66,13 +66,15 @@
                 }
                 @foreach (var item in Model)
                 {
+                    var paid = item.Payoffs?.Sum(i => i.Price) ?? 0;
+                    var remain = item.Amount - paid;
                     <tr>
                         <td>@(++index)</td>
                         <td>@item.CostGroup.Title</td>
                         <td>@item.Creditor.FirstName @item.Creditor.LastName</td>
                         <td>@item.Date.ToShamsi()</td>
                         <td>@item.Description</td>
-                        <td>@item.Amount.ToNumeric()</td>
+                        <td>@remain.ToNumeric()</td>
                         <td>@item.Status.ToDisplay()</td>
                         <td>
 
@@ -86,10 +88,10 @@
                                      style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
                                     <a href="#" data-bs-toggle="modal" data-bs-target="#detailModal"
                                        data-bs-id="@item.Id"
-                                       data-bs-cost-group="@item.CostGroup.Title"
+                                       data-bs-cost-group="@item.CostGroup.Title" data-bs-invoice-amount="@item.Amount"
                                        data-bs-creditor="@item.Creditor.FirstName @item.Creditor.LastName"
                                        data-bs-description="@item.Description" data-bs-date="@item.Date.ToShamsi()"
-                                       data-bs-paid-amount="@item.Amount.ToNumeric()"
+                                       data-bs-payoffs-amount="@paid.ToNumeric()" data-bs-discount="@item.Discount.ToNumeric()"
                                        class="dropdown-item">
                                         <i
                                             class="fa fa-list"></i>
@@ -119,11 +121,11 @@
                 <table class="table mb-2">
                     <tr>
                         <td>شرح: <span id="description-el"></span></td>
-                        <td>مبلغ پرداخت شده: <span id="paid-amount-el"></span></td>
-                        <td>مبلغ چک: <span id="check-amount-el"></span></td>
+                        <td>گروه هزنیه: <span id="cost-group-el"></span></td>
+                        <td>مبلغ فاکتور: <span id="invoice-amount-el"></span></td>
                     </tr>
                     <tr>
-                        <td>گروه هزنیه: <span id="cost-group-el"></span></td>
+                        <td> مبلغ پرداخت شده: <span id="payoffs-amount-el"></span></td>
                         <td>تاریخ ثبت: <span id="date-el"></span></td>
                         <td>نام بستانکار: <span id="creditor-el"></span></td>
                     </tr>
@@ -152,7 +154,7 @@
                                         value="@PayoffType.EmployerPayment">@PayoffType.EmployerPayment.ToDisplay()</option>
                                 </select>
                             </td>
-                            <td><textarea name="description" class="form-control"></textarea></td>
+                            <td><input type="text" class="form-control" name="description"></td>
                             <td><input type="text" class="form-control date-picker" name="date"></td>
                             <td><input type="text" class="form-control numeric" name="price"></td>
                             <td>
@@ -187,7 +189,7 @@
                         <div class="col-md-1 text-left">
                             @if (CheckPermission.Check(User, "UnsettledInvoice.Update"))
                             {
-                                <button type="button" class="btn btn-primary">ثبت</button>
+                                <button type="button" class="btn btn-primary update-invoice">ثبت</button>
                             }
                         </div>
                     </div>

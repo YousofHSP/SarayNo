@@ -1,8 +1,11 @@
 @using Common.Utilities
 @using Domain
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Newtonsoft.Json
 @using Presentation.Helpers
+@using Service.Model.Contracts
 @model List<Presentation.DTO.EmployerPaymentResDto>
-
+@inject IUploadedFileService UploadedFileService
 @{
     ViewBag.Title = "دستمزد پیمانکار";
     Layout = "_Layout";
@@ -10,10 +13,12 @@
     var project = ViewBag.Project as Project;
     var percentAmount = 0m;
     var projectId = 0;
+    var files = await UploadedFileService.GetFiles(nameof(EmployerPayment), [], null, default);
+    var url = UploadedFileService.GetUrl();
     if (project is not null)
     {
         projectId = project.Id;
-        var totalAmount = project.Invoices.SelectMany(i => i.InvoiceDetails).Sum(i => i.Price);
+        var totalAmount = project.Invoices.Where(i => i.Type is InvoiceType.Settled or InvoiceType.Unsettled).SelectMany(i => i.InvoiceDetails).Sum(i => i.Price);
         percentAmount = totalAmount * (project.Percent / 100);
     }
 }
@@ -21,6 +26,7 @@
 
 <div class="card">
     <div class="card-body">
+        <h3>دستمزد پیمانکار</h3>
 
         @if (projects is not null && projects.Any())
         {
@@ -79,10 +85,17 @@
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
                                      style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#imagesModal"
+                                       class="dropdown-item" data-id="@item.Id">
+                                        <i
+                                            class="fa fa-list"></i>
+                                        جزئیات
+                                        
+                                    </a>
                                     @if (CheckPermission.Check(User, "EmployerPayment.AddImage"))
                                     {
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#addImageModal"
-                                           class="dropdown-item" data-bs-invoice-id="@item.Id">
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#uploadImageModal"
+                                           class="dropdown-item" data-id="@item.Id">
                                             <i
                                                 class="fa fa-image"></i>
                                             آپلود تصویر
@@ -137,6 +150,21 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="imagesModal" tabindex="-1" aria-labelby="imagesModal" aria-hidden="true">
+    <div class="modal-lg modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="imagesModalLabel">تصاویر</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+                <div id="images-modal-body" class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="uploadImageModal" tabindex="-1" aria-labelby="uploadImageModal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -147,12 +175,6 @@
             <form asp-action="AddImage" method="post" enctype="multipart/form-data">
                 <div class="modal-body">
                     <input type="hidden" name="ModelId">
-                    <div class="form-group">
-                        <label class="form-label" for="Type">نوع</label>
-                        <select class="form-control" id="Type" name="Type">
-                            <option value="@UploadedFileType.Unknown">@UploadedFileType.Unknown.ToDisplay()</option>
-                        </select>
-                    </div>
                     <div class="form-group">
                         <label class="form-label" for="File">فایل</label>
                         <input type="file" class="form-control" name="File" id="File" required>
@@ -170,3 +192,42 @@
         </div>
     </div>
 </div>
+@section Scripts
+{
+    <script>
+        let files = @Html.Raw(JsonConvert.SerializeObject(files));
+        console.log(files)
+
+        $('#imagesModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget)
+            const id = button.data('id')
+            
+            let modelFiles = files.filter(i => i.ModelId == id);
+
+            let url = "@url";
+            let el = "";
+            modelFiles.forEach(item => {
+                el += `
+                <div class="col-3">
+                    <div class="card">
+                        <img src="${url + item.SavedName}" class="card-img-top"
+                             alt=""/>
+                        <div class="card-body">
+                            <p class="card-text">${item.Description}</p>
+                            <a class="btn btn-danger">حذف</a>
+                        </div>
+
+                    </div>
+                </div>`
+            })
+            $("#images-modal-body").html(el)
+        })
+        $('#uploadImageModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget)
+            const id = button.data('id')
+            $("[name=ModelId]").val(id);
+
+        })
+    
+    </script>
+}
