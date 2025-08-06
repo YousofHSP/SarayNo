@@ -10,7 +10,6 @@ namespace Service.Model
 {
     public class UploadedFileService : IUploadedFileService
     {
-        //private readonly IWebHostEnvironment _env;
         private readonly IRepository<UploadedFile> _repository;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
