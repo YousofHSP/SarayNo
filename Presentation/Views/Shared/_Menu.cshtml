@@ -9,9 +9,19 @@
     bool isEmployerPaymentActive = currentController == "EmployerPayment";
 
     // مشخص‌کردن حالت active برای هر زیرمنوی پروژه
-    bool isProjectIndexActive = currentController == "Project" && currentAction == "Index";
-    bool isProjectImagesActive = currentController == "Project" && currentAction == "Images";
-    bool isProjectDetailsActive = currentController == "Project" && currentAction == "ProjectDetails";
+    var projectMenuActiveClass = "";
+    var galleryMenuActiveClass = "";
+    var detailsMenuActiveClass = "";
+
+    if (currentController == "Project")
+    {
+        if (currentAction == "Index")
+            projectMenuActiveClass = "active";
+        else if (currentAction == "Images")
+            galleryMenuActiveClass = "active";
+        else if (currentAction == "ProjectDetails")
+            detailsMenuActiveClass = "active";
+    }
 }
 
 
@@ -59,7 +69,7 @@
         @if (CheckPermission.Check(User, "Project.Index"))
         {
             <a asp-area="Admin" asp-controller="Project" asp-action="Index"
-               class="menu-item d-flex align-items-center @(isProjectIndexActive ? "active" : "")">
+               class="menu-item d-flex align-items-center @projectMenuActiveClass">
                 <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">پروژه ها</span>
             </a>
         }
@@ -67,7 +77,7 @@
         @if (CheckPermission.Check(User, "Project.Images"))
         {
             <a asp-area="Admin" asp-controller="Project" asp-action="Images"
-               class="menu-item d-flex align-items-center @(isProjectImagesActive ? "active" : "")">
+               class="menu-item d-flex align-items-center @galleryMenuActiveClass">
                 <i class="fas fa-images text-gold"></i><span class="ms-2 menu-text">گالری</span>
             </a>
         }
@@ -75,41 +85,44 @@
         @if (CheckPermission.Check(User, ["Project.EstimateDetails", "Project.FinalDetails"]))
         {
             <a asp-area="Admin" asp-controller="Project" asp-action="ProjectDetails"
-               class="menu-item d-flex align-items-center @(isProjectDetailsActive ? "active" : "")">
+               class="menu-item d-flex align-items-center @detailsMenuActiveClass">
                 <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">متراژ و برآورد</span>
             </a>
         }
-        <div id="projectCostMenu" class="menu-item d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-                <i class="fas fa-dollar text-gold"></i><span class="me-2 menu-text">هزینه پروژه</span>
+        @if (CheckPermission.Check(User, ["ProjectCost.CashCart", "ProjectCost.Check", "ProjectCost.DirectPayment"]))
+        {
+            <div id="projectCostMenu" class="menu-item d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-dollar text-gold"></i><span class="me-2 menu-text">هزینه پروژه</span>
+                </div>
+                <i class="fas fa-chevron-down menu-text" id="projectCostChevron"></i>
             </div>
-            <i class="fas fa-chevron-down menu-text" id="projectCostChevron"></i>
-        </div>
 
-        <div id="projectCostSubmenu" class="submenu" style="display: none">
+            <div id="projectCostSubmenu" class="submenu" style="display: none">
 
-            @if (CheckPermission.Check(User, ["ProjectCost.CashCart"]))
-            {
-                <a asp-area="Admin" asp-controller="ProjectCost" asp-action="CashCart"
-                   class="menu-item d-flex align-items-center">
-                    <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">کارت نقدی</span>
-                </a>
-            }
-            @if (CheckPermission.Check(User, ["ProjectCost.Check"]))
-            {
-                <a asp-area="Admin" asp-controller="ProjectCost" asp-action="Check"
-                   class="menu-item d-flex align-items-center">
-                    <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">چک</span>
-                </a>
-            }
-            @if (CheckPermission.Check(User, ["ProjectCost.DirectPayment"]))
-            {
-                <a asp-area="Admin" asp-controller="ProjectCost" asp-action="DirectPayment"
-                   class="menu-item d-flex align-items-center">
-                    <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">پرداخت مستقیم کارفرما</span>
-                </a>
-            }
-        </div>
+                @if (CheckPermission.Check(User, ["ProjectCost.CashCart"]))
+                {
+                    <a asp-area="Admin" asp-controller="ProjectCost" asp-action="CashCart"
+                       class="menu-item d-flex align-items-center">
+                        <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">کارت نقدی</span>
+                    </a>
+                }
+                @if (CheckPermission.Check(User, ["ProjectCost.Check"]))
+                {
+                    <a asp-area="Admin" asp-controller="ProjectCost" asp-action="Check"
+                       class="menu-item d-flex align-items-center">
+                        <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">چک</span>
+                    </a>
+                }
+                @if (CheckPermission.Check(User, ["ProjectCost.DirectPayment"]))
+                {
+                    <a asp-area="Admin" asp-controller="ProjectCost" asp-action="DirectPayment"
+                       class="menu-item d-flex align-items-center">
+                        <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">پرداخت مستقیم کارفرما</span>
+                    </a>
+                }
+            </div>
+        }
 
         <div id="employerPaymentMenu"
              class="menu-item d-flex justify-content-between align-items-center @(isEmployerPaymentActive ? "active" : "")">
@@ -119,7 +132,8 @@
             <i class="fas fa-chevron-down menu-text" id="employerPaymentChevron"></i>
         </div>
 
-        <div id="employerPaymentSubmenu" class="submenu" style="@(isEmployerPaymentActive ? "display: block;" : "display: none;")">
+        <div id="employerPaymentSubmenu" class="submenu"
+             style="@(isEmployerPaymentActive ? "display: block;" : "display: none;")">
 
             @if (CheckPermission.Check(User, "EmployerPayment.Index"))
             {
@@ -146,26 +160,30 @@
                 </div>
                 <i class="fas fa-chevron-down menu-text" id="accountingChevron"></i>
             </div>
-            <div id="accountingSubmenu" class="submenu" style="@(isAccountingActive ? "display: block;" : "display: none;")">
+            <div id="accountingSubmenu" class="submenu"
+                 style="@(isAccountingActive ? "display: block;" : "display: none;")">
                 @if (CheckPermission.Check(User, "UnsettledInvoice.Index"))
                 {
                     <a asp-area="Admin" asp-controller="UnsettledInvoice" asp-action="Index"
                        class="menu-item d-flex align-items-center @(currentController == "UnsettledInvoice" && currentAction == "Index" ? "active" : "")">
-                        <i class="fas fa-envelope text-gold"></i><span class="ms-2 menu-text">فاکتور های تسویه نشده</span>
+                        <i class="fas fa-envelope text-gold"></i><span
+                            class="ms-2 menu-text">فاکتور های تسویه نشده</span>
                     </a>
                 }
                 @if (CheckPermission.Check(User, "Activity.Index"))
                 {
                     <a asp-area="Admin" asp-controller="Activity" asp-action="Index"
                        class="menu-item d-flex align-items-center @(currentController == "Activity" && currentAction == "Index" ? "active" : "")">
-                        <i class="fas fa-envelope text-gold"></i><span class="ms-2 menu-text">فعالیت های در حال انجام</span>
+                        <i class="fas fa-envelope text-gold"></i><span
+                            class="ms-2 menu-text">فعالیت های در حال انجام</span>
                     </a>
                 }
                 @if (CheckPermission.Check(User, "UnverifiedInvoice.Index"))
                 {
                     <a asp-area="Admin" asp-controller="UnverifiedInvoice" asp-action="Index"
                        class="menu-item d-flex align-items-center @(currentController == "UnverifiedInvoice" && currentAction == "Index" ? "active" : "")">
-                        <i class="fas fa-envelope text-gold"></i><span class="ms-2 menu-text">فاکتور های تایید نشده</span>
+                        <i class="fas fa-envelope text-gold"></i><span
+                            class="ms-2 menu-text">فاکتور های تایید نشده</span>
                     </a>
                 }
             </div>
@@ -222,8 +240,8 @@
         border-radius: 6px;
     }
 
-        .menu-item.active i,
-        .menu-item.active span {
-            color: #000 !important;
-        }
+    .menu-item.active i,
+    .menu-item.active span {
+        color: #000 !important;
+    }
 </style>

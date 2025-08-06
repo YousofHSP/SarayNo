@@ -15,6 +15,7 @@ public class Project : BaseEntity
     public List<EmployerPayment> EmployerPayments{ get; set; }
     public List<Invoice> Invoices { get; set; } = new();
     public List<Payoff> Payoffs{ get; set; } = new();
+    public List<Album> Albums{ get; set; } = new();
     public User User { get; set; }
 
 }
@@ -37,5 +38,8 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.HasOne(i => i.User)
             .WithMany(i => i.Projects)
             .HasForeignKey(i => i.UserId);
+        builder.HasMany(i => i.Albums)
+            .WithOne(i => i.Project)
+            .HasForeignKey(i => i.ProjectId);
     }
 }

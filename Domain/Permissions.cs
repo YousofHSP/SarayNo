@@ -68,6 +68,12 @@ public static class Permissions
         new() { Controller = "UnverifiedInvoice", Action = "ChangeStatusToRejected", ControllerLabel = "فاکتورهای تایید نشده", ActionLabel = "رد" },
         new() { Controller = "UnverifiedInvoice", Action = "AddToUnsettledInvoice", ControllerLabel = "فاکتورهای تایید نشده", ActionLabel = "افزودن به فاکتور های تسویه نشده" },
         
+        new() { Controller = "ProjectCost", Action = "CashCart", ControllerLabel = "هزینه پروژه", ActionLabel = "کارت نقدی" },
+        new() { Controller = "ProjectCost", Action = "CreateCashCart", ControllerLabel = "هزینه پروژه", ActionLabel = "افزودن کارت نقدی" },
+        new() { Controller = "ProjectCost", Action = "DeleteCashCart", ControllerLabel = "هزینه پروژه", ActionLabel = "حذف کارت نقدی" },
+        new() { Controller = "ProjectCost", Action = "Check", ControllerLabel = "هزینه پروژه", ActionLabel = "چک" },
+        new() { Controller = "ProjectCost", Action = "DirectPayment", ControllerLabel = "هزینه پروژه", ActionLabel = "پرداخت مستقیم کارفرما" },
+        
     ];
 }
 

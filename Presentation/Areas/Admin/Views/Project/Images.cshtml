@@ -11,6 +11,7 @@
 @{
     ViewBag.Title = "گالری";
     Layout = "_Layout";
+    // var projects = ViewBag.Projects as List<Project>;
     var albums = ViewBag.Albums as List<Album>;
     var albumId = ViewBag.AlbumId as int?;
     var albumSelectList = await AlbumRepository.GetSelectListItems();

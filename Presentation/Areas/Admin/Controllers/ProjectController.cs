@@ -36,6 +36,7 @@ public class ProjectController(
         AddOptions(nameof(ProjectDto.UserId), users);
     }
 
+    [HttpGet("[area]/[controller]/[action]")]
     public override async Task<ViewResult> Index(IndexDto model, CancellationToken ct)
     {
         var list = await _repository.TableNoTracking
@@ -44,7 +45,7 @@ public class ProjectController(
         return View(list);
     }
 
-    [HttpGet]
+    [HttpGet("[area]/[controller]/[action]")]
     public async Task<IActionResult> ProjectDetails([FromQuery] int? projectId, CancellationToken ct)
     {
         if (projectId is null)
@@ -90,6 +91,7 @@ public class ProjectController(
         return RedirectToAction("ProjectDetails", new { projectId = dto.ProjectId });
     }
 
+    [HttpGet("[area]/[controller]/[action]")]
     public async Task<IActionResult> Images([FromQuery] int? albumId, CancellationToken ct)
     {
 
