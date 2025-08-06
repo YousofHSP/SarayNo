@@ -9,7 +9,7 @@
 @{
     ViewBag.Title = "جزئیات فعالیت";
     Layout = "_Layout";
-    var images = await UploadedFileService.GetFiles(nameof(Activity), [Model.Id], null, default);
+    var images = await UploadedFileService.GetFiles(nameof(Invoice), [Model.Id], null, default);
 }
 
 
