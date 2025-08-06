@@ -136,6 +136,7 @@ public class InvoiceController : Controller
         if (invoice is null)
             return NotFound();
         var model = dto.ToEntity(_mapper);
+        model.ProjectId = invoice.ProjectId;
         model.Status = PayoffStatus.Pending;
         await _payoffRepository.AddAsync(model, ct);
         var res = PayoffResDto.FromEntity(model, _mapper);

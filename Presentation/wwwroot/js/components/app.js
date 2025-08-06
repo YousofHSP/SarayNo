@@ -51,7 +51,7 @@ $("#addPayoff").click(function () {
     let date = form.find("[name=date]").val();
     let dueDate = form.find("[name=dueDate]").val();
     let price = form.find("[name=price]").val();
-    let data = {invoiceId, type, description, date, price, dueDate};
+    let data = {invoiceId, type, description, date, price, dueDate, depositType: 0};
     const modal = $("#detailModal")
     $.ajax({
         url: `/Admin/api/Invoice/AddPayoff`,

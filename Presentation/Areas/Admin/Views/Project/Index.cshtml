@@ -51,16 +51,16 @@
                                             class="fa fa-pencil"></i>
                                         ویرایش
                                     </a>
-                                    @if (CheckPermission.Check(User, "Project.Delete"))
-                                    {
-                                        <a asp-area="Admin" asp-controller="Project" asp-action="Delete"
-                                           asp-route-id="@item.Id"
-                                           class="dropdown-item">
-                                            <i
-                                                class="fa fa-trash"></i>
-                                            حذف
-                                        </a>
-                                    }
+                                }
+                                @if (CheckPermission.Check(User, "Project.Delete"))
+                                {
+                                    <a asp-area="Admin" asp-controller="Project" asp-action="Delete"
+                                       asp-route-id="@item.Id"
+                                       class="dropdown-item">
+                                        <i
+                                            class="fa fa-trash"></i>
+                                        حذف
+                                    </a>
                                 }
                             </div>
                         </div>

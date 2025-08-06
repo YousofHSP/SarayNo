@@ -11,7 +11,7 @@ public class ProjectDetail : BaseEntity
     public string Title { get; set; }
     public int Percent { get; set; }
     public DateTimeOffset Date { get; set; }
-    public string? Descriptin { get; set; }
+    public string? Description { get; set; }
 
     public Project Project { get; set; }
     public List<ProjectDetailItem> ProjectDetailItems { get; set; }

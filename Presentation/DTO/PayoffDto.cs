@@ -6,9 +6,11 @@ namespace Presentation.DTO;
 
 public class PayoffDto : BaseDto<PayoffDto, Payoff>
 {
-    public int InvoiceId { get; set; }
+    public int? InvoiceId { get; set; }
+    public int? ProjectId{ get; set; }
     public string Price { get; set; }
     public string Type { get; set; }
+    public DepositType DepositType { get; set; } = DepositType.Decrease;
     public string? Description{ get; set; }
     public string Date { get; set; }
     public string? DueDate { get; set; }

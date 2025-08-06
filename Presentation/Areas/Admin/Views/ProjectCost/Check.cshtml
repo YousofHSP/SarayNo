@@ -1,0 +1,64 @@
+@using Common.Utilities
+@using Domain
+@model List<Payoff>
+
+@{
+    ViewBag.Title = "چک";
+    Layout = "_Layout";
+    var projects = ViewBag.Projects as List<Project>;
+}
+
+<div class="card">
+    <div class="card-body">
+        <h3>چک</h3>
+
+        @if (projects is not null && projects.Any())
+        {
+            <div class="row gap-2">
+                @foreach (var item in projects)
+                {
+                    <a asp-action="Check" asp-route-projectId="@item.Id" class="card"
+                       style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Title</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@(item.User.FirstName + " " + item.User.LastName)</h6>
+                            @* <p class="card-text">@project.</p> *@
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>تاریخ</th>
+                    <th>تاریخ سررسید</th>
+                    <th>مبلغ</th>
+                    <th>توضیحات</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.OrderBy(i => i.Date))
+                {
+                    <tr>
+                        <td>@item.Date.ToShamsi()</td>
+                        <td>@(item.DueDate?.ToShamsi() ?? "-")</td>
+                        <td>@item.Price.ToNumeric()</td>
+                        <td>@item.Description</td>
+                    </tr>
+                }
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="2"></td>
+                    <td>@(Model.Sum(i => i.Price).ToNumeric())</td>
+                    <td></td>
+                </tr>
+                </tfoot>
+            </table>
+        }
+    </div>
+</div>
+
