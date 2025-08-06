@@ -5,8 +5,12 @@
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
 
-    bool isAccountingActive = currentController == "Activity" || currentController == "UnverifiedInvoice" || currentController == "UnsettledInvoice";
-    bool isEmployerPaymentActive = currentController == "EmployerPayment" || currentController == "ProjectCost";
+    bool isAccountingActive = currentController == "Activity" || currentController == "UnverifiedInvoice" || currentController == "UnsettledInvoice"
+                            || (currentController == "EmployerPayment" && currentAction == "ProjectCosts");
+
+    bool isEmployerPaymentActive =
+        (currentController == "EmployerPayment" && currentAction != "ProjectCosts") ||
+        currentController == "ProjectCost";
 
     // مشخص‌کردن حالت active برای هر زیرمنوی پروژه
     var projectMenuActiveClass = "";
