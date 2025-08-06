@@ -50,7 +50,8 @@
         }
         @if (CheckPermission.Check(User, "Project.Images"))
         {
-            <a asp-area="Admin" asp-controller="Project" asp-action="Images" class="menu-item d-flex align-items-center">
+            <a asp-area="Admin" asp-controller="Project" asp-action="Images"
+               class="menu-item d-flex align-items-center">
                 <i class="fas fa-images text-gold"></i><span class="ms-2 menu-text">گالری</span>
             </a>
         }
@@ -61,9 +62,37 @@
                 <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">متراژ و برآورد</span>
             </a>
         }
-        @* <div class="menu-item"> *@
-        @*     <i class="fas fa-image text-gold"></i><span class="menu-label">گالری</span> *@
-        @* </div> *@
+        <div id="projectCostMenu" class="menu-item d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-dollar text-gold"></i><span class="me-2 menu-text">هزینه پروژه</span>
+            </div>
+            <i class="fas fa-chevron-down menu-text" id="projectCostChevron"></i>
+        </div>
+
+        <div id="projectCostSubmenu" class="submenu" style="display: none">
+
+            @if (CheckPermission.Check(User, ["ProjectCost.CashCart"]))
+            {
+                <a asp-area="Admin" asp-controller="ProjectCost" asp-action="CashCart"
+                   class="menu-item d-flex align-items-center">
+                    <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">کارت نقدی</span>
+                </a>
+            }
+            @if (CheckPermission.Check(User, ["ProjectCost.Check"]))
+            {
+                <a asp-area="Admin" asp-controller="ProjectCost" asp-action="Check"
+                   class="menu-item d-flex align-items-center">
+                    <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">چک</span>
+                </a>
+            }
+            @if (CheckPermission.Check(User, ["ProjectCost.DirectPayment"]))
+            {
+                <a asp-area="Admin" asp-controller="ProjectCost" asp-action="DirectPayment"
+                   class="menu-item d-flex align-items-center">
+                    <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">پرداخت مستقیم کارفرما</span>
+                </a>
+            }
+        </div>
 
         <div id="employerPaymentMenu" class="menu-item d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
@@ -89,7 +118,7 @@
                 </a>
             }
         </div>
-        
+
         @if (CheckPermission.Check(User, ["Activity.Index", "UnverifiedInvoice.Index", "UnsettledInvoice.Index", "EmployerPayment.Index", "EmployerPayment.ProjectCosts"]))
         {
             <div id="accountingMenu" class="menu-item d-flex justify-content-between align-items-center">
@@ -111,7 +140,8 @@
                 {
                     <a asp-area="Admin" asp-controller="Activity" asp-action="Index"
                        class="menu-item d-flex align-items-center">
-                        <i class="fas fa-envelope text-gold"></i><span class="ms-2 menu-text">فعالیت های در حال انجام</span>
+                        <i class="fas fa-envelope text-gold"></i><span
+                            class="ms-2 menu-text">فعالیت های در حال انجام</span>
                     </a>
                 }
                 @if (CheckPermission.Check(User, "UnverifiedInvoice.Index"))
@@ -143,6 +173,9 @@
     const employerPaymentMenu = document.getElementById('employerPaymentMenu');
     const employerPaymentSubmenu = document.getElementById('employerPaymentSubmenu');
     const employerPaymentChevron = document.getElementById('employerPaymentChevron');
+    const projectCostMenu = document.getElementById('projectCostMenu');
+    const projectCostSubmenu = document.getElementById('projectCostSubmenu');
+    const projectCostChevron = document.getElementById('projectCostChevron');
 
     collapseBtn.addEventListener('click', () => {
         sidebar.classList.toggle('collapsed');
@@ -158,5 +191,10 @@
         const isVisible = employerPaymentSubmenu.style.display === 'block';
         employerPaymentSubmenu.style.display = isVisible ? 'none' : 'block';
         employerPaymentChevron.classList.toggle('rotate-180');
+    });
+    projectCostMenu.addEventListener('click', () => {
+        const isVisible = projectCostSubmenu.style.display === 'block';
+        projectCostSubmenu.style.display = isVisible ? 'none' : 'block';
+        projectCostChevron.classList.toggle('rotate-180');
     });
 </script>

@@ -45,6 +45,7 @@ $("#addPayoffModalBtn").click(function (){
         date : modalBody.find("[name=Date]").val(),
         dueDate: modalBody.find("[name=DueDate]").val(),
         type : modalBody.find("[name=Type]").val(),
+        depositType: 0
     }
 
     $.ajax({

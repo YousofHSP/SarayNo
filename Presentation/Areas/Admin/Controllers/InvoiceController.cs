@@ -16,7 +16,7 @@ public class InvoiceController : Controller
         _uploadedFileService = uploadedFileService;
     }
 
-    [HttpPost("[area]/api/[controller]/[action]")]
+    [HttpPost("[area]/[controller]/[action]")]
     public async Task<IActionResult> AddImage(AddImageDto dto, CancellationToken ct)
     {
         

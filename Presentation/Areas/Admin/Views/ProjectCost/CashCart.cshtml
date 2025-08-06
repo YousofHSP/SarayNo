@@ -1,0 +1,131 @@
+@using Common.Utilities
+@using Domain
+@using Presentation.Helpers
+@model List<Payoff>
+
+@{
+    ViewBag.Title = "کارت نقدی";
+    Layout = "_Layout";
+    var projects = ViewBag.Projects as List<Project>;
+    var project = ViewBag.Project as Project;
+    var projectId = 0;
+    if (project is not null)
+        projectId = project.Id;
+}
+
+<div class="card">
+    <div class="card-body">
+        <h3>کارت نقدی</h3>
+
+        @if (projects is not null && projects.Any())
+        {
+            <div class="row gap-2">
+                @foreach (var item in projects)
+                {
+                    <a asp-action="CashCart" asp-route-projectId="@item.Id" class="card"
+                       style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Title</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@(item.User.FirstName + " " + item.User.LastName)</h6>
+                            @* <p class="card-text">@project.</p> *@
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            @if (CheckPermission.Check(User, "ProjectCost.CreateCashCart"))
+            {
+                <a data-bs-target="#addPayoffModal" data-bs-toggle="modal" class="btn btn-primary">افزودن</a>
+            }
+
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>تاریخ</th>
+                    <th>دریافت</th>
+                    <th>واریز</th>
+                    <th>مانده</th>
+                    <th>توضیحات</th>
+                    <th>عملیات</th>
+                </tr>
+                </thead>
+                <tbody>
+                @{
+                    var remain = 0m;
+                }
+                @foreach (var item in Model.OrderBy(i => i.Date))
+                {
+                    remain += item.DepositType == DepositType.Decrease ? -1 * item.Price : item.Price;
+                    <tr>
+                        <td>@item.Date.ToShamsi()</td>
+                        <td>
+                            @if (item.DepositType == DepositType.Increalse)
+                            {
+                                <span>@item.Price.ToNumeric()</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.DepositType == DepositType.Decrease)
+                            {
+                                <span>@item.Price.ToNumeric()</span>
+                            }
+                        </td>
+                        <td>@remain.ToNumeric()</td>
+                        <td>@item.Description</td>
+                        <td>
+                            @if (item.DepositType == DepositType.Increalse)
+                            {
+                                <a asp-action="DeleteCashCart" asp-route-id="@item.Id" class="btn btn-danger">حذف</a>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+<div class="modal fade" id="addPayoffModal" tabindex="-1" aria-labelledby="addPayoffModal"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h1 class="modal-title fs-5" id="addPayoffModalLabel">افزودن</h1>
+            </div>
+            <form asp-action="CreateCashCart" method="post">
+
+                <div class="modal-body">
+                    <input type="hidden" name="ProjectId" value="@projectId">
+                    <input type="hidden" name="Type" value="@PayoffType.Cash">
+                    <div class="form-group">
+                        <label class="form-label">مبلغ</label>
+                        <input type="text" class="form-control numeric" name="Price">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">تاریخ</label>
+                        <input type="text" class="form-control date-picker" name="Date">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">تاریخ سررسید</label>
+                        <input type="text" class="form-control date-picker" name="DueDate">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">توضیحات</label>
+                        <textarea name="Description" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <button type="submit" class="btn btn-primary">ثبت</button>
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+</div>
+
+

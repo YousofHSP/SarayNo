@@ -65,6 +65,7 @@
                             <th>درصد انجام عملیات</th>
                             <th>تاریخ</th>
                             <th>قیمت کل</th>
+                            <th>توضیحات</th>
                             <th>عملیات</th>
                         </tr>
 
@@ -80,6 +81,7 @@
                                 <td>@item.Percent</td>
                                 <td>@item.Date.ToShamsi()</td>
                                 <td>@totalAmount.ToNumeric()</td>
+                                <td>@item.Description</td>
                                 <td>
 
                                     <div class="dropdown d-inline-block">
@@ -97,8 +99,23 @@
                                                    data-bs-id="@item.Id"
                                                    data-bs-type="@(nameof(ProjectDetailItemType.Estimate))"
                                                    class="dropdown-item">
-                                                    <i class="fa fa-pencil"></i>
+                                                    <i class="fa fa-list"></i>
                                                     جزئیات
+                                                </a>
+                                            }
+                                            @if (CheckPermission.Check(User, "ProjectDetail.Edit"))
+                                            {
+                                                <a href="#" data-bs-target="#editModal"
+                                                   data-bs-toggle="modal"
+                                                   data-id="@item.Id"
+                                                   data-title="@item.Title"
+                                                   data-description="@item.Description"
+                                                   data-percent="@item.Percent"
+                                                   data-date="@item.Date.ToShamsi()"
+                                                   class="dropdown-item">
+                                                    <i
+                                                        class="fa fa-pencil"></i>
+                                                    ویرایش
                                                 </a>
                                             }
                                         </div>
@@ -119,6 +136,7 @@
                             <th>درصد انجام عملیات</th>
                             <th>تاریخ</th>
                             <th>قیمت کل</th>
+                            <th>توضیحات</th>
                             <th>عملیات</th>
                         </tr>
 
@@ -135,6 +153,7 @@
                                 <td>@item.Percent</td>
                                 <td>@item.Date.ToShamsi()</td>
                                 <td>@totalAmount.ToNumeric()</td>
+                                <td>@item.Description</td>
                                 <td>
                                     <div class="dropdown d-inline-block">
                                         <a class="nav-link" style="padding: .5rem 1rem"
@@ -155,6 +174,21 @@
                                                     جزئیات
                                                 </a>
                                             }
+                                            @if (CheckPermission.Check(User, "ProjectDetail.Edit"))
+                                            {
+                                                <a href="#" data-bs-target="#editModal"
+                                                   data-bs-toggle="modal"
+                                                   data-id="@item.Id"
+                                                   data-title="@item.Title"
+                                                   data-description="@item.Description"
+                                                   data-percent="@item.Percent"
+                                                   data-date="@item.Date.ToShamsi()"
+                                                   class="dropdown-item">
+                                                    <i
+                                                        class="fa fa-pencil"></i>
+                                                    ویرایش
+                                                </a>
+                                            }
                                         </div>
                                     </div>
                                 </td>
@@ -165,6 +199,42 @@
                 </div>
             </div>
         }
+    </div>
+</div>
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-between">
+                <h1 class="modal-title fs-5" id="editModalLabel">ویرایش</h1>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="EditProjectDetail" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="ProjectId" value="@Model.Id">
+                    <input type="hidden" name="Id" value="">
+                    <div class="form-group">
+                        <label class="form-label"> عنوان </label>
+                        <input type="text" class="form-control" name="Title">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"> درصد انجام عملیات</label>
+                        <input type="text" class="form-control" name="Percent">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"> تاریخ </label>
+                        <input type="text" class="form-control date-picker" name="Date">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"> توضیحات </label>
+                        <textarea name="Description" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> بستن</button>
+                    <button type="submit" class="btn btn-primary"> ثبت</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModal" aria-hidden="true">
@@ -235,7 +305,8 @@
                             <td><input type="text" placeholder="عنوان" class="form-control" name="Title"></td>
                             <td><input type="number" placeholder="مقدار" class="form-control" name="Area"></td>
                             <td><input type="number" placeholder="فی" class="form-control" name="UnitPrice"></td>
-                            <td><input type="text" placeholder="مبلغ کل" class="form-control numeric" name="TotalPrice"></td>
+                            <td><input type="text" placeholder="مبلغ کل" class="form-control numeric" name="TotalPrice">
+                            </td>
                             <td><input type="text" placeholder="شرح" class="form-control" name="Description"></td>
                             <td>
                                 <button type="submit" class="btn btn-primary">ثبت</button>
@@ -254,13 +325,6 @@
 </div>
 
 @section Scripts
-
-
-
-
-
-
-
 {
     <script>
         let items = @Html.Raw(JsonSerializer.Serialize(items));

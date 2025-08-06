@@ -72,6 +72,16 @@ public class ProjectController(
         await _projectDetailRepository.AddAsync(model, ct);
         return RedirectToAction(nameof(ProjectDetails), new { projectId = model.ProjectId });
     }
+    [HttpPost]
+    public async Task<IActionResult> EditProjectDetail(ProjectDetailDto dto, CancellationToken ct)
+    {
+        var model = await _projectDetailRepository.GetByIdAsync(ct, dto.Id);
+        if(model is null)
+            return NotFound();
+        model = dto.ToEntity(_mapper);
+        await _projectDetailRepository.UpdateAsync(model, ct);
+        return RedirectToAction(nameof(ProjectDetails), new { projectId = model.ProjectId });
+    }
 
     public async Task<IActionResult> CreateProjectDetailItem(ProjectDetailItemDto dto, CancellationToken ct)
     {
