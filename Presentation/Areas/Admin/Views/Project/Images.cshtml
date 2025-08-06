@@ -88,7 +88,9 @@
                     <div class="col-md-3">
                         <div class="card">
                             <img src="@UploadedFileService.GetFilePath(image, default)" class="card-img-top"
-                                 alt="@image.Type.ToString()"/>
+                                 alt="@image.Type.ToString()"
+                                 style="cursor: pointer"
+                                 onclick="showImageModal('@UploadedFileService.GetFilePath(image, default)')"/>
                             <div class="card-body">
                                 <h5>@image.Type.ToDisplay()</h5>
                                 <p class="card-text">@image.Description</p>

@@ -208,7 +208,6 @@
         let payoffs = @Html.Raw(JsonSerializer.Serialize(payoffs))
         let url = "@url";
         let hasRemovePermission = @(CheckPermission.Check(User, "UnsettledInvoice.DeletePayoff").ToString().ToLower());
-        console.log("test", hasRemovePermission)
     </script>
     <script src="~/js/pages/UnsettledInvoice.js"></script>
 }
