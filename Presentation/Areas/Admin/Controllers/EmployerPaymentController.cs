@@ -54,6 +54,8 @@ public class EmployerPaymentController : Controller
         }
 
         var project = await _projectRepository.TableNoTracking
+            .Include(i => i.Invoices)
+            .ThenInclude(i => i.Payoffs)
             .Include(i => i.Details)
             .FirstOrDefaultAsync(i => i.Id == projectId, ct);
         if (project is null)

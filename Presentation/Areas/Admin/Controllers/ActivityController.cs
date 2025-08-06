@@ -77,6 +77,16 @@ public class ActivityController(
         await payoffRepository.UpdateAsync(model, ct);
         return RedirectToAction("Details", new { id = model.InvoiceId});
     }
+    
+    [HttpGet("[area]/[controller]/[action]/{id:int}")]
+    public async Task<IActionResult> DeletePayoff([FromRoute] int id,CancellationToken ct)
+    {
+        var model = await payoffRepository.GetByIdAsync(ct, id);
+        if (model is null)
+            return NotFound();
+        await payoffRepository.DeleteAsync(model, ct);
+        return RedirectToAction("Details", new { id = model.InvoiceId});
+    }
     [HttpPost("[area]/[controller]/[action]/{id:int}")]
     public async Task<IActionResult> SetTotalAmount([FromRoute] int id, decimal totalAmount, CancellationToken ct)
     {

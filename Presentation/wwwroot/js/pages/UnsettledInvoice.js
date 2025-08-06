@@ -13,9 +13,12 @@ $('#detailModal').on('show.bs.modal', function (event) {
     let payoffsEl = ``;
     let el =``;
     let paid = 0
+    let removeBtn = "";
     modelPayoffs.forEach(item => {
         let price = parseInt(item.Price.replace(/,/g, ''));
         paid += price;
+        if(hasRemovePermission)
+            removeBtn = `<button type="button" class="btn btn-danger deletePayoff" data-id="${item.Id}"> حذف</button>`
         payoffsEl += `
             <tr>
                 <td>${item.TypeDisplay}</td>
@@ -23,7 +26,7 @@ $('#detailModal').on('show.bs.modal', function (event) {
                 <td>${item.Date}</td>
                 <td>${item.DueDate}</td>
                 <td>${item.Price}</td>
-                <td> ${hasRemovePermission ? '<button type="button" class="btn btn-danger deletePayoff" data-id="${item.Id}"> حذف</button>' : ''}</td>
+                <td> ${removeBtn}</td>
             </tr>
         `
     })

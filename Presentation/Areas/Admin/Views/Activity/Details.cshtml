@@ -18,7 +18,7 @@
         <h2>جزئیات فعالیت</h2>
 
         <div class="d-flex justify-content-start mt-3">
-            @if (CheckPermission.Check(User, "Activity.AddDetail"))
+            @if (CheckPermission.Check(User, "Activity.AddPayoff"))
             {
                 <button data-bs-toggle="modal" data-bs-target="#addPayoffModal"
                         data-invoice-id="@Model.Id" type="button"
@@ -38,7 +38,7 @@
                         class="btn btn-primary me-2">ثبت مبلغ فاکتور
                 </button>
             }
-            @if (CheckPermission.Check(User, "Activity.Done"))
+            @if (CheckPermission.Check(User, "Activity.Done") && Model.Payoffs.All(i => i.Status == PayoffStatus.Approved))
             {
                 <button type="button" data-id="@Model.Id" data-type="@(InvoiceType.Unverified)"
                         class="changeType btn btn-primary"> اتمام فعالیت و ارسال به فاکتور تایید نشده
@@ -83,7 +83,7 @@
                         <td>@item.Price.ToNumeric()</td>
                         <td>@item.Description</td>
                         <td>
-                            @if (item.Status == PayoffStatus.Pending && CheckPermission.Check(User, "Activity.ApprovedDetail"))
+                            @if (item.Status == PayoffStatus.Pending && CheckPermission.Check(User, "Activity.ApprovedPayoff"))
                             {
                                 <a asp-controller="Activity" asp-action="ApprovePayoff" asp-route-id="@item.Id"
                                    class="btn btn-primary">تایید</a>
@@ -91,6 +91,12 @@
                             else
                             {
                                 <span>تایید شده</span>
+                            }
+                            @if (CheckPermission.Check(User, "Activity.DeletePayoff"))
+                            {
+
+                            <a asp-controller="Activity" asp-action="DeletePayoff" asp-route-id="@item.Id"
+                               class="btn btn-danger">حذف</a>
                             }
                         </td>
                     </tr>
