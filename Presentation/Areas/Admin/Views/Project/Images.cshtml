@@ -23,58 +23,78 @@
 <h3>گالری</h3>
 <div class="card">
     <div class="card-body">
-       
-        @if (albumId == 0)
+
+        @if (projects is not null && projects.Any())
         {
-            <button data-bs-target="#addAlbumModal" data-bs-toggle="modal" type="button"
-                    class="btn btn-primary">
-                افزودن آلبوم
-            </button>
-            <div class="row gap-2 mt-3">
-                <h4>آلبوم ها</h4>
-                @foreach (var item in albums)
+            <div class="row gap-2">
+                @foreach (var item in projects)
                 {
-                    <a asp-action="Images" asp-route-albumId="@item.Id" class="card"
+                    <a asp-action="Images" asp-route-projectId="@item.Id" class="card"
                        style="width: 18rem;">
                         <div class="card-body">
                             <h5 class="card-title">@item.Title</h5>
-                            @* <h6 class="card-subtitle mb-2 text-muted">@(item.User.FirstName + " " + item.User.LastName)</h6> *@
+                            <h6 class="card-subtitle mb-2 text-muted">@(item.User.FirstName + " " + item.User.LastName)</h6>
                             @* <p class="card-text">@project.</p> *@
                         </div>
                     </a>
                 }
             </div>
-            <hr/>
         }
         else
         {
-            <div class="d-flex justify-content-between mb-2">
-                @if (CheckPermission.Check(User, "Project.AddImage"))
+            if (albumId == 0)
+            {
+                <button data-bs-target="#addAlbumModal" data-bs-toggle="modal" type="button"
+                        class="btn btn-primary">
+                    افزودن آلبوم
+                </button>
+                <div class="row gap-2 mt-3">
+                    <h4>آلبوم ها</h4>
+                    @foreach (var item in albums)
+                    {
+                        <a asp-action="Images" asp-route-albumId="@item.Id" asp-route-projectId="@projectId" class="card"
+                           style="width: 18rem;">
+                            <div class="card-body">
+                                <h5 class="card-title">@item.Title</h5>
+                                @* <h6 class="card-subtitle mb-2 text-muted">@(item.User.FirstName + " " + item.User.LastName)</h6> *@
+                                @* <p class="card-text">@project.</p> *@
+                            </div>
+                        </a>
+                    }
+                </div>
+                <hr/>
+            }
+            else
+            {
+                <div class="d-flex justify-content-between mb-2">
+                    @if (CheckPermission.Check(User, "Project.AddImage"))
+                    {
+                        <button data-bs-target="#addImageModal" data-bs-toggle="modal" type="button"
+                                class="btn btn-primary">
+                            افزودن
+                        </button>
+                    }
+                </div>
+            }
+
+            <div class="mt-3 row gap-1">
+                @foreach (var image in Model)
                 {
-                    <button data-bs-target="#addImageModal" data-bs-toggle="modal" type="button"
-                            class="btn btn-primary">
-                        افزودن
-                    </button>
+                    <div class="col-md-3">
+                        <div class="card">
+                            <img src="@UploadedFileService.GetFilePath(image, default)" class="card-img-top"
+                                 alt="@image.Type.ToString()"/>
+                            <div class="card-body">
+                                <h5>@image.Type.ToDisplay()</h5>
+                                <p class="card-text">@image.Description</p>
+                                <p class="card-text">@(image.ModelType is nameof(Activity) ? "فعالیت" : "فاکتور")</p>
+                            </div>
+
+                        </div>
+                    </div>
                 }
             </div>
         }
-        <div class="mt-3 row gap-1">
-            @foreach (var image in Model)
-            {
-                <div class="col-md-3">
-                    <div class="card">
-                        <img src="@UploadedFileService.GetFilePath(image, default)" class="card-img-top"
-                             alt="@image.Type.ToString()"/>
-                        <div class="card-body">
-                            <h5>@image.Type.ToDisplay()</h5>
-                            <p class="card-text">@image.Description</p>
-                            <p class="card-text">@(image.ModelType is nameof(Activity) ? "فعالیت" : "فاکتور")</p>
-                        </div>
-
-                    </div>
-                </div>
-            }
-        </div>
 
     </div>
 </div>

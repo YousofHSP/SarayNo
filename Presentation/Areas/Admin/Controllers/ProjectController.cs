@@ -6,10 +6,12 @@ using Data.Contracts;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Presentation.DTO;
 using Presentation.Models;
 using Service.Model.Contracts;
+using Project = Domain.Project;
 
 namespace Presentation.Areas.Admin.Controllers;
 
@@ -92,22 +94,43 @@ public class ProjectController(
     }
 
     [HttpGet("[area]/[controller]/[action]")]
-    public async Task<IActionResult> Images([FromQuery] int? albumId, CancellationToken ct)
+    public async Task<IActionResult> Images([FromQuery] int? projectId, [FromQuery] int? albumId, CancellationToken ct)
     {
 
-        if (albumId is null)
+        if (projectId is null or 0)
         {
-            var albums = await albumRepository.TableNoTracking.ToListAsync(ct);
-            ViewBag.Albums = albums;
-            ViewBag.AlbumId = 0;
-            var files2 = await uploadedFileService.GetFiles(null, ct);
-            return View(files2);
+            var projects = await _repository.TableNoTracking
+                .Include(i => i.User)
+                .ToListAsync(ct);
+            ViewBag.Projects = projects;
+            return View();
         }
 
+        var project = await _repository.TableNoTracking.FirstOrDefaultAsync(i => i.Id == projectId, ct);
+        if (project is null)
+        {
+            TempData["ErrorMessage"] = "پروژه پیدا نشد";
+            return View();
+        }
+
+        ViewBag.Project = project;
+        if (albumId is null)
+        {
+            var albums = await albumRepository.TableNoTracking
+                .Where(i => i.ProjectId == projectId)
+                .ToListAsync(ct);
+            ViewBag.Albums = albums;
+            ViewBag.AlbumId = 0;
+            return View();
+        }
+        
         var album = await albumRepository.TableNoTracking
             .FirstOrDefaultAsync(i => i.Id == albumId, ct);
         if (album is null)
-            return NotFound();
+        {
+            TempData["ErrorMessage"] = "آلبوم پیدا نشد";
+            return View();
+        }
         ViewBag.AlbumId = album.Id;
         var files = await uploadedFileService.GetFiles(album.Id, ct);
         return View(files);
@@ -128,7 +151,7 @@ public class ProjectController(
     {
         var model = dto.ToEntity(_mapper);
         await albumRepository.AddAsync(model, ct);
-        return RedirectToAction("Images", new { albumId = model.Id});
+        return RedirectToAction("Images", new { albumId = model.Id, projectId = model.ProjectId});
     }
 
     public override async Task<IActionResult> Delete(int id, CancellationToken ct)
