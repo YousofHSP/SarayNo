@@ -52,7 +52,7 @@ public enum DepositType
 }
 public enum PayoffType
 {
-    [Display(Name = "نقدی")]
+    [Display(Name = "کارت نقدی")]
     Cash,
     [Display(Name = "چک")]
     Check,
