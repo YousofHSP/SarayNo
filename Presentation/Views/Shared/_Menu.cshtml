@@ -89,42 +89,8 @@
                 <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">متراژ و برآورد</span>
             </a>
         }
-        @if (CheckPermission.Check(User, ["ProjectCost.CashCart", "ProjectCost.Check", "ProjectCost.DirectPayment"]))
-        {
-            <div id="projectCostMenu" class="menu-item d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-dollar text-gold"></i><span class="me-2 menu-text">هزینه پروژه</span>
-                </div>
-                <i class="fas fa-chevron-down menu-text" id="projectCostChevron"></i>
-            </div>
 
-            <div id="projectCostSubmenu" class="submenu" style="display: none">
-
-                @if (CheckPermission.Check(User, ["ProjectCost.CashCart"]))
-                {
-                    <a asp-area="Admin" asp-controller="ProjectCost" asp-action="CashCart"
-                       class="menu-item d-flex align-items-center">
-                        <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">وجه امانی</span>
-                    </a>
-                }
-                @if (CheckPermission.Check(User, ["ProjectCost.Check"]))
-                {
-                    <a asp-area="Admin" asp-controller="ProjectCost" asp-action="Check"
-                       class="menu-item d-flex align-items-center">
-                        <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">چک</span>
-                    </a>
-                }
-                @if (CheckPermission.Check(User, ["ProjectCost.DirectPayment"]))
-                {
-                    <a asp-area="Admin" asp-controller="ProjectCost" asp-action="DirectPayment"
-                       class="menu-item d-flex align-items-center">
-                        <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">پرداخت مستقیم کارفرما</span>
-                    </a>
-                }
-            </div>
-        }
-
-        @if (CheckPermission.Check(User, "EmployerPayment.Index"))
+        @if (CheckPermission.Check(User, ["EmployerPayment.Index", "ProjectCost.CashCart", "ProjectCost.Check", "ProjectCost.DirectPayment"]))
         {
             <div id="employerPaymentMenu"
                  class="menu-item d-flex justify-content-between align-items-center @(isEmployerPaymentActive ? "active" : "")">
@@ -143,6 +109,41 @@
                        class="menu-item d-flex align-items-center @(currentController == "EmployerPayment" && currentAction == "Index" ? "active" : "")">
                         <i class="fas fa-envelope text-gold"></i><span class="ms-2 menu-text">دستمزد پیمانکار</span>
                     </a>
+                }
+
+                @if (CheckPermission.Check(User, ["ProjectCost.CashCart", "ProjectCost.Check", "ProjectCost.DirectPayment"]))
+                {
+                    <div id="projectCostMenu" class="menu-item d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-dollar text-gold"></i><span class="me-2 menu-text">هزینه پروژه</span>
+                        </div>
+                        <i class="fas fa-chevron-down menu-text" id="projectCostChevron"></i>
+                    </div>
+
+                    <div id="projectCostSubmenu" class="submenu" style="display: none">
+
+                        @if (CheckPermission.Check(User, ["ProjectCost.CashCart"]))
+                        {
+                            <a asp-area="Admin" asp-controller="ProjectCost" asp-action="CashCart"
+                               class="menu-item d-flex align-items-center">
+                                <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">وجه امانی</span>
+                            </a>
+                        }
+                        @if (CheckPermission.Check(User, ["ProjectCost.Check"]))
+                        {
+                            <a asp-area="Admin" asp-controller="ProjectCost" asp-action="Check"
+                               class="menu-item d-flex align-items-center">
+                                <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">چک</span>
+                            </a>
+                        }
+                        @if (CheckPermission.Check(User, ["ProjectCost.DirectPayment"]))
+                        {
+                            <a asp-area="Admin" asp-controller="ProjectCost" asp-action="DirectPayment"
+                               class="menu-item d-flex align-items-center">
+                                <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">پرداخت مستقیم کارفرما</span>
+                            </a>
+                        }
+                    </div>
                 }
             </div>
         }
