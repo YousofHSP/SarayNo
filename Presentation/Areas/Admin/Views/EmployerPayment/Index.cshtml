@@ -18,7 +18,7 @@
     if (project is not null)
     {
         projectId = project.Id;
-        var totalAmount = project.Invoices.Where(i => i.Type is InvoiceType.Settled or InvoiceType.Unsettled).SelectMany(i => i.InvoiceDetails).Sum(i => i.Price);
+        var totalAmount = project.Invoices.Where(i => i.Type is InvoiceType.Settled or InvoiceType.Unsettled).SelectMany(i => i.Payoffs).Sum(i => i.Price);
         percentAmount = totalAmount * (project.Percent / 100);
     }
 }
@@ -182,7 +182,7 @@
                 <h1 class="modal-title fs-5" id="uploadImageModalLabel">افزودن تصویر</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form asp-action="AddImage" method="post" enctype="multipart/form-data">
+            <form asp-action="AddImage" asp-route-projectId="@projectId" method="post" enctype="multipart/form-data">
                 <div class="modal-body">
                     <input type="hidden" name="ModelId">
                     <div class="form-group">
@@ -220,10 +220,12 @@
                 <div class="col-3">
                     <div class="card">
                         <img src="${url + item.SavedName}" class="card-img-top"
-                             alt=""/>
+                             alt=""
+                            style="cursor: pointer"
+                             onclick="showImageModal('${url + item.SavedName}')"
+                             />
                         <div class="card-body">
                             <p class="card-text">${item.Description}</p>
-                            <a class="btn btn-danger">حذف</a>
                         </div>
 
                     </div>

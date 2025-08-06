@@ -37,7 +37,7 @@ namespace Service.Model
             var request = _httpContextAccessor.HttpContext?.Request;
             if (request is null)
                 return "";
-            return $"{request.Scheme}://{request.Host.Host}:{request.Host.Port}/uploads/";
+            return $"{request.Scheme}://{request.Host.Host}/uploads/";
             
         }
         public string GetFilePath(UploadedFile model, CancellationToken ct)

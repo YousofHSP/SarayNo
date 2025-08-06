@@ -105,3 +105,10 @@ $("body").on("click", ".deletePayoff", function(){
         }
     })
 })
+
+function showImageModal(imageSrc) {
+    const modalImg = document.getElementById('modalImage');
+    modalImg.src = imageSrc;
+    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+    modal.show();
+}

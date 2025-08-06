@@ -32,7 +32,10 @@ $('#detailModal').on('show.bs.modal', function (event) {
                 <div class="col-3">
                     <div class="card">
                         <img src="${url + item.SavedName}" class="card-img-top"
-                             alt=""/>
+                             alt=""
+                            style="cursor: pointer"
+                             onclick="showImageModal('${url + item.SavedName}')"
+                             />
                         <div class="card-body">
                             <p class="card-text">${item.Description}</p>
                             <a class="btn btn-danger">حذف</a>

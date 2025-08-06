@@ -134,12 +134,12 @@ public class EmployerPaymentController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddImage(AddImageDto dto, CancellationToken ct)
+    public async Task<IActionResult> AddImage(AddImageDto dto, [FromQuery] int projectId, CancellationToken ct)
     {
         var userId = User.Identity!.GetUserId<int>();
         await _uploadedFileService.UploadFileAsync(dto.File, dto.AlbumId, nameof(EmployerPayment),
             dto.ModelId, userId, ct, dto.Description);
-        return RedirectToAction("Index");
+        return RedirectToAction("Index", new {projectId});
         
     }
 
