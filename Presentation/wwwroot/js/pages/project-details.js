@@ -12,6 +12,7 @@ $('#itemModal').on('show.bs.modal', function (event) {
             <td>${item.UnitPrice}</td>
             <td>${item.TotalPrice}</td>
             <td>${item.Description}</td>
+            <td>${hasRemoveItemPermission ? '<button type="button" class="btn btn-danger deleteProjectDetailId" data-id="${item.Id}">حذف</button>' : ''}</td>
         </tr>`
     })
     modal.find('table tbody').html(el)
@@ -41,4 +42,27 @@ $('[name=UnitPrice], [name=Area]').on('keyup', function(){
     let area = $('[name=Area]').val() ?? 0;
     $('[name=TotalPrice]').val(unit * area);
     
+})
+
+$('body').on("click", ".deleteProjectDetailId", function(){
+
+    const id = $(this).data("id");
+    const trEl = $(this).parents("tr")
+    $.ajax({
+        url: `/Admin/api/Invoice/DeleteProjectDetailItem/${id}`,
+        contentType: 'application/json',
+        method: "post",
+        success: () => {
+            trEl.remove();
+        },
+        error: (xhr) => {
+            console.log(xhr)
+            Swal.fire({
+                icon: "error",
+                title: "خطا در حذف",
+                text: xhr.responseJSON?.message || "خطایی رخ داده است."
+            })
+
+        }
+    })
 })

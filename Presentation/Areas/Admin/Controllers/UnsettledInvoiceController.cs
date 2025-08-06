@@ -43,7 +43,7 @@ public class UnsettledInvoiceController : Controller
             var projects = await query
                 .ToListAsync(ct);
             ViewBag.Projects = projects;
-            return View();
+            return View(new List<Invoice>());
         }
         ViewBag.ProjectId = projectId;
         var list = await _invoiceRepository.TableNoTracking

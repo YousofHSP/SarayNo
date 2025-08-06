@@ -5,6 +5,8 @@ public static class Permissions
     public static List<Permission> All =
     [
         
+        new() { Controller = "Dashboar", ControllerLabel = "داشبورد",  Action = "Index", ActionLabel = "نمایش" },
+        
         new() { Controller = "Role", ControllerLabel = "نقش",  Action = "Index", ActionLabel = "نمایش" },
         new() { Controller = "Role", ControllerLabel = "نقش", Action = "Create",  ActionLabel = "ایجاد" },
         new() { Controller = "Role", ControllerLabel = "نقش", Action = "Edit",  ActionLabel = "ویرایش" },
@@ -48,12 +50,15 @@ public static class Permissions
         new() { Controller = "Project", Action = "Create", ControllerLabel = "پروژه", ActionLabel = "ایجاد" },
         new() { Controller = "Project", Action = "Edit", ControllerLabel = "پروژه", ActionLabel = "ویرایش" },
         new() { Controller = "Project", Action = "Delete", ControllerLabel = "پروژه", ActionLabel = "حذف" },
-        new() { Controller = "Project", Action = "EstimateDetails", ControllerLabel = "پروژه", ActionLabel = "برآورد و تخمین" },
-        new() { Controller = "Project", Action = "FinalDetails", ControllerLabel = "پروژه", ActionLabel = "متراژ و قیمت اجرا شده" },
-        new() { Controller = "Project", Action = "AddEstimateDetail", ControllerLabel = "پروژه", ActionLabel = "افزودن برآورد و تخمین" },
-        new() { Controller = "Project", Action = "AddFinalDetail", ControllerLabel = "پروژه", ActionLabel = "افزودن متراژ و قیمت اجرا شده" },
+        new() { Controller = "Project", Action = "ProjectDetail", ControllerLabel = "پروژه", ActionLabel = "متراژ و برآورد" },
+        new() { Controller = "Project", Action = "ProjectDetailItem", ControllerLabel = "پروژه", ActionLabel = "جزئیات متراژ و برآورد" },
+        new() { Controller = "Project", Action = "AddProjectDetail", ControllerLabel = "پروژه", ActionLabel = "افزودن متراژ و برآورد" },
+        new() { Controller = "Project", Action = "EditProjectDetail", ControllerLabel = "پروژه", ActionLabel = "ویرایش متراژ و برآورد" },
+        new() { Controller = "Project", Action = "AddProjectDetailItem", ControllerLabel = "پروژه", ActionLabel = "افزودن جزئیات متراژ و برآورد" },
+        new() { Controller = "Project", Action = "DeleteProjectDetailItem", ControllerLabel = "پروژه", ActionLabel = "حذف جزئیات متراژ و برآورد" },
         new() { Controller = "Project", Action = "Images", ControllerLabel = "پروژه", ActionLabel = "گالری" },
         new() { Controller = "Project", Action = "AddImages", ControllerLabel = "پروژه", ActionLabel = "افزودن تصویر" },
+        new() { Controller = "Project", Action = "AddAlbum", ControllerLabel = "پروژه", ActionLabel = "افزودن آلبوم" },
         
         new() { Controller = "UnsettledInvoice", Action = "Index", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "نمایش" },
         new() { Controller = "UnsettledInvoice", Action = "Edit", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "ویرایش" },

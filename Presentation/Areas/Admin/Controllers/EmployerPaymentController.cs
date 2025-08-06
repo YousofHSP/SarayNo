@@ -2,6 +2,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Common.Utilities;
 using Data.Contracts;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -48,7 +49,8 @@ public class EmployerPaymentController : Controller
             }
             var projects = query.ToListAsync(ct);
             ViewBag.Projects = projects;
-            return View();
+            ViewBag.Project = new Project();
+            return View(new List<EmployerPaymentResDto>());
         }
 
         var project = await _projectRepository.TableNoTracking
@@ -82,7 +84,7 @@ public class EmployerPaymentController : Controller
             }
             var projects = query.ToListAsync(ct);
             ViewBag.Projects = projects;
-            return View();
+            return View(new List<ProjectCostDto>());
         }
 
         var project = await _projectRepository.TableNoTracking

@@ -2,6 +2,7 @@
 @using Data.Contracts
 @using Domain
 @using Microsoft.EntityFrameworkCore
+@using Presentation.Helpers
 @inject IRepository<Invoice> InvoiceRepository;
 @inject IRepository<Project> ProjectRepository;
 
@@ -14,115 +15,122 @@
   var allProjectsCost = projects.SelectMany(i => i.Invoices).Where(i => i.Type == InvoiceType.Settled).Sum(i => i.Amount);
   var allUnsetteldAmount = projects.SelectMany(i => i.Invoices).Where(i => i.Type == InvoiceType.Unsettled).Sum(i => i.Amount);
 
-	Layout = "_Layout";
+  Layout = "_Layout";
 }
 <h3>داشبورد</h3>
 <div class="container mb-5">
-  <div class="row g-4">
+  @if (CheckPermission.Check(User, "Dashboard.Index"))
+  {
+    <div class="row g-4">
 
-    <!-- Card: تعداد کل پروژه‌ها -->
-    <div class="col-md-4">
-      <div class="card dashboard-card p-3 text-center">
-        <div class="section-title">تعداد کل پروژه‌ها</div>
-        <div class="stat-value">@projects.Count</div>
+      <!-- Card: تعداد کل پروژه‌ها -->
+      <div class="col-md-4">
+        <div class="card dashboard-card p-3 text-center">
+          <div class="section-title">تعداد کل پروژه‌ها</div>
+          <div class="stat-value">@projects.Count</div>
+        </div>
       </div>
+
+      <!-- Card: پروژه‌های فعال -->
+      <div class="col-md-4">
+        <div class="card dashboard-card p-3 text-center">
+          <div class="section-title">پروژه‌های فعال</div>
+          <div class="stat-value text-success">@activeProjects.Count</div>
+        </div>
+      </div>
+
+      <!-- Card: پروژه‌های تکمیل‌شده -->
+      <div class="col-md-4">
+        <div class="card dashboard-card p-3 text-center">
+          <div class="section-title">پروژه‌های تکمیل‌شده</div>
+          <div class="stat-value text-muted">@doneProjects.Count</div>
+        </div>
+      </div>
+
+      <!-- Card: بودجه کل -->
+      <div class="col-md-6">
+        <div class="card dashboard-card p-3 text-center">
+          <div class="section-title">مجموع کل هزینه پروژه ها</div>
+          <div class="stat-value">@allProjectsCost.ToNumeric()</div>
+        </div>
+      </div>
+
+      <!-- Card: میزان پرداخت شده -->
+      <div class="col-md-6">
+        <div class="card dashboard-card p-3 text-center">
+          <div class="section-title">مبلغ های تسویه نشده</div>
+          <div class="stat-value text-info">@allUnsetteldAmount.ToNumeric()</div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Card: پروژه‌های فعال -->
-    <div class="col-md-4">
-      <div class="card dashboard-card p-3 text-center">
-        <div class="section-title">پروژه‌های فعال</div>
-        <div class="stat-value text-success">@activeProjects.Count</div>
+    <div class="mt-5">
+      <h4 class="section-title">پیشرفت پروژه‌ها</h4>
+      <div class="card p-3">
+        <div class="mb-3">
+          <label class="form-label">پروژه مجتمع آزادی</label>
+          <div class="progress project-progress">
+            <div class="progress-bar bg-success" style="width: 75%;">۷۵٪</div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">پروژه برج زیتون</label>
+          <div class="progress project-progress">
+            <div class="progress-bar bg-warning" style="width: 45%;">۴۵٪</div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">پروژه خانه‌های ویلایی</label>
+          <div class="progress project-progress">
+            <div class="progress-bar bg-primary" style="width: 90%;">۹۰٪</div>
+          </div>
+        </div>
       </div>
     </div>
+  }
 
-    <!-- Card: پروژه‌های تکمیل‌شده -->
-    <div class="col-md-4">
-      <div class="card dashboard-card p-3 text-center">
-        <div class="section-title">پروژه‌های تکمیل‌شده</div>
-        <div class="stat-value text-muted">@doneProjects.Count</div>
-      </div>
-    </div>
-
-    <!-- Card: بودجه کل -->
-    <div class="col-md-6">
-      <div class="card dashboard-card p-3 text-center">
-        <div class="section-title">مجموع کل هزینه پروژه ها</div>
-        <div class="stat-value">@allProjectsCost.ToNumeric()</div>
-      </div>
-    </div>
-
-    <!-- Card: میزان پرداخت شده -->
-    <div class="col-md-6">
-      <div class="card dashboard-card p-3 text-center">
-        <div class="section-title">مبلغ های تسویه نشده</div>
-        <div class="stat-value text-info">@allUnsetteldAmount.ToNumeric()</div>
-      </div>
-    </div>
-
-  </div>
 
   <!-- Progress Section -->
-  <div class="mt-5">
-    <h4 class="section-title">پیشرفت پروژه‌ها</h4>
-    <div class="card p-3">
-      <div class="mb-3">
-        <label class="form-label">پروژه مجتمع آزادی</label>
-        <div class="progress project-progress">
-          <div class="progress-bar bg-success" style="width: 75%;">۷۵٪</div>
-        </div>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">پروژه برج زیتون</label>
-        <div class="progress project-progress">
-          <div class="progress-bar bg-warning" style="width: 45%;">۴۵٪</div>
-        </div>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">پروژه خانه‌های ویلایی</label>
-        <div class="progress project-progress">
-          <div class="progress-bar bg-primary" style="width: 90%;">۹۰٪</div>
-        </div>
-      </div>
-    </div>
-  </div>
+
 
 </div>
+
 @section Styles{
 
-<style>
-  .dashboard-card {
-    border-radius: 15px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
-  }
+  <style>
+    .dashboard-card {
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
 
-  .dashboard-card:hover {
-    transform: translateY(-5px);
-  }
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+    }
 
-  .section-title {
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-    font-weight: bold;
-    color: #003366;
-  }
+    .section-title {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      font-weight: bold;
+      color: #003366;
+    }
 
-  .stat-value {
-    font-size: 1.75rem;
-    font-weight: bold;
-    color: #007bff;
-  }
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: bold;
+      color: #007bff;
+    }
 
-  .bg-gradient-header {
-    background: linear-gradient(135deg, #d4af37, #003366);
-    color: white;
-    padding: 2rem;
-    border-radius: 0 0 40px 40px;
-  }
+    .bg-gradient-header {
+      background: linear-gradient(135deg, #d4af37, #003366);
+      color: white;
+      padding: 2rem;
+      border-radius: 0 0 40px 40px;
+    }
 
-  .project-progress {
-    height: 10px;
-    border-radius: 5px;
-  }
-</style>}
+    .project-progress {
+      height: 10px;
+      border-radius: 5px;
+    }
+  </style>}

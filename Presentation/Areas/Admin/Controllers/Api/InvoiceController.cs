@@ -19,10 +19,11 @@ public class InvoiceController : Controller
     private readonly IRepository<InvoiceDetail> _invoiceDetailRepository;
     private readonly IRepository<InvoiceLog> _invoiceLogRepository;
     private readonly IRepository<Payoff> _payoffRepository;
+    private readonly IRepository<ProjectDetailItem> _projectDetailItemRepository;
     private readonly IRepository<Invoice> _invoiceRepository;
     private readonly IUploadedFileService _uploadedFileService;
 
-    public InvoiceController(IMapper mapper, IRepository<InvoiceDetail> invoiceDetailRepository, IRepository<Invoice> invoiceRepository, IUploadedFileService uploadedFileService, IRepository<Payoff> payoffRepository, IRepository<InvoiceLog> invoiceLogRepository)
+    public InvoiceController(IMapper mapper, IRepository<InvoiceDetail> invoiceDetailRepository, IRepository<Invoice> invoiceRepository, IUploadedFileService uploadedFileService, IRepository<Payoff> payoffRepository, IRepository<InvoiceLog> invoiceLogRepository, IRepository<ProjectDetailItem> projectDetailItemRepository)
     {
         _mapper = mapper;
         _invoiceDetailRepository = invoiceDetailRepository;
@@ -30,6 +31,7 @@ public class InvoiceController : Controller
         _uploadedFileService = uploadedFileService;
         _payoffRepository = payoffRepository;
         _invoiceLogRepository = invoiceLogRepository;
+        _projectDetailItemRepository = projectDetailItemRepository;
     }
 
     [HttpPost("[area]/api/[controller]/[action]")]
@@ -164,6 +166,15 @@ public class InvoiceController : Controller
         if (model is null)
             throw new NotFoundException("پرداخت پیدا نشد");
         await _payoffRepository.DeleteAsync(model, ct);
+        return Ok();
+    }
+    [HttpPost("[area]/api/[controller]/[action]/{id:int}")]
+    public async Task<IActionResult> DeleteProjectDetailItem([FromRoute] int id, CancellationToken ct)
+    {
+        var model = await _projectDetailItemRepository.GetByIdAsync(ct, id);
+        if (model is null)
+            throw new NotFoundException(" پیدا نشد");
+        await _projectDetailItemRepository.DeleteAsync(model, ct);
         return Ok();
     }
 }

@@ -32,7 +32,7 @@
         else
         {
             <div class="d-flex justify-content-between mb-2">
-                @if (CheckPermission.Check(User, "ProjectDetail.Create"))
+                @if (CheckPermission.Check(User, "Project.AddProjectDetail"))
                 {
                     <button type="button" class="btn btn-primary" data-bs-target="#addModal" data-bs-toggle="modal">
                         افزودن
@@ -92,7 +92,7 @@
                                         </a>
                                         <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
                                              style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
-                                            @if (CheckPermission.Check(User, "ProjectDetail.Items"))
+                                            @if (CheckPermission.Check(User, "Project.ProjectDetailItem"))
                                             {
                                                 <a data-bs-target="#itemModal"
                                                    data-bs-toggle="modal"
@@ -103,7 +103,7 @@
                                                     جزئیات
                                                 </a>
                                             }
-                                            @if (CheckPermission.Check(User, "ProjectDetail.Edit"))
+                                            @if (CheckPermission.Check(User, "Project.EditProjectDetail"))
                                             {
                                                 <a href="#" data-bs-target="#editModal"
                                                    data-bs-toggle="modal"
@@ -163,7 +163,7 @@
                                         </a>
                                         <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
                                              style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
-                                            @if (CheckPermission.Check(User, "ProjectDetail.Items"))
+                                            @if (CheckPermission.Check(User, "Project.ProjectDetailItem"))
                                             {
                                                 <a data-bs-target="#itemModal"
                                                    data-bs-toggle="modal"
@@ -174,7 +174,7 @@
                                                     جزئیات
                                                 </a>
                                             }
-                                            @if (CheckPermission.Check(User, "ProjectDetail.Edit"))
+                                            @if (CheckPermission.Check(User, "Project.EditProjectDetail"))
                                             {
                                                 <a href="#" data-bs-target="#editModal"
                                                    data-bs-toggle="modal"
@@ -309,7 +309,10 @@
                             </td>
                             <td><input type="text" placeholder="شرح" class="form-control" name="Description"></td>
                             <td>
-                                <button type="submit" class="btn btn-primary">ثبت</button>
+                                @if (CheckPermission.Check(User, "Project.AddProjectDetailItem"))
+                                {
+                                    <button type="submit" class="btn btn-primary">ثبت</button>
+                                }
                             </td>
                         </tr>
 
@@ -328,6 +331,7 @@
 {
     <script>
         let items = @Html.Raw(JsonSerializer.Serialize(items));
+        let hasRemoveItemPermission = @(CheckPermission.Check(User, "Project.DeleteProjectDetailItem").ToString().ToLower());
     </script>
     <script src="~/js/pages/project-details.js"></script>
 }

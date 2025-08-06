@@ -17,12 +17,14 @@ namespace Presentation.Controllers
         private SignInManager<User> _signInManager { get; set; }
         private IUserRepository _userRepository { get; set; }
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IUserRepository userRepository)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager,
+            IUserRepository userRepository)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _userRepository = userRepository;
         }
+
         [HttpGet("[controller]/[action]")]
         public IActionResult Register()
         {
@@ -47,14 +49,14 @@ namespace Presentation.Controllers
                     ModelState.AddModelError(nameof(RegisterDto.NationalCode), "کدملی تکراری است");
                     return View(dto);
                 }
-               
+
                 var user = new User
                 {
-                    FirstName= dto.FirstName,
+                    FirstName = dto.FirstName,
                     LastName = dto.LastName,
                     NationalCode = dto.NationalCode,
                     PhoneNumber = dto.PhoneNumber,
-                    UserName= dto.PhoneNumber,
+                    UserName = dto.PhoneNumber,
                     Status = UserStatus.Active
                 };
                 var result = await _userManager.CreateAsync(user, dto.Password);
@@ -63,8 +65,8 @@ namespace Presentation.Controllers
                     await _userManager.AddToRoleAsync(user, "Guest");
                     var claims = new List<Claim>
                     {
-                        new (ClaimTypes.NameIdentifier,user.Id.ToString()),
-                        new (ClaimTypes.GivenName,user.FirstName + " " + user.LastName)
+                        new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                        new(ClaimTypes.GivenName, user.FirstName + " " + user.LastName)
                     };
                     var properties = new AuthenticationProperties
                     {
@@ -74,44 +76,47 @@ namespace Presentation.Controllers
                     return RedirectToAction("Index", "Dashboard");
                 }
             }
+
             ModelState.AddModelError("", "داده های وارد شده معتبر نیست");
             return View(dto);
         }
 
         [HttpGet]
-        public IActionResult Login(string returnUrl ="/")
+        public IActionResult Login(string returnUrl = "/")
         {
             return View(new LoginDto
             {
                 ReturnUrl = returnUrl,
             });
         }
+
         [HttpPost]
         public async Task<IActionResult> Login([FromForm] LoginDto dto, CancellationToken ct)
         {
             if (ModelState.IsValid)
             {
-                var user = await _userRepository.TableNoTracking.Where(i => i.PhoneNumber == dto.PhoneNumber).FirstOrDefaultAsync(ct);
-                if(user is not null)
+                var user = await _userRepository.TableNoTracking.Where(i => i.PhoneNumber == dto.PhoneNumber)
+                    .FirstOrDefaultAsync(ct);
+                if (user is not null)
                 {
                     var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
-                    if(result.Succeeded)
+                    if (result.Succeeded)
                     {
                         await _signInManager.SignOutAsync();
                         var claims = new List<Claim>
                         {
-                            new (ClaimTypes.NameIdentifier,user.Id.ToString()),
-                            new (ClaimTypes.GivenName,user.FirstName + " " + user.LastName)
+                            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                            new(ClaimTypes.GivenName, user.FirstName + " " + user.LastName)
                         };
                         var properties = new AuthenticationProperties
                         {
                             IsPersistent = true
                         };
                         await _signInManager.SignInWithClaimsAsync(user, properties, claims);
-                        var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
-                        if(isAdmin)
-                            return Redirect("/Admin");
-                        return Redirect("/");
+                        var isGuest = await _userManager.IsInRoleAsync(user, "Guest");
+                        if (isGuest)
+                            return Redirect("/");
+                        return Redirect("/Admin");
                     }
                 }
             }

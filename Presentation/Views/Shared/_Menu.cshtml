@@ -82,7 +82,7 @@
             </a>
         }
 
-        @if (CheckPermission.Check(User, ["Project.EstimateDetails", "Project.FinalDetails"]))
+        @if (CheckPermission.Check(User, ["Project.ProjectDetail"]))
         {
             <a asp-area="Admin" asp-controller="Project" asp-action="ProjectDetails"
                class="menu-item d-flex align-items-center @detailsMenuActiveClass">

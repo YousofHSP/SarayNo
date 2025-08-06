@@ -44,15 +44,20 @@
         {
             if (albumId == 0)
             {
-                <button data-bs-target="#addAlbumModal" data-bs-toggle="modal" type="button"
-                        class="btn btn-primary">
-                    افزودن آلبوم
-                </button>
+                if (CheckPermission.Check(User, "Project.AddAlbum"))
+                {
+                    <button data-bs-target="#addAlbumModal" data-bs-toggle="modal" type="button"
+                            class="btn btn-primary">
+                        افزودن آلبوم
+                    </button>
+                }
+
                 <div class="row gap-2 mt-3">
                     <h4>آلبوم ها</h4>
                     @foreach (var item in albums)
                     {
-                        <a asp-action="Images" asp-route-albumId="@item.Id" asp-route-projectId="@projectId" class="card"
+                        <a asp-action="Images" asp-route-albumId="@item.Id" asp-route-projectId="@projectId"
+                           class="card"
                            style="width: 18rem;">
                             <div class="card-body">
                                 <h5 class="card-title">@item.Title</h5>

@@ -1,6 +1,7 @@
 using AutoMapper;
 using Common.Utilities;
 using Data.Contracts;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +41,7 @@ public class ProjectCostController : Controller
             var projects = await query
                 .ToListAsync(ct);
             ViewBag.Projects = projects;
-            return View();
+            return View(new List<Payoff>());
         }
 
         var project = await _projectRepository.TableNoTracking
@@ -106,7 +107,7 @@ public class ProjectCostController : Controller
             var projects = await query
                 .ToListAsync(ct);
             ViewBag.Projects = projects;
-            return View();
+            return View(new List<Payoff>());
         }
 
         var list = await _payoffRepository.TableNoTracking
@@ -135,7 +136,7 @@ public class ProjectCostController : Controller
             var projects = await query
                 .ToListAsync(ct);
             ViewBag.Projects = projects;
-            return View();
+            return View(new List<Payoff>());
         }
 
         var list = await _payoffRepository.TableNoTracking

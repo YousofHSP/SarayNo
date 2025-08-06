@@ -127,14 +127,14 @@ public class ProjectController(
             var projects = await query
                 .ToListAsync(ct);
             ViewBag.Projects = projects;
-            return View();
+            return View(new List<UploadedFile>());
         }
 
         var project = await _repository.TableNoTracking.FirstOrDefaultAsync(i => i.Id == projectId, ct);
         if (project is null)
         {
             TempData["ErrorMessage"] = "پروژه پیدا نشد";
-            return View();
+            return View(new List<UploadedFile>());
         }
 
         ViewBag.Project = project;
@@ -145,7 +145,7 @@ public class ProjectController(
                 .ToListAsync(ct);
             ViewBag.Albums = albums;
             ViewBag.AlbumId = 0;
-            return View();
+            return View(new List<UploadedFile>());
         }
 
         var album = await albumRepository.TableNoTracking
@@ -153,7 +153,7 @@ public class ProjectController(
         if (album is null)
         {
             TempData["ErrorMessage"] = "آلبوم پیدا نشد";
-            return View();
+            return View(new List<UploadedFile>());
         }
 
         ViewBag.AlbumId = album.Id;
