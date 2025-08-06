@@ -47,7 +47,7 @@ public class EmployerPaymentController : Controller
                 var userId = User.Identity!.GetUserId<int>();
                 query = query.Where(i => i.UserId == userId);
             }
-            var projects = query.ToListAsync(ct);
+            var projects = await query.ToListAsync(ct);
             ViewBag.Projects = projects;
             ViewBag.Project = new Project();
             return View(new List<EmployerPaymentResDto>());
@@ -82,7 +82,7 @@ public class EmployerPaymentController : Controller
                 var userId = User.Identity!.GetUserId<int>();
                 query = query.Where(i => i.UserId == userId);
             }
-            var projects = query.ToListAsync(ct);
+            var projects = await query.ToListAsync(ct);
             ViewBag.Projects = projects;
             return View(new List<ProjectCostDto>());
         }

@@ -10,7 +10,7 @@
   var projects = await ProjectRepository.TableNoTracking
     .Include(i => i.Invoices)
     .ToListAsync();
-  var doneProjects = projects.Where(i => i.Invoices.All(n => n.Type == InvoiceType.Settled)).ToList();
+  var doneProjects = projects.Where(i => i.Invoices.Any() && i.Invoices.All(n => n.Type == InvoiceType.Settled)).ToList();
   var activeProjects = projects.Where(i => i.Invoices.Any(n => n.Type != InvoiceType.Settled)).ToList();
   var allProjectsCost = projects.SelectMany(i => i.Invoices).Where(i => i.Type == InvoiceType.Settled).Sum(i => i.Amount);
   var allUnsetteldAmount = projects.SelectMany(i => i.Invoices).Where(i => i.Type == InvoiceType.Unsettled).Sum(i => i.Amount);
@@ -66,26 +66,17 @@
     </div>
 
     <div class="mt-5">
-      <h4 class="section-title">پیشرفت پروژه‌ها</h4>
+      <h4 class="section-title">درصد مشارکت پروژه</h4>
       <div class="card p-3">
-        <div class="mb-3">
-          <label class="form-label">پروژه مجتمع آزادی</label>
-          <div class="progress project-progress">
-            <div class="progress-bar bg-success" style="width: 75%;">۷۵٪</div>
+        @foreach (var item in activeProjects)
+        {
+          <div class="mb-3">
+            <label class="form-label">@item.Title</label>
+            <div class="progress project-progress">
+              <div class="progress-bar bg-success" style="width: @(item.Percent)%;">@((int)item.Percent)%</div>
+            </div>
           </div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">پروژه برج زیتون</label>
-          <div class="progress project-progress">
-            <div class="progress-bar bg-warning" style="width: 45%;">۴۵٪</div>
-          </div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">پروژه خانه‌های ویلایی</label>
-          <div class="progress project-progress">
-            <div class="progress-bar bg-primary" style="width: 90%;">۹۰٪</div>
-          </div>
-        </div>
+        }
       </div>
     </div>
   }
