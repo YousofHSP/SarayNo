@@ -6,7 +6,7 @@
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
 
     bool isAccountingActive = currentController == "Activity" || currentController == "UnverifiedInvoice" || currentController == "UnsettledInvoice";
-    bool isEmployerPaymentActive = currentController == "EmployerPayment";
+    bool isEmployerPaymentActive = currentController == "EmployerPayment" || currentController == "ProjectCost";
 
     // مشخص‌کردن حالت active برای هر زیرمنوی پروژه
     var projectMenuActiveClass = "";
@@ -15,14 +15,30 @@
 
     if (currentController == "Project")
     {
-        if (currentAction == "Index")
-            projectMenuActiveClass = "active";
-        else if (currentAction == "Images")
-            galleryMenuActiveClass = "active";
-        else if (currentAction == "ProjectDetails")
-            detailsMenuActiveClass = "active";
+        switch (currentAction)
+        {
+            case "Index":
+                projectMenuActiveClass = "active";
+                break;
+            case "Images":
+                galleryMenuActiveClass = "active";
+                break;
+            case "ProjectDetails":
+                detailsMenuActiveClass = "active";
+                break;
+            default:
+                projectMenuActiveClass = "active"; // به صورت پیش‌فرض، پروژه‌ها فعال باشد
+                break;
+        }
     }
+
+    // منطق active شدن زیرمنوی هزینه پروژه
+    var isProjectCostCashCartActive = currentController == "ProjectCost" && currentAction == "CashCart";
+    var isProjectCostCheckActive = currentController == "ProjectCost" && currentAction == "Check";
+    var isProjectCostDirectPaymentActive = currentController == "ProjectCost" && currentAction == "DirectPayment";
+    var showProjectCostSubmenu = isProjectCostCashCartActive || isProjectCostCheckActive || isProjectCostDirectPaymentActive;
 }
+
 
 
 <aside id="sidebar" class="sidebar bg-sidebar text-white transition-all">
@@ -113,37 +129,38 @@
 
                 @if (CheckPermission.Check(User, ["ProjectCost.CashCart", "ProjectCost.Check", "ProjectCost.DirectPayment"]))
                 {
-                    <div id="projectCostMenu" class="menu-item d-flex justify-content-between align-items-center">
+                    <div id="projectCostMenu" class="menu-item d-flex justify-content-between align-items-center @(showProjectCostSubmenu ? "active" : "")">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-dollar text-gold"></i><span class="me-2 menu-text">هزینه پروژه</span>
                         </div>
-                        <i class="fas fa-chevron-down menu-text" id="projectCostChevron"></i>
+                        <i class="fas fa-chevron-down menu-text @(showProjectCostSubmenu ? "rotate-180" : "")" id="projectCostChevron"></i>
                     </div>
 
-                    <div id="projectCostSubmenu" class="submenu" style="display: none">
+                    <div id="projectCostSubmenu" class="submenu" style="@(showProjectCostSubmenu ? "display: block;" : "display: none;")">
 
                         @if (CheckPermission.Check(User, ["ProjectCost.CashCart"]))
                         {
                             <a asp-area="Admin" asp-controller="ProjectCost" asp-action="CashCart"
-                               class="menu-item d-flex align-items-center">
+                               class="menu-item d-flex align-items-center @(isProjectCostCashCartActive ? "active" : "")">
                                 <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">وجه امانی</span>
                             </a>
                         }
                         @if (CheckPermission.Check(User, ["ProjectCost.Check"]))
                         {
                             <a asp-area="Admin" asp-controller="ProjectCost" asp-action="Check"
-                               class="menu-item d-flex align-items-center">
+                               class="menu-item d-flex align-items-center @(isProjectCostCheckActive ? "active" : "")">
                                 <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">چک</span>
                             </a>
                         }
                         @if (CheckPermission.Check(User, ["ProjectCost.DirectPayment"]))
                         {
                             <a asp-area="Admin" asp-controller="ProjectCost" asp-action="DirectPayment"
-                               class="menu-item d-flex align-items-center">
+                               class="menu-item d-flex align-items-center @(isProjectCostDirectPaymentActive ? "active" : "")">
                                 <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">پرداخت مستقیم کارفرما</span>
                             </a>
                         }
                     </div>
+
                 }
             </div>
         }
