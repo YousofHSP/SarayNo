@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Common.Exceptions;
 using Common.Utilities;
 using Data.Contracts;
@@ -41,10 +42,24 @@ public class InvoiceController : Controller
         await _invoiceRepository.AddAsync(model, ct);
         return Ok();
     }
+    [HttpPost("[area]/api/[controller]/[action]")]
+    public async Task<IActionResult> UpdateInvoice([FromBody]InvoiceDto dto, CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(dto.Amount))
+            dto.Amount = "0";
+        var model = await _invoiceRepository.GetByIdAsync(ct, dto.Id);
+        if (model is null)
+            throw new NotFoundException();
+        model = dto.ToEntity(model,_mapper);
+        model.Status = InvoiceStatus.Pending;
+        await _invoiceRepository.UpdateAsync(model, ct);
+        return Ok();
+    }
     [HttpGet("[area]/api/[controller]/{id:int}/[action]")]
     public async Task<IActionResult> Get([FromRoute] int id, CancellationToken ct)
     {
         var model = await _invoiceRepository.TableNoTracking
+            .ProjectTo<InvoiceResDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(i => i.Id == id, ct);
         if (model is null)
             return NotFound();

@@ -57,6 +57,7 @@ public static class Permissions
         new() { Controller = "UnsettledInvoice", Action = "Index", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "نمایش" },
         new() { Controller = "UnsettledInvoice", Action = "Edit", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "ویرایش" },
         new() { Controller = "UnsettledInvoice", Action = "AddPayoff", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "افزودن پرداخت" },
+        new() { Controller = "UnsettledInvoice", Action = "DeletePayoff", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "حذف پرداخت" },
         new() { Controller = "UnsettledInvoice", Action = "Done", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "تسویه" },
         
         new() { Controller = "UnverifiedInvoice", Action = "Index", ControllerLabel = "فاکتورهای تایید نشده", ActionLabel = "نمایش" },

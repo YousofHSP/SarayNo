@@ -23,7 +23,7 @@ $('#detailModal').on('show.bs.modal', function (event) {
                 <td>${item.Date}</td>
                 <td>${item.DueDate}</td>
                 <td>${item.Price}</td>
-                <td> <button type="button" class="btn btn-danger deletePayoff" data-id="${item.Id}"> حذف</button></td>
+                <td> ${hasRemovePermission ? '<button type="button" class="btn btn-danger deletePayoff" data-id="${item.Id}"> حذف</button>' : ''}</td>
             </tr>
         `
     })

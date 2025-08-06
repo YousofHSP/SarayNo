@@ -45,6 +45,8 @@ $('#updateInvoiceModal').on('show.bs.modal', function (event) {
             let modalBody = $(".update-invoice-modal-body")
             modalBody.find("[name=Id]").val(result.id)
             modalBody.find("[name=ProjectId]").val(result.projectId)
+            modalBody.find("[name=Type]").val(result.type)
+            modalBody.find("[name=Status]").val(result.status)
             modalBody.find("[name=CostGroupId]").val(result.costGroupId).trigger("change")
             modalBody.find("[name=CreditorId]").val(result.creditorId).trigger("change")
             modalBody.find("[name=Date]").val(result.date)
@@ -52,4 +54,33 @@ $('#updateInvoiceModal').on('show.bs.modal', function (event) {
             modalBody.find("[name=Amount]").val(result.amount)
         }
     })
+})
+
+$("#updateInvoice").click(function (){
+    let modalBody = $(".update-invoice-modal-body")
+    let data = {
+        id: modalBody.find("[name=Id]").val(),
+        projectId: modalBody.find("[name=ProjectId]").val(),
+        costGroupId: modalBody.find("[name=CostGroupId]").val(),
+        creditorId: modalBody.find("[name=CreditorId]").val(),
+        date : modalBody.find("[name=Date]").val(),
+        description: modalBody.find("[name=Description]").val(),
+        amount: modalBody.find("[name=Amount]").val(),
+        type : modalBody.find("[name=Type]").val()
+    }
+
+    $.ajax({
+        url: "/Admin/api/Invoice/UpdateInvoice",
+        type: "POST",
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function (result) {
+            Swal.fire({
+                type: "success",
+                title: "ثبت شد",
+                text: "اطلاعات با موفقیت ثبت شد"
+            }).then(() => location.reload());;
+        }
+    })
+
 })

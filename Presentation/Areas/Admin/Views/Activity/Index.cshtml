@@ -22,7 +22,7 @@
 
 <div class="card">
     <div class="card-body">
-    <h3>فعالیت های در حال انجام</h3>
+        <h3>فعالیت های در حال انجام</h3>
         @if (projects is not null && projects.Any())
         {
             <div class="row gap-2">
@@ -44,7 +44,8 @@
             @if (CheckPermission.Check(User, "Activity.Create"))
             {
                 <div class="d-flex justify-content-between">
-                    <button data-bs-toggle="modal" data-bs-target="#addInvoiceModal" data-project-id="@projectId" data-type="@InvoiceType.Activity" type="button" class="btn btn-primary">
+                    <button data-bs-toggle="modal" data-bs-target="#addInvoiceModal" data-project-id="@projectId"
+                            data-type="@InvoiceType.Activity" type="button" class="btn btn-primary">
                         افزودن
                     </button>
                 </div>
@@ -74,23 +75,27 @@
                                    href="#" role="button" aria-haspopup="false" aria-expanded="false">
                                     <i class="fa fa-ellipsis-v font-20 text-muted"></i>
                                 </a>
-                                @if (CheckPermission.Check(User, "Activity.Details"))
-                                {
-                                    <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
-                                         style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#updateInvoiceModal" data-id="@item.Id" class="dropdown-item">
+                                <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
+                                     style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
+                                    @if (CheckPermission.Check(User, "Activity.Update"))
+                                    {
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#updateInvoiceModal"
+                                           data-id="@item.Id" class="dropdown-item">
                                             <i
                                                 class="fa fa-pencil"></i>
-                                           ویرایش 
+                                            ویرایش
                                         </a>
+                                    }
 
+                                    @if (CheckPermission.Check(User, "Activity.Details"))
+                                    {
                                         <a asp-action="Details" asp-route-id="@item.Id" class="dropdown-item">
                                             <i
                                                 class="fa fa-list"></i>
                                             جزئیات
                                         </a>
-                                    </div>
-                                }
+                                    }
+                                </div>
                             </div>
                         </td>
                     </tr>

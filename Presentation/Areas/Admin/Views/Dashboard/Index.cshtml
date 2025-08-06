@@ -1,3 +1,4 @@
+@using Common.Utilities
 @using Data.Contracts
 @using Domain
 @using Microsoft.EntityFrameworkCore
@@ -47,7 +48,7 @@
     <div class="col-md-6">
       <div class="card dashboard-card p-3 text-center">
         <div class="section-title">مجموع کل هزینه پروژه ها</div>
-        <div class="stat-value">@allProjectsCost</div>
+        <div class="stat-value">@allProjectsCost.ToNumeric()</div>
       </div>
     </div>
 
@@ -55,7 +56,7 @@
     <div class="col-md-6">
       <div class="card dashboard-card p-3 text-center">
         <div class="section-title">مبلغ های تسویه نشده</div>
-        <div class="stat-value text-info">@allUnsetteldAmount</div>
+        <div class="stat-value text-info">@allUnsetteldAmount.ToNumeric()</div>
       </div>
     </div>
 

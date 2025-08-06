@@ -86,7 +86,7 @@
                                      style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
                                     @if (CheckPermission.Check(User, "UnverifiedInvoice.Update"))
                                     {
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#updateModal"
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#updateInvoiceModal"
                                            data-id="@item.Id" data-cost-group-id="@item.CostGroupId"
                                            data-creditor-id="@item.CreditorId" data-project-id="@item.ProjectId"
                                            data-amount="@item.Amount" data-date="@item.Date.ToShamsi()"

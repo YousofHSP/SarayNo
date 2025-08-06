@@ -56,7 +56,7 @@
                         <div class="card-body">
                             <h5>@image.Type.ToDisplay()</h5>
                             <p class="card-text">@image.Description</p>
-                            <a asp-action="RemoveImage" asp-route-id="@image.Id" class="btn btn-danger">حذف</a>
+                            @* <a asp-action="RemoveImage" asp-route-id="@image.Id" class="btn btn-danger">حذف</a> *@
                         </div>
 
                     </div>
@@ -81,7 +81,7 @@
                         <td>@item.Price.ToNumeric()</td>
                         <td>@item.Description</td>
                         <td>
-                            @if (item.Status == PayoffStatus.Pending)
+                            @if (item.Status == PayoffStatus.Pending && CheckPermission.Check(User, "Activity.ApprovedDetail"))
                             {
                                 <a asp-controller="Activity" asp-action="ApprovePayoff" asp-route-id="@item.Id"
                                    class="btn btn-primary">تایید</a>
