@@ -75,7 +75,7 @@
                         <td>@remain.ToNumeric()</td>
                         <td>@item.Description</td>
                         <td>
-                            @if (item.DepositType == DepositType.Increalse)
+                            @if (item.DepositType == DepositType.Increalse && CheckPermission.Check(User, "ProjectCost.DeleteCashCart"))
                             {
                                 <a asp-action="DeleteCashCart" asp-route-id="@item.Id" class="btn btn-danger">حذف</a>
                             }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Presentation.DTO;
+using Presentation.Helpers;
 using Presentation.Models;
 using Service.Model.Contracts;
 using Project = Domain.Project;
@@ -33,7 +34,8 @@ public class ProjectController(
     public override async Task Configure(string method, CancellationToken ct)
     {
         await base.Configure(method, ct);
-        var users = await userRepository.TableNoTracking.Select(i => new SelectListItem(i.FirstName + " " + i.LastName, i.Id.ToString())).ToListAsync(ct);
+        var users = await userRepository.TableNoTracking
+            .Select(i => new SelectListItem(i.FirstName + " " + i.LastName, i.Id.ToString())).ToListAsync(ct);
         SetIncludes(nameof(Project.User));
         AddOptions(nameof(ProjectDto.UserId), users);
     }
@@ -41,7 +43,15 @@ public class ProjectController(
     [HttpGet("[area]/[controller]/[action]")]
     public override async Task<ViewResult> Index(IndexDto model, CancellationToken ct)
     {
-        var list = await _repository.TableNoTracking
+        var userId = User.Identity!.GetUserId<int>();
+
+        var query = _repository.TableNoTracking.AsQueryable();
+        if (!CheckPermission.Check(User, "Project.All"))
+        {
+            query = query.Where(i => i.UserId == userId);
+        }
+
+        var list = await query
             .ProjectTo<ProjectResDto>(_mapper.ConfigurationProvider)
             .ToListAsync(ct);
         return View(list);
@@ -52,8 +62,15 @@ public class ProjectController(
     {
         if (projectId is null)
         {
-            var projects = await _repository.TableNoTracking
+            var query = _repository.TableNoTracking
                 .Include(i => i.User)
+                .AsQueryable();
+            if (!CheckPermission.Check(User, "Project.All"))
+            {
+                var userId = User.Identity!.GetUserId<int>();
+                query = query.Where(i => i.UserId == userId);
+            }
+            var projects = await query
                 .ToListAsync(ct);
             ViewBag.Projects = projects;
             return View(new Project());
@@ -61,7 +78,7 @@ public class ProjectController(
 
         var project = await _repository.TableNoTracking
             .Include(i => i.Details)
-            .ThenInclude(i => i.ProjectDetailItems) 
+            .ThenInclude(i => i.ProjectDetailItems)
             .FirstOrDefaultAsync(i => i.Id == projectId, ct);
         if (project is null)
             return NotFound();
@@ -75,11 +92,12 @@ public class ProjectController(
         await _projectDetailRepository.AddAsync(model, ct);
         return RedirectToAction(nameof(ProjectDetails), new { projectId = model.ProjectId });
     }
+
     [HttpPost]
     public async Task<IActionResult> EditProjectDetail(ProjectDetailDto dto, CancellationToken ct)
     {
         var model = await _projectDetailRepository.GetByIdAsync(ct, dto.Id);
-        if(model is null)
+        if (model is null)
             return NotFound();
         model = dto.ToEntity(_mapper);
         await _projectDetailRepository.UpdateAsync(model, ct);
@@ -96,11 +114,17 @@ public class ProjectController(
     [HttpGet("[area]/[controller]/[action]")]
     public async Task<IActionResult> Images([FromQuery] int? projectId, [FromQuery] int? albumId, CancellationToken ct)
     {
-
         if (projectId is null or 0)
         {
-            var projects = await _repository.TableNoTracking
+            var query = _repository.TableNoTracking
                 .Include(i => i.User)
+                .AsQueryable();
+            if (!CheckPermission.Check(User, "Project.All"))
+            {
+                var userId = User.Identity!.GetUserId<int>();
+                query = query.Where(i => i.UserId == userId);
+            }
+            var projects = await query
                 .ToListAsync(ct);
             ViewBag.Projects = projects;
             return View();
@@ -123,7 +147,7 @@ public class ProjectController(
             ViewBag.AlbumId = 0;
             return View();
         }
-        
+
         var album = await albumRepository.TableNoTracking
             .FirstOrDefaultAsync(i => i.Id == albumId, ct);
         if (album is null)
@@ -131,19 +155,21 @@ public class ProjectController(
             TempData["ErrorMessage"] = "آلبوم پیدا نشد";
             return View();
         }
+
         ViewBag.AlbumId = album.Id;
         var files = await uploadedFileService.GetFiles(album.Id, ct);
         return View(files);
     }
-    
+
 
     [HttpPost]
     public async Task<IActionResult> AddImage(AddImageDto dto, CancellationToken ct)
     {
         var userId = User.Identity!.GetUserId<int>();
-        await uploadedFileService.UploadFileAsync(dto.File, dto.AlbumId, nameof(Album), dto.ModelId, userId, ct, dto.Description);
+        await uploadedFileService.UploadFileAsync(dto.File, dto.AlbumId, nameof(Album), dto.ModelId, userId, ct,
+            dto.Description);
 
-        return RedirectToAction("Images", new { projectId = dto.ModelId});
+        return RedirectToAction("Images", new { projectId = dto.ModelId });
     }
 
     [HttpPost]
@@ -151,7 +177,7 @@ public class ProjectController(
     {
         var model = dto.ToEntity(_mapper);
         await albumRepository.AddAsync(model, ct);
-        return RedirectToAction("Images", new { albumId = model.Id, projectId = model.ProjectId});
+        return RedirectToAction("Images", new { albumId = model.Id, projectId = model.ProjectId });
     }
 
     public override async Task<IActionResult> Delete(int id, CancellationToken ct)
@@ -166,6 +192,7 @@ public class ProjectController(
             TempData["ErrorMessage"] = "پروژه پیدا نشد";
             return RedirectToAction("Index");
         }
+
         var hasItems = model.EmployerPayments.Count != 0 || model.Details.Count != 0 || model.Invoices.Count != 0;
         if (hasItems)
         {
@@ -176,6 +203,5 @@ public class ProjectController(
         await _repository.DeleteAsync(model, ct);
         TempData["SuccessMessage"] = "پروژه با موفقیت حذف شد";
         return RedirectToAction("Index");
-
     }
 }

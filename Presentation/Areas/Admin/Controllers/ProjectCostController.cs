@@ -1,9 +1,11 @@
 using AutoMapper;
+using Common.Utilities;
 using Data.Contracts;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Presentation.DTO;
+using Presentation.Helpers;
 
 namespace Presentation.Areas.Admin.Controllers;
 
@@ -27,8 +29,15 @@ public class ProjectCostController : Controller
     {
         if (projectId is null)
         {
-            var projects = await _projectRepository.TableNoTracking
+            var query = _projectRepository.TableNoTracking
                 .Include(i => i.User)
+                .AsQueryable();
+            if (!CheckPermission.Check(User, "Project.All"))
+            {
+                var userId = User.Identity!.GetUserId<int>();
+                query = query.Where(i => i.UserId == userId);
+            }
+            var projects = await query
                 .ToListAsync(ct);
             ViewBag.Projects = projects;
             return View();
@@ -86,8 +95,15 @@ public class ProjectCostController : Controller
     {
         if (projectId is null)
         {
-            var projects = await _projectRepository.TableNoTracking
+            var query = _projectRepository.TableNoTracking
                 .Include(i => i.User)
+                .AsQueryable();
+            if (!CheckPermission.Check(User, "Project.All"))
+            {
+                var userId = User.Identity!.GetUserId<int>();
+                query = query.Where(i => i.UserId == userId);
+            }
+            var projects = await query
                 .ToListAsync(ct);
             ViewBag.Projects = projects;
             return View();
@@ -108,8 +124,15 @@ public class ProjectCostController : Controller
     {
         if (projectId is null)
         {
-            var projects = await _projectRepository.TableNoTracking
+            var query = _projectRepository.TableNoTracking
                 .Include(i => i.User)
+                .AsQueryable();
+            if (!CheckPermission.Check(User, "Project.All"))
+            {
+                var userId = User.Identity!.GetUserId<int>();
+                query = query.Where(i => i.UserId == userId);
+            }
+            var projects = await query
                 .ToListAsync(ct);
             ViewBag.Projects = projects;
             return View();

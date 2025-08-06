@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Presentation.DTO;
+using Presentation.Helpers;
 using Service.Model.Contracts;
 
 namespace Presentation.Areas.Admin.Controllers;
@@ -37,9 +38,15 @@ public class EmployerPaymentController : Controller
     {
         if (projectId is null or 0)
         {
-            var projects = await _projectRepository.TableNoTracking
+            var query = _projectRepository.TableNoTracking
                 .Include(i => i.User)
-                .ToListAsync(ct);
+                .AsQueryable();
+            if (!CheckPermission.Check(User, "Project.All"))
+            {
+                var userId = User.Identity!.GetUserId<int>();
+                query = query.Where(i => i.UserId == userId);
+            }
+            var projects = query.ToListAsync(ct);
             ViewBag.Projects = projects;
             return View();
         }
@@ -65,7 +72,15 @@ public class EmployerPaymentController : Controller
     {
         if (projectId is null or 0)
         {
-            var projects = await _projectRepository.TableNoTracking.ToListAsync(ct);
+            var query = _projectRepository.TableNoTracking
+                .Include(i => i.User)
+                .AsQueryable();
+            if (!CheckPermission.Check(User, "Project.All"))
+            {
+                var userId = User.Identity!.GetUserId<int>();
+                query = query.Where(i => i.UserId == userId);
+            }
+            var projects = query.ToListAsync(ct);
             ViewBag.Projects = projects;
             return View();
         }

@@ -43,6 +43,7 @@ public static class Permissions
         new() { Controller = "EmployerPayment", Action = "Create", ControllerLabel = "پرداختی کارفرما", ActionLabel = "افزودن پرداخت" },
         new() { Controller = "EmployerPayment", Action = "AddImage", ControllerLabel = "پرداختی کارفرما", ActionLabel = "افزودن تصویر" },
         
+        new() { Controller = "Project", Action = "All", ControllerLabel = "پروژه", ActionLabel = "نمایش تمام پروژه ها" },
         new() { Controller = "Project", Action = "Index", ControllerLabel = "پروژه", ActionLabel = "نمایش" },
         new() { Controller = "Project", Action = "Create", ControllerLabel = "پروژه", ActionLabel = "ایجاد" },
         new() { Controller = "Project", Action = "Edit", ControllerLabel = "پروژه", ActionLabel = "ویرایش" },
