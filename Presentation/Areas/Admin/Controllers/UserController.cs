@@ -32,7 +32,7 @@ public class UserController(
         
         var roles = await roleRepository.GetSelectListItems(
             nameof(Role.Name),
-            nameof(Role.Name),
+            nameof(Role.Title),
             null,
             [selectedRole],
             hasDefault:false,
