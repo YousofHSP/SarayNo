@@ -1,139 +1,153 @@
 @using Presentation.Helpers
+
+@{
+    var currentArea = ViewContext.RouteData.Values["area"]?.ToString();
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+    bool isAccountingActive = currentController == "Activity" || currentController == "UnverifiedInvoice" || currentController == "UnsettledInvoice";
+    bool isEmployerPaymentActive = currentController == "EmployerPayment";
+
+    // مشخص‌کردن حالت active برای هر زیرمنوی پروژه
+    bool isProjectIndexActive = currentController == "Project" && currentAction == "Index";
+    bool isProjectImagesActive = currentController == "Project" && currentAction == "Images";
+    bool isProjectDetailsActive = currentController == "Project" && currentAction == "ProjectDetails";
+}
+
+
 <aside id="sidebar" class="sidebar bg-sidebar text-white transition-all">
     <div class="logo px-3">
-        <img src="~/images/logo.jpg" alt="SARAYENO" class="me-2" style=" height: 80px;">
+        <img src="~/images/logoHeder.jpg" alt="SARAYENO" class="me-2" style=" height: 80px;">
         <span id="logo-text" class="text-gold fw-bold fs-4">SARAYENO</span>
     </div>
     <nav class="flex-grow-1 mt-3">
         @if (CheckPermission.Check(User, ""))
         {
             <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index"
-               class="menu-item d-flex align-items-center">
+               class="menu-item d-flex align-items-center @(currentController == "Dashboard" && currentAction == "Index" ? "active" : "")">
                 <i class="fas fa-clock text-gold"></i><span class="ms-2 menu-text">داشبورد</span>
             </a>
         }
         @if (CheckPermission.Check(User, "Role.Index"))
         {
             <a asp-area="Admin" asp-controller="Role" asp-action="Index"
-               class="menu-item d-flex align-items-center">
+               class="menu-item d-flex align-items-center @(currentController == "Role" && currentAction == "Index" ? "active" : "")">
                 <i class="fas fa-user text-gold"></i><span class="ms-2 menu-text">تعریف نقش</span>
             </a>
         }
         @if (CheckPermission.Check(User, "User.Index"))
         {
             <a asp-area="Admin" asp-controller="User" asp-action="Index"
-               class="menu-item d-flex align-items-center">
+               class="menu-item d-flex align-items-center @(currentController == "User" && currentAction == "Index" ? "active" : "")">
                 <i class="fas fa-user text-gold"></i><span class="ms-2 menu-text">تعریف کاربران</span>
             </a>
         }
-
-
         @if (CheckPermission.Check(User, "CostGroup.Index"))
         {
             <a asp-area="Admin" asp-controller="CostGroup" asp-action="Index"
-               class="menu-item d-flex align-items-center">
+               class="menu-item d-flex align-items-center @(currentController == "CostGroup" && currentAction == "Index" ? "active" : "")">
                 <i class="fas fa-users text-gold"></i><span class="ms-2 menu-text">گروه هزینه</span>
             </a>
         }
         @if (CheckPermission.Check(User, "Creditor.Index"))
         {
             <a asp-area="Admin" asp-controller="Creditor" asp-action="Index"
-               class="menu-item d-flex align-items-center">
+               class="menu-item d-flex align-items-center @(currentController == "Creditor" && currentAction == "Index" ? "active" : "")">
                 <i class="fas fa-user-clock text-gold"></i><span class="ms-2 menu-text">بستانکار</span>
             </a>
         }
         @if (CheckPermission.Check(User, "Project.Index"))
         {
-            <a asp-area="Admin" asp-controller="Project" asp-action="Index" class="menu-item d-flex align-items-center">
+            <a asp-area="Admin" asp-controller="Project" asp-action="Index"
+               class="menu-item d-flex align-items-center @(isProjectIndexActive ? "active" : "")">
                 <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">پروژه ها</span>
             </a>
         }
+
         @if (CheckPermission.Check(User, "Project.Images"))
         {
-            <a asp-area="Admin" asp-controller="Project" asp-action="Images" class="menu-item d-flex align-items-center">
+            <a asp-area="Admin" asp-controller="Project" asp-action="Images"
+               class="menu-item d-flex align-items-center @(isProjectImagesActive ? "active" : "")">
                 <i class="fas fa-images text-gold"></i><span class="ms-2 menu-text">گالری</span>
             </a>
         }
+
         @if (CheckPermission.Check(User, ["Project.EstimateDetails", "Project.FinalDetails"]))
         {
             <a asp-area="Admin" asp-controller="Project" asp-action="ProjectDetails"
-               class="menu-item d-flex align-items-center">
+               class="menu-item d-flex align-items-center @(isProjectDetailsActive ? "active" : "")">
                 <i class="fas fa-folder text-gold"></i><span class="ms-2 menu-text">متراژ و برآورد</span>
             </a>
         }
-        @* <div class="menu-item"> *@
-        @*     <i class="fas fa-image text-gold"></i><span class="menu-label">گالری</span> *@
-        @* </div> *@
 
-        <div id="employerPaymentMenu" class="menu-item d-flex justify-content-between align-items-center">
+
+        <div id="employerPaymentMenu"
+             class="menu-item d-flex justify-content-between align-items-center @(isEmployerPaymentActive ? "active" : "")">
             <div class="d-flex align-items-center">
                 <i class="fas fa-dollar text-gold"></i><span class="me-2 menu-text">پرداختی کارفرما</span>
             </div>
             <i class="fas fa-chevron-down menu-text" id="employerPaymentChevron"></i>
         </div>
 
-        <div id="employerPaymentSubmenu" class="submenu" style="display: none">
+        <div id="employerPaymentSubmenu" class="submenu" style="@(isEmployerPaymentActive ? "display: block;" : "display: none;")">
 
             @if (CheckPermission.Check(User, "EmployerPayment.Index"))
             {
                 <a asp-area="Admin" asp-controller="EmployerPayment" asp-action="Index"
-                   class="menu-item d-flex align-items-center">
+                   class="menu-item d-flex align-items-center @(currentController == "EmployerPayment" && currentAction == "Index" ? "active" : "")">
                     <i class="fas fa-envelope text-gold"></i><span class="ms-2 menu-text">دستمزد پیمانکار</span>
                 </a>
             }
             @if (CheckPermission.Check(User, "EmployerPayment.ProjectCosts"))
             {
                 <a asp-area="Admin" asp-controller="EmployerPayment" asp-action="ProjectCosts"
-                   class="menu-item d-flex align-items-center">
+                   class="menu-item d-flex align-items-center @(currentController == "EmployerPayment" && currentAction == "ProjectCosts" ? "active" : "")">
                     <i class="fas fa-envelope text-gold"></i><span class="ms-2 menu-text">هزینه پروژه</span>
                 </a>
             }
         </div>
-        
+
         @if (CheckPermission.Check(User, ["Activity.Index", "UnverifiedInvoice.Index", "UnsettledInvoice.Index", "EmployerPayment.Index", "EmployerPayment.ProjectCosts"]))
         {
-            <div id="accountingMenu" class="menu-item d-flex justify-content-between align-items-center">
+            <div id="accountingMenu"
+                 class="menu-item d-flex justify-content-between align-items-center @(isAccountingActive ? "active" : "")">
                 <div class="d-flex align-items-center">
                     <i class="fas fa-calculator text-gold"></i><span class="me-2 menu-text">حسابداری</span>
                 </div>
                 <i class="fas fa-chevron-down menu-text" id="accountingChevron"></i>
             </div>
-            <div id="accountingSubmenu" class="submenu" style="display: none">
+            <div id="accountingSubmenu" class="submenu" style="@(isAccountingActive ? "display: block;" : "display: none;")">
                 @if (CheckPermission.Check(User, "UnsettledInvoice.Index"))
                 {
                     <a asp-area="Admin" asp-controller="UnsettledInvoice" asp-action="Index"
-                       class="menu-item d-flex align-items-center">
-                        <i class="fas fa-envelope text-gold"></i><span
-                            class="ms-2 menu-text">فاکتور های تسویه نشده</span>
+                       class="menu-item d-flex align-items-center @(currentController == "UnsettledInvoice" && currentAction == "Index" ? "active" : "")">
+                        <i class="fas fa-envelope text-gold"></i><span class="ms-2 menu-text">فاکتور های تسویه نشده</span>
                     </a>
                 }
                 @if (CheckPermission.Check(User, "Activity.Index"))
                 {
                     <a asp-area="Admin" asp-controller="Activity" asp-action="Index"
-                       class="menu-item d-flex align-items-center">
+                       class="menu-item d-flex align-items-center @(currentController == "Activity" && currentAction == "Index" ? "active" : "")">
                         <i class="fas fa-envelope text-gold"></i><span class="ms-2 menu-text">فعالیت های در حال انجام</span>
                     </a>
                 }
                 @if (CheckPermission.Check(User, "UnverifiedInvoice.Index"))
                 {
                     <a asp-area="Admin" asp-controller="UnverifiedInvoice" asp-action="Index"
-                       class="menu-item d-flex align-items-center">
-                        <i class="fas fa-envelope text-gold"></i><span
-                            class="ms-2 menu-text">فاکتور های تایید نشده</span>
+                       class="menu-item d-flex align-items-center @(currentController == "UnverifiedInvoice" && currentAction == "Index" ? "active" : "")">
+                        <i class="fas fa-envelope text-gold"></i><span class="ms-2 menu-text">فاکتور های تایید نشده</span>
                     </a>
                 }
             </div>
         }
-
-
     </nav>
     <button id="collapseBtn" class="btn bg-sidebar text-white w-100 py-3 border-0"
             style="background-color: var(--color-navy);">
         <i id="collapseIcon" class="fas fa-angle-left"></i>
     </button>
 </aside>
-<script>
 
+<script>
     const sidebar = document.getElementById('sidebar');
     const collapseBtn = document.getElementById('collapseBtn');
     const collapseIcon = document.getElementById('collapseIcon');
@@ -154,9 +168,24 @@
         accountingSubmenu.style.display = isVisible ? 'none' : 'block';
         accountingChevron.classList.toggle('rotate-180');
     });
+
     employerPaymentMenu.addEventListener('click', () => {
         const isVisible = employerPaymentSubmenu.style.display === 'block';
         employerPaymentSubmenu.style.display = isVisible ? 'none' : 'block';
         employerPaymentChevron.classList.toggle('rotate-180');
     });
 </script>
+
+<style>
+    .menu-item.active {
+        background-color: #f0b849; /* رنگ طلایی روشن */
+        color: #000 !important;
+        font-weight: bold;
+        border-radius: 6px;
+    }
+
+        .menu-item.active i,
+        .menu-item.active span {
+            color: #000 !important;
+        }
+</style>

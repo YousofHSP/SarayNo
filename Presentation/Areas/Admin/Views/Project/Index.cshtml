@@ -6,10 +6,9 @@
     ViewData["Title"] = "لیست پروژه ها";
     Layout = "_Layout";
 }
-
+<h3>لیست پروژه ها</h3>
 <div class="card">
     <div class="card-body">
-        <h3>لیست پروژه ها</h3>
         <div class="d-flex justify-content-between">
             @if (CheckPermission.Check(User, "Project.Create"))
             {

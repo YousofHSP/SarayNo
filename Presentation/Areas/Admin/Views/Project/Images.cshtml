@@ -15,9 +15,10 @@
     var albumId = ViewBag.AlbumId as int?;
     var albumSelectList = await AlbumRepository.GetSelectListItems();
 }
-
+<h3>گالری</h3>
 <div class="card">
     <div class="card-body">
+       
         @if (albumId == 0)
         {
             <button data-bs-target="#addAlbumModal" data-bs-toggle="modal" type="button"

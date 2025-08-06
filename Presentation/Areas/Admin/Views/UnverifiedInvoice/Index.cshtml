@@ -9,7 +9,7 @@
 @inject IUploadedFileService UploadFileService
 
 @{
-    ViewBag.Title = "قاکتور های تایید نشده";
+    ViewBag.Title = "قاکتورهای تایید نشده";
     Layout = "_Layout";
     var files = await UploadFileService.GetFiles(nameof(UnverifiedInvoice), [], null, default);
     var url = UploadFileService.GetUrl();
@@ -19,6 +19,7 @@
 
 <div class="card">
     <div class="card-body">
+        <h3>فاکتور های تایید نشده</h3>
         @if (projects is not null && projects.Any())
         {
             <div class="row gap-2">
