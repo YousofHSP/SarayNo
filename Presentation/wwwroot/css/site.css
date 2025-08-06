@@ -111,9 +111,3 @@ body, html {
 .select2-container{
     z-index: 9999;
 }
-
-.menu-item.active {
-    background-color: #f0b849;
-    color: #000 !important;
-    border-radius: 5px;
-}
