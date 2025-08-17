@@ -31,8 +31,8 @@ public class UserController(
             selectedRole = (await userManager.GetRolesAsync(Model)).FirstOrDefault() ?? "";
         
         var roles = await roleRepository.GetSelectListItems(
-            nameof(Role.Name),
             nameof(Role.Title),
+            nameof(Role.Name),
             null,
             [selectedRole],
             hasDefault:false,

@@ -5,7 +5,7 @@ public static class Permissions
     public static List<Permission> All =
     [
         
-        new() { Controller = "Dashboar", ControllerLabel = "داشبورد",  Action = "Index", ActionLabel = "نمایش" },
+        new() { Controller = "Dashboard", ControllerLabel = "داشبورد",  Action = "Index", ActionLabel = "نمایش" },
         
         new() { Controller = "Role", ControllerLabel = "نقش",  Action = "Index", ActionLabel = "نمایش" },
         new() { Controller = "Role", ControllerLabel = "نقش", Action = "Create",  ActionLabel = "ایجاد" },
