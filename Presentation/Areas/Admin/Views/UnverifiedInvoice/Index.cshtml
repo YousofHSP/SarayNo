@@ -129,6 +129,13 @@
                                             ارسال به فاکتور های تسویه نشده
                                         </a>
                                     }
+                                    @if (CheckPermission.Check(User, "UnverifiedInvoice.Delete"))
+                                    {
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="UnverifiedInvoice" asp-action="Delete" asp-route-id="@item.Id">
+                                            <i class="fa fa-trash"></i>
+                                            حذف
+                                        </a>
+                                    }
 
                                 </div>
                             </div>

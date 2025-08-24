@@ -74,4 +74,18 @@ public class CreditorController(
         
         return View(list);
     }
+
+    public override async Task<IActionResult> Delete(int id, CancellationToken ct)
+    {
+        var check = await repository.TableNoTracking
+            .Where(i => i.Id == id)
+            .AnyAsync(i => i.Invoices.Any(), ct);
+        if (check)
+        {
+            TempData["ErrorMessage"] = "امکان حذف این مورد در این بخش وجود ندارد";
+            return RedirectToAction("Index");
+        }
+            
+        return await base.Delete(id, ct);
+    }
 }

@@ -98,6 +98,14 @@
                                             class="fa fa-list"></i>
                                         جزئیات
                                     </a>
+
+                                    @if (CheckPermission.Check(User, "UnsettledInvoice.Delete"))
+                                    {
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="UnsettledInvoice" asp-action="Delete" asp-route-id="@item.Id">
+                                            <i class="fa fa-trash"></i>
+                                            حذف
+                                        </a>
+                                    }
                                 </div>
                             </div>
                         </td>

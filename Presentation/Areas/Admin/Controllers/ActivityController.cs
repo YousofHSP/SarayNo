@@ -17,6 +17,8 @@ namespace Presentation.Areas.Admin.Controllers;
 [Area("Admin")]
 public class ActivityController(
     IRepository<Invoice> invoiceRepository,
+    IRepository<InvoiceLog> invoiceLogRepository,
+    IRepository<InvoiceDetail> invoiceDetailRepository,
     IRepository<Payoff> payoffRepository,
     IRepository<Project> projectRepository) : Controller 
 {
@@ -96,5 +98,17 @@ public class ActivityController(
         model.Amount = totalAmount;
         await invoiceRepository.UpdateAsync(model, ct);
         return RedirectToAction("Details", new { id, ct });
+    }
+    
+    public async Task<IActionResult> Delete(int id, CancellationToken ct)
+    {
+        await payoffRepository.TableNoTracking.Where(i => i.InvoiceId == id).ExecuteDeleteAsync(ct);
+        await invoiceLogRepository.TableNoTracking.Where(i => i.InvoiceId == id).ExecuteDeleteAsync(ct);
+        await invoiceDetailRepository.TableNoTracking.Where(i => i.InvoiceId == id).ExecuteDeleteAsync(ct);
+        await invoiceRepository.TableNoTracking.Where(i => i.Id == id).ExecuteDeleteAsync(ct);
+
+        TempData["SuccessMessage"] = " فاکتور با موفقیت حذف شد";
+        return RedirectToAction("Index");
+        
     }
 }
