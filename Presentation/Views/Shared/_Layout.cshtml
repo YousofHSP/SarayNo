@@ -17,6 +17,7 @@
 	@* <link rel="stylesheet" href="~/css/style.min.css"/> *@
 	<link rel="stylesheet" href="~/css/site.css"/>
 	<link rel="stylesheet" href="~/plugins/font-awesome-4/css/font-awesome.css"/>
+	<link rel="stylesheet" href="~/css/responsive.css" />
 	@await RenderSectionAsync("Styles", required: false)
 	<style>
 		body {
@@ -171,22 +172,29 @@
 	<div id="main-content" class="flex-grow-1">
 		<main class="flex-grow-1 d-flex flex-column">
 			<!-- Header -->
-			<header class="bg-header text-white d-flex justify-end align-items-center px-4" style="height: 64px; direction: ltr">
-				<div class="dropdown">
-					<div class="d-flex align-items-center gap-2 dropdown-toggle" role="button"
-					     data-bs-toggle="dropdown">
-						<span>@User.Identity.GetUserName()</span>
-						<i class="fas fa-user-circle fs-4"></i>
+				<header class="bg-header text-white d-flex justify-between align-items-center px-4" style="height: 64px; direction: ltr">
+					<!-- دکمه نمایش/مخفی کردن منو در موبایل -->
+					<button id="menuToggleBtn1" class="menu-toggle d-md-none btn btn-outline-light me-2">
+						<i class="fas fa-bars"></i>
+					</button>
+
+					<div class="dropdown ms-auto">
+						<div class="d-flex align-items-center gap-2 dropdown-toggle" role="button" data-bs-toggle="dropdown">
+							<span>@User.Identity.GetUserName()</span>
+							<i class="fas fa-user-circle fs-4"></i>
+						</div>
+						<ul class="dropdown-menu dropdown-menu-end text-start" style="direction: rtl; right: -50px">
+							<li>
+								<a class="dropdown-item text-danger" asp-area="" asp-controller="Account" asp-action="Logout">
+									<i class="fas fa-sign-out-alt ms-2"></i>خروج
+								</a>
+							</li>
+						</ul>
 					</div>
-					<ul class="dropdown-menu dropdown-menu-end text-start" style="direction: rtl;right: -50px">
-						@* <li><a class="dropdown-item" href="#"><i class="fas fa-user ms-2"></i>پروفایل</a></li> *@
-						<li><a class="dropdown-item text-danger" asp-area="" asp-controller="Account"
-						       asp-action="Logout"><i
-							                           class="fas fa-sign-out-alt ms-2"></i>خروج</a>
-						</li>
-					</ul>
-				</div>
-			</header>
+
+
+				</header>
+	
 
 			<section class="p-4">
 				@RenderBody()

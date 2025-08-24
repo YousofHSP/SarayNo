@@ -18,7 +18,7 @@
   Layout = "_Layout";
 }
 <h3>داشبورد</h3>
-<div class="container mb-5">
+<div>
   @if (CheckPermission.Check(User, "Dashboard.Index"))
   {
     <div class="row g-4">
@@ -113,12 +113,12 @@
       color: #007bff;
     }
 
-    .bg-gradient-header {
+    /* .bg-gradient-header {
       background: linear-gradient(135deg, #d4af37, #003366);
       color: white;
       padding: 2rem;
       border-radius: 0 0 40px 40px;
-    }
+    } */
 
     .project-progress {
       height: 10px;

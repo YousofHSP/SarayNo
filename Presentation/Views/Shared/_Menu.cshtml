@@ -12,7 +12,6 @@
         (currentController == "EmployerPayment" && currentAction != "ProjectCosts") ||
         currentController == "ProjectCost";
 
-    // مشخص‌کردن حالت active برای هر زیرمنوی پروژه
     var projectMenuActiveClass = "";
     var galleryMenuActiveClass = "";
     var detailsMenuActiveClass = "";
@@ -31,12 +30,11 @@
                 detailsMenuActiveClass = "active";
                 break;
             default:
-                projectMenuActiveClass = "active"; // به صورت پیش‌فرض، پروژه‌ها فعال باشد
+                projectMenuActiveClass = "active";
                 break;
         }
     }
 
-    // منطق active شدن زیرمنوی هزینه پروژه
     var isProjectCostCashCartActive = currentController == "ProjectCost" && currentAction == "CashCart";
     var isProjectCostCheckActive = currentController == "ProjectCost" && currentAction == "Check";
     var isProjectCostDirectPaymentActive = currentController == "ProjectCost" && currentAction == "DirectPayment";
@@ -44,13 +42,13 @@
 }
 
 
-
-<aside id="sidebar" class="sidebar bg-sidebar text-white transition-all">
-    <div class="logo px-3">
-        <img src="~/images/logoHeder.jpg" alt="SARAYENO" class="me-2" style=" height: 80px;">
-        <span id="logo-text" class="text-gold fw-bold fs-4">SARAYENO</span>
+<aside id="sidebar" class="sidebar bg-sidebar text-white d-flex flex-column transition-all" style="height: 100vh;">
+    <div class="logo px-3 py-2">
+        <img src="~/images/logoHeder.jpg" alt="SARAYENO" class="me-2" style="height: 80px;">
+        <span id="logo-text" class="text-gold fw-bold fs-4 menu-text">SARAYENO</span>
     </div>
-    <nav class="flex-grow-1 mt-3">
+
+    <nav class="flex-grow-1 overflow-auto mt-3 px-2">
         @if (CheckPermission.Check(User, ""))
         {
             <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index"
@@ -193,8 +191,7 @@
                     <a asp-area="Admin" asp-controller="UnsettledInvoice" asp-action="Index"
                        class="menu-item d-flex align-items-center @(currentController == "UnsettledInvoice" && currentAction == "Index" ? "active" : "")">
                         <i class="fas fa-envelope text-gold"></i>
-                        <span
-                            class="ms-2 menu-text">فاکتور های تسویه نشده</span>
+                        <span class="ms-2 menu-text">فاکتور های تسویه نشده</span>
                     </a>
                 }
                 @if (CheckPermission.Check(User, "Activity.Index"))
@@ -202,8 +199,7 @@
                     <a asp-area="Admin" asp-controller="Activity" asp-action="Index"
                        class="menu-item d-flex align-items-center @(currentController == "Activity" && currentAction == "Index" ? "active" : "")">
                         <i class="fas fa-envelope text-gold"></i>
-                        <span
-                            class="ms-2 menu-text">فعالیت های در حال انجام</span>
+                        <span class="ms-2 menu-text">فعالیت های در حال انجام</span>
                     </a>
                 }
                 @if (CheckPermission.Check(User, "UnverifiedInvoice.Index"))
@@ -211,66 +207,86 @@
                     <a asp-area="Admin" asp-controller="UnverifiedInvoice" asp-action="Index"
                        class="menu-item d-flex align-items-center @(currentController == "UnverifiedInvoice" && currentAction == "Index" ? "active" : "")">
                         <i class="fas fa-envelope text-gold"></i>
-                        <span
-                            class="ms-2 menu-text">فاکتور های تایید نشده</span>
+                        <span class="ms-2 menu-text">فاکتور های تایید نشده</span>
                     </a>
                 }
             </div>
         }
     </nav>
-    <button id="collapseBtn" class="btn bg-sidebar text-white w-100 py-3 border-0"
-            style="background-color: var(--color-navy);">
+
+    <button id="collapseBtn" class="btn bg-sidebar text-white w-100 py-3 border-0 mt-auto" style="background-color: var(--color-navy);">
         <i id="collapseIcon" class="fas fa-angle-left"></i>
     </button>
 </aside>
 
 <script>
-    const sidebar = document.getElementById('sidebar');
-    const collapseBtn = document.getElementById('collapseBtn');
-    const collapseIcon = document.getElementById('collapseIcon');
-    const accountingMenu = document.getElementById('accountingMenu');
-    const accountingSubmenu = document.getElementById('accountingSubmenu');
-    const accountingChevron = document.getElementById('accountingChevron');
-    const employerPaymentMenu = document.getElementById('employerPaymentMenu');
-    const employerPaymentSubmenu = document.getElementById('employerPaymentSubmenu');
-    const employerPaymentChevron = document.getElementById('employerPaymentChevron');
-    const projectCostMenu = document.getElementById('projectCostMenu');
-    const projectCostSubmenu = document.getElementById('projectCostSubmenu');
-    const projectCostChevron = document.getElementById('projectCostChevron');
+    document.addEventListener('DOMContentLoaded', () => {
+        const sidebar = document.getElementById('sidebar');
+        const collapseBtn = document.getElementById('collapseBtn');
+        const collapseIcon = document.getElementById('collapseIcon');
+        const accountingMenu = document.getElementById('accountingMenu');
+        const accountingSubmenu = document.getElementById('accountingSubmenu');
+        const accountingChevron = document.getElementById('accountingChevron');
+        const employerPaymentMenu = document.getElementById('employerPaymentMenu');
+        const employerPaymentSubmenu = document.getElementById('employerPaymentSubmenu');
+        const employerPaymentChevron = document.getElementById('employerPaymentChevron');
+        const projectCostMenu = document.getElementById('projectCostMenu');
+        const projectCostSubmenu = document.getElementById('projectCostSubmenu');
+        const projectCostChevron = document.getElementById('projectCostChevron');
+        const menuToggleBtn = document.getElementById('menuToggleBtn1');
 
-    collapseBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('collapsed');
-        collapseIcon.classList.toggle('rotate-180');
-    });
+        collapseBtn?.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            collapseIcon.classList.toggle('rotate-180');
+        });
 
-    accountingMenu.addEventListener('click', () => {
-        const isVisible = accountingSubmenu.style.display === 'block';
-        accountingSubmenu.style.display = isVisible ? 'none' : 'block';
-        accountingChevron.classList.toggle('rotate-180');
-    });
+        accountingMenu?.addEventListener('click', () => {
+            const isVisible = accountingSubmenu.style.display === 'block';
+            accountingSubmenu.style.display = isVisible ? 'none' : 'block';
+            accountingChevron.classList.toggle('rotate-180');
+        });
 
-    employerPaymentMenu.addEventListener('click', () => {
-        const isVisible = employerPaymentSubmenu.style.display === 'block';
-        employerPaymentSubmenu.style.display = isVisible ? 'none' : 'block';
-        employerPaymentChevron.classList.toggle('rotate-180');
-    });
-    projectCostMenu.addEventListener('click', () => {
-        const isVisible = projectCostSubmenu.style.display === 'block';
-        projectCostSubmenu.style.display = isVisible ? 'none' : 'block';
-        projectCostChevron.classList.toggle('rotate-180');
+        employerPaymentMenu?.addEventListener('click', () => {
+            const isVisible = employerPaymentSubmenu.style.display === 'block';
+            employerPaymentSubmenu.style.display = isVisible ? 'none' : 'block';
+            employerPaymentChevron.classList.toggle('rotate-180');
+        });
+
+        projectCostMenu?.addEventListener('click', () => {
+            const isVisible = projectCostSubmenu.style.display === 'block';
+            projectCostSubmenu.style.display = isVisible ? 'none' : 'block';
+            projectCostChevron.classList.toggle('rotate-180');
+        });
+
+        // دکمه همبرگر موبایل
+        menuToggleBtn?.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
     });
 </script>
 
+
 <style>
     .menu-item.active {
-        background-color: #f0b849; /* رنگ طلایی روشن */
+        background-color: #f0b849;
         color: #000 !important;
         font-weight: bold;
         border-radius: 6px;
     }
 
-    .menu-item.active i,
-    .menu-item.active span {
-        color: #000 !important;
+        .menu-item.active i,
+        .menu-item.active span {
+            color: #000 !important;
+        }
+
+    /* رفع فاصله اضافی پایین منو و اسکرول */
+    .sidebar {
+        display: flex;
+        flex-direction: column;
     }
+
+        .sidebar nav {
+            flex: 1 1 auto;
+            overflow-y: auto;
+        }
 </style>
