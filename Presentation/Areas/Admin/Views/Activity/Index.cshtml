@@ -95,6 +95,13 @@
                                             جزئیات
                                         </a>
                                     }
+                                    @if (CheckPermission.Check(User, "Activity.Delete"))
+                                    {
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Activity" asp-action="Delete" asp-route-id="@item.Id">
+                                            <i class="fa fa-trash"></i>
+                                            حذف
+                                        </a>
+                                    }
                                 </div>
                             </div>
                         </td>

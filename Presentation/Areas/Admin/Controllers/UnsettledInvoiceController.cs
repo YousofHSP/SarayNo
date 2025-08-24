@@ -16,6 +16,8 @@ namespace Presentation.Areas.Admin.Controllers;
 public class UnsettledInvoiceController : Controller
 {
     private readonly IRepository<Invoice> _invoiceRepository;
+    private readonly IRepository<InvoiceDetail> _invoiceDetailRepository;
+    private readonly IRepository<InvoiceLog> _invoiceLogRepository;
     private readonly IRepository<Project> _projectRepository;
     private readonly IMapper _mapper;
     private readonly IRepository<Payoff> _payoffRepository; 
@@ -57,6 +59,18 @@ public class UnsettledInvoiceController : Controller
             .ToListAsync(ct);
 
         return View(list);
+    }
+
+    public async Task<IActionResult> Delete(int id, CancellationToken ct)
+    {
+        await _payoffRepository.TableNoTracking.Where(i => i.InvoiceId == id).ExecuteDeleteAsync(ct);
+        await _invoiceLogRepository.TableNoTracking.Where(i => i.InvoiceId == id).ExecuteDeleteAsync(ct);
+        await _invoiceDetailRepository.TableNoTracking.Where(i => i.InvoiceId == id).ExecuteDeleteAsync(ct);
+        await _invoiceRepository.TableNoTracking.Where(i => i.Id == id).ExecuteDeleteAsync(ct);
+
+        TempData["SuccessMessage"] = " فاکتور با موفقیت حذف شد";
+        return RedirectToAction("Index");
+        
     }
 
 
