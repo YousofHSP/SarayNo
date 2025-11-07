@@ -38,6 +38,7 @@ public class ProjectCostController : Controller
                 var userId = User.Identity!.GetUserId<int>();
                 query = query.Where(i => i.UserId == userId);
             }
+
             var projects = await query
                 .ToListAsync(ct);
             ViewBag.Projects = projects;
@@ -52,7 +53,8 @@ public class ProjectCostController : Controller
         var list = await _payoffRepository.TableNoTracking
             .Where(i => i.ProjectId == projectId)
             .Where(i => i.Type == PayoffType.Cash)
-            .Where(i => i.Status == PayoffStatus.Approved)
+            .Where(i => i.Status == PayoffStatus.Approved || i.Invoice.Type == InvoiceType.Unsettled ||
+                        i.Invoice.Type == InvoiceType.Settled)
             .Include(i => i.Invoice)
             .Include(i => i.Project)
             .ToListAsync(ct);
@@ -83,7 +85,6 @@ public class ProjectCostController : Controller
         {
             TempData["ErrorMessage"] = "امکان حذف این پرداخت در این بخش نیست";
             return RedirectToAction("CashCart", new { projectId = model.ProjectId });
-            
         }
 
         await _payoffRepository.DeleteAsync(model, ct);
@@ -104,6 +105,7 @@ public class ProjectCostController : Controller
                 var userId = User.Identity!.GetUserId<int>();
                 query = query.Where(i => i.UserId == userId);
             }
+
             var projects = await query
                 .ToListAsync(ct);
             ViewBag.Projects = projects;
@@ -133,6 +135,7 @@ public class ProjectCostController : Controller
                 var userId = User.Identity!.GetUserId<int>();
                 query = query.Where(i => i.UserId == userId);
             }
+
             var projects = await query
                 .ToListAsync(ct);
             ViewBag.Projects = projects;

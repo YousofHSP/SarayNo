@@ -157,6 +157,7 @@
                         <tr id="addPayoffForm">
                             <td>
                                 <input type="hidden" class="id" name="InvoiceId" value="0">
+                                <input type="hidden" name="status" value="1">
                                 <select name="type" class="select2">
                                     <option value="@PayoffType.Cash">@PayoffType.Cash.ToDisplay()</option>
                                     <option value="@PayoffType.Check">@PayoffType.Check.ToDisplay()</option>
@@ -198,7 +199,7 @@
                             </div>
                         </div>
                         <div class="col-md-1 text-left">
-                            @if (CheckPermission.Check(User, "UnsettledInvoice.Update"))
+                            @if (CheckPermission.Check(User, "UnsettledInvoice.Edit"))
                             {
                                 <button type="button" class="btn btn-primary update-invoice">ثبت</button>
                             }

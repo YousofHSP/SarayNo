@@ -47,11 +47,12 @@ $("#addPayoff").click(function () {
     let form = $("#addPayoffForm");
     let invoiceId = form.find("[name=InvoiceId]").val();
     let type = form.find("[name=type]").val();
+    let statusN = form.find("[name=status]").val() ?? 0;
     let description = form.find("[name=description]").val();
     let date = form.find("[name=date]").val();
     let dueDate = form.find("[name=dueDate]").val();
     let price = form.find("[name=price]").val();
-    let data = {invoiceId, type, description, date, price, dueDate, depositType: 0};
+    let data = {invoiceId, type, description, statusN, date, price, dueDate, depositType: 0};
     const modal = $("#detailModal")
     $.ajax({
         url: `/Admin/api/Invoice/AddPayoff`,
@@ -62,6 +63,7 @@ $("#addPayoff").click(function () {
             let remainStr = modal.find("#remain-amount-el").text()
             let remain = parseInt(remainStr.replace(/,/g, ''));
             let price = parseInt(res.price.replace(/,/g, ''));
+            let removeBtn = `<button type="button" class="btn btn-danger deletePayoff" data-id="${res.id}"> حذف</button>`
             
             remain -= price;
             modal.find("#remain-amount-el").text(remain.toLocaleString("en-US"))
@@ -71,7 +73,8 @@ $("#addPayoff").click(function () {
                 <td>${res.description}</td>
                 <td>${res.date}</td>
                 <td>${res.dueDate}</td>
-                <td colspan="2">${res.price}</td>
+                <td>${res.price}</td>
+                <td>${removeBtn}</td>
             </tr>
         `
             $('#payoffs-table').append(payoffsEl)

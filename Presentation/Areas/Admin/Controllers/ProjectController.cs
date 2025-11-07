@@ -70,6 +70,7 @@ public class ProjectController(
                 var userId = User.Identity!.GetUserId<int>();
                 query = query.Where(i => i.UserId == userId);
             }
+
             var projects = await query
                 .ToListAsync(ct);
             ViewBag.Projects = projects;
@@ -88,8 +89,24 @@ public class ProjectController(
 
     public async Task<IActionResult> CreateProjectDetail(ProjectDetailDto dto, CancellationToken ct)
     {
+        if (!ModelState.IsValid)
+        {
+            TempData["ErrorMessage"] = "مقدار را وارد کنید";
+            return RedirectToAction(nameof(ProjectDetails), new { projectId = dto.ProjectId });
+        }
+
         var model = dto.ToEntity(_mapper);
         await _projectDetailRepository.AddAsync(model, ct);
+        return RedirectToAction(nameof(ProjectDetails), new { projectId = model.ProjectId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> DeleteProjectDetail(int id, CancellationToken ct)
+    {
+        var model = await _projectDetailRepository.GetByIdAsync(ct, id);
+        if (model is null)
+            return NotFound();
+        await _projectDetailRepository.DeleteAsync(model, ct);
         return RedirectToAction(nameof(ProjectDetails), new { projectId = model.ProjectId });
     }
 
@@ -124,6 +141,7 @@ public class ProjectController(
                 var userId = User.Identity!.GetUserId<int>();
                 query = query.Where(i => i.UserId == userId);
             }
+
             var projects = await query
                 .ToListAsync(ct);
             ViewBag.Projects = projects;

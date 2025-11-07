@@ -118,6 +118,17 @@
                                                     ویرایش
                                                 </a>
                                             }
+                                            @if (CheckPermission.Check(User, "Project.DeleteProjectDetail"))
+                                            {
+                                                <a asp-area="Admin" asp-controller="Project"
+                                                   asp-action="DeleteProjectDetail"
+                                                   asp-route-id="@item.Id"
+                                                   class="dropdown-item">
+                                                    <i
+                                                        class="fa fa-trash"></i>
+                                                    حذف
+                                                </a>
+                                            }
                                         </div>
                                     </div>
                                 </td>
@@ -187,6 +198,17 @@
                                                     <i
                                                         class="fa fa-pencil"></i>
                                                     ویرایش
+                                                </a>
+                                            }
+                                            @if (CheckPermission.Check(User, "Project.DeleteProjectDetail"))
+                                            {
+                                                <a asp-area="Admin" asp-controller="Project"
+                                                   asp-action="DeleteProjectDetail"
+                                                   asp-route-id="@item.Id"
+                                                   class="dropdown-item">
+                                                    <i
+                                                        class="fa fa-trash"></i>
+                                                    حذف
                                                 </a>
                                             }
                                         </div>
@@ -328,6 +350,9 @@
 </div>
 
 @section Scripts
+
+
+
 {
     <script>
         let items = @Html.Raw(JsonSerializer.Serialize(items));

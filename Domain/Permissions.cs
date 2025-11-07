@@ -55,6 +55,7 @@ public static class Permissions
         new() { Controller = "Project", Action = "ProjectDetailItem", ControllerLabel = "پروژه", ActionLabel = "جزئیات متراژ و برآورد" },
         new() { Controller = "Project", Action = "AddProjectDetail", ControllerLabel = "پروژه", ActionLabel = "افزودن متراژ و برآورد" },
         new() { Controller = "Project", Action = "EditProjectDetail", ControllerLabel = "پروژه", ActionLabel = "ویرایش متراژ و برآورد" },
+        new() { Controller = "Project", Action = "DeleteProjectDetail", ControllerLabel = "پروژه", ActionLabel = "حذف متراژ و برآورد" },
         new() { Controller = "Project", Action = "AddProjectDetailItem", ControllerLabel = "پروژه", ActionLabel = "افزودن جزئیات متراژ و برآورد" },
         new() { Controller = "Project", Action = "DeleteProjectDetailItem", ControllerLabel = "پروژه", ActionLabel = "حذف جزئیات متراژ و برآورد" },
         new() { Controller = "Project", Action = "Images", ControllerLabel = "پروژه", ActionLabel = "گالری" },

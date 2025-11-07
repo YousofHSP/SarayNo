@@ -8,9 +8,12 @@ namespace Presentation.DTO;
 public class ProjectDetailDto : BaseDto<ProjectDetailDto, ProjectDetail>
 {
     [Display(Name = "عنوان")]
+    [Required(ErrorMessage = "عنوان را وارد کنید")]
     public string Title { get; set; }
 
+    [Required(ErrorMessage = "تاریخ را وارد کنید")]
     public string Date { get; set; }
+    [Required(ErrorMessage = "درصد را وارد کنید")]
     public int Percent { get; set; }
     public string? Description { get; set; }
     public int ProjectId { get; set; }

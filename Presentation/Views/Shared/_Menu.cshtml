@@ -49,7 +49,7 @@
     </div>
 
     <nav class="flex-grow-1 overflow-auto mt-3 px-2">
-        @if (CheckPermission.Check(User, ""))
+        @if (CheckPermission.Check(User, "Dashboard.Index"))
         {
             <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index"
                class="menu-item d-flex align-items-center @(currentController == "Dashboard" && currentAction == "Index" ? "active" : "")">
