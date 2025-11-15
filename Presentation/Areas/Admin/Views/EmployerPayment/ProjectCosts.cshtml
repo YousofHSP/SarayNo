@@ -1,5 +1,6 @@
 @using Common.Utilities
 @using Domain
+@using Presentation.Helpers
 @model List<Presentation.DTO.ProjectCostDto>
 
 @{
@@ -43,6 +44,7 @@
                     <th>نوع</th>
                     <th>نوع پرداخت</th>
                     <th>توضیحات</th>
+                    <th>عملیات</th>
                 </tr>
                 @{
                     var index = 1;
@@ -58,6 +60,29 @@
                         <td>@item.Type</td>
                         <td>@item.PayType</td>
                         <td>@item.Description</td>
+                        <td>
+                            <div class="dropdown d-inline-block">
+                                <a class="nav-link" style="padding: .5rem 1rem"
+                                   data-bs-toggle="dropdown"
+                                   href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                                    <i class="fa fa-ellipsis-v font-20 text-muted"></i>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
+                                     style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
+                                    @if (CheckPermission.Check(User, "ProjectCost.Delete"))
+                                    {
+                                        <a asp-area="Admin" asp-controller="Invoice" asp-action="Delete"
+                                           asp-route-id="@item.Id"
+                                           class="dropdown-item">
+                                            <i
+                                                class="fa fa-trash"></i>
+                                            حذف
+                                        </a>
+                                    }
+
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                 }
                 <tr>

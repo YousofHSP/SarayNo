@@ -108,6 +108,7 @@ public class EmployerPaymentController : Controller
         {
             list.Add(new ()
             {
+                Id = item.Id,
                 ProjectId = item.ProjectId,
                 Description = item.Description ?? "",
                 Number = "",

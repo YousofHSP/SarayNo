@@ -5,19 +5,19 @@ $('#detailModal').on('show.bs.modal', function (event) {
     const creditor = button.data('bs-creditor')
     const description = button.data('bs-description')
     const date = button.data('bs-date')
-    const discount= button.data('bs-discount')
-    const invoiceAmountStr= button.data('bs-invoice-amount')
+    const discount = button.data('bs-discount')
+    const invoiceAmountStr = button.data('bs-invoice-amount')
     const modal = $(this)
     const modelFiles = files.filter(i => i.ModelId == id);
     const modelPayoffs = payoffs.filter(i => i.InvoiceId == id);
     let payoffsEl = ``;
-    let el =``;
+    let el = ``;
     let paid = 0
     let removeBtn = "";
     modelPayoffs.forEach(item => {
         let price = parseInt(item.Price.replace(/,/g, ''));
         paid += price;
-        if(hasRemovePermission)
+        if (hasRemovePermission)
             removeBtn = `<button type="button" class="btn btn-danger deletePayoff" data-id="${item.Id}"> حذف</button>`
         payoffsEl += `
             <tr>
@@ -31,6 +31,7 @@ $('#detailModal').on('show.bs.modal', function (event) {
         `
     })
     modelFiles.forEach(item => {
+        console.log(item)
         el += `
                 <div class="col-3">
                     <div class="card">
@@ -41,7 +42,7 @@ $('#detailModal').on('show.bs.modal', function (event) {
                              />
                         <div class="card-body">
                             <p class="card-text">${item.Description}</p>
-                            <a class="btn btn-danger">حذف</a>
+                            <a class="btn btn-danger delete-image" data-id="${item.Id}">حذف</a>
                         </div>
 
                     </div>
@@ -49,7 +50,7 @@ $('#detailModal').on('show.bs.modal', function (event) {
     })
     let invoiceAmount = parseInt(invoiceAmountStr);
     let remain = invoiceAmount - paid;
-    
+
     modal.find('.images').html(el)
     modal.find('#payoffs-table').html(payoffsEl)
     modal.find('#description-el').text(description)
@@ -64,7 +65,25 @@ $('#detailModal').on('show.bs.modal', function (event) {
     modal.find('[name=discount]').val(discount);
 })
 
-$(".update-invoice").click(function(){
+$(document).on('click', '.delete-image', function () {
+    let id = $(this).data("id");
+
+    $.ajax({
+        url: `/Admin/api/Invoice/DeleteImage/${id}`,
+        contentType: 'application/json',
+        method: "post",
+        success: () => {
+            Swal.fire({
+                type: "success",
+                title: "ثبت شد",
+                text: "اطلاعات با موفقیت ثبت شد"
+            }).then(() =>
+                $(this).parent().parent().parent().remove()
+            );
+        }
+    })
+})
+$(".update-invoice").click(function () {
     const modal = $('#detailModal')
     let id = modal.find("[name=Id]").val()
     let discount = modal.find("[name=discount]").val()

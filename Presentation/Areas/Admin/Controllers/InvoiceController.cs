@@ -40,6 +40,23 @@ public class InvoiceController : Controller
         {
             return Redirect(dto.ReturnUrl);
         }
-        return RedirectToAction("Images", "Project", new {projectId = invoice?.ProjectId ?? 0});
+
+        return RedirectToAction("Images", "Project", new { projectId = invoice?.ProjectId ?? 0 });
+    }
+
+    [HttpGet("[area]/[controller]/[action]/{id}")]
+    public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken ct)
+    {
+        var model = await _invoiceRepository.Table
+            .FirstOrDefaultAsync(i => i.Id == id, ct);
+        if (model is null)
+        {
+            TempData["ErrorMessage"] = "فاکتور پیدا نشد";
+            return Redirect(Request.Headers.Referer.ToString());
+        }
+
+        await _invoiceRepository.DeleteAsync(model, ct);
+        TempData["SuccessMessage"] = "پروژه با موفقیت حذف شد";
+        return Redirect(Request.Headers.Referer.ToString());
     }
 }

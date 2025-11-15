@@ -180,4 +180,11 @@ public class InvoiceController : Controller
         await _projectDetailItemRepository.DeleteAsync(model, ct);
         return Ok();
     }
+
+    [HttpPost("[area]/api/[controller]/[action]/{id:int}")]
+    public async Task<IActionResult> DeleteImage([FromRoute] int id, CancellationToken ct)
+    {
+        await _uploadedFileService.RemoveFile(id, ct);
+        return Ok();
+    }
 }

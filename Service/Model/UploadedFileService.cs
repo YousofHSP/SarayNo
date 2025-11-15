@@ -104,6 +104,18 @@ namespace Service.Model
 
             await _repository.DeleteAsync(model, ct);
         }
+        public async Task RemoveFile(int id, CancellationToken ct)
+        {
+
+            var model = await GetFile(id, ct);
+            var filePath = Path.Combine("wwwroot", "uploads", model.SavedName);
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            await _repository.DeleteAsync(model, ct);
+        }
 
         public async Task SetDisableFilesAsync(CancellationToken ct, string modelType, int modelId,
             UploadedFileType? type)

@@ -61,6 +61,7 @@ public class ProjectResDto : BaseDto<ProjectResDto, Project>
 
 public class ProjectCostDto
 {
+    public int Id { get; set; }
     public int ProjectId { get; set; }
     public string CostGroupTitle { get; set; }
     public string CreditorFullName { get; set; }

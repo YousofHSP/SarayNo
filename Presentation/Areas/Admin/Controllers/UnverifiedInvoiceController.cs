@@ -25,13 +25,16 @@ public class UnverifiedInvoiceController : Controller
 
     public UnverifiedInvoiceController(IMapper mapper,
         IUploadedFileService uploadedFileService, IRepository<UnsettledInvoice> unsettledInvoiceRepository,
-        IRepository<Project> projectRepository, IRepository<Invoice> invoiceRepository)
+        IRepository<Project> projectRepository, IRepository<Invoice> invoiceRepository, IRepository<Payoff> payoffRepository, IRepository<InvoiceDetail> invoiceDetailRepository, IRepository<InvoiceLog> invoiceLogRepository)
     {
         _mapper = mapper;
         _uploadedFileService = uploadedFileService;
         _unsettledInvoiceRepository = unsettledInvoiceRepository;
         _projectRepository = projectRepository;
         _invoiceRepository = invoiceRepository;
+        _payoffRepository = payoffRepository;
+        _invoiceDetailRepository = invoiceDetailRepository;
+        _invoiceLogRepository = invoiceLogRepository;
     }
 
     public async Task<IActionResult> Index([FromQuery] int? projectId, CancellationToken ct)

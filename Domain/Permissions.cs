@@ -83,6 +83,7 @@ public static class Permissions
         new() { Controller = "ProjectCost", Action = "DeleteCashCart", ControllerLabel = "هزینه پروژه", ActionLabel = "حذف کارت نقدی" },
         new() { Controller = "ProjectCost", Action = "Check", ControllerLabel = "هزینه پروژه", ActionLabel = "چک" },
         new() { Controller = "ProjectCost", Action = "DirectPayment", ControllerLabel = "هزینه پروژه", ActionLabel = "پرداخت مستقیم کارفرما" },
+        new() { Controller = "ProjectCost", Action = "Delete", ControllerLabel = "هزینه پروژه", ActionLabel = "حذف" },
         
     ];
 }
