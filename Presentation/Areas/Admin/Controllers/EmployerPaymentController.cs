@@ -86,7 +86,7 @@ public class EmployerPaymentController : Controller
             }
             var projects = await query.ToListAsync(ct);
             ViewBag.Projects = projects;
-            return View(new List<ProjectCostDto>());
+            return View(new List<Invoice>());
         }
 
         var project = await _projectRepository.TableNoTracking
@@ -103,26 +103,7 @@ public class EmployerPaymentController : Controller
             .Include(i => i.Creditor)
             .Include(i => i.InvoiceDetails)
             .ToListAsync(ct);
-        var list = new List<ProjectCostDto>();
-        foreach (var item in invoices)
-        {
-            list.Add(new ()
-            {
-                Id = item.Id,
-                ProjectId = item.ProjectId,
-                Description = item.Description ?? "",
-                Number = "",
-                Date = item.Date.ToShamsi(),
-                ProjectTitle = item.Project.Title,
-                AmountNumeric = item.Amount.ToNumeric(),
-                Amount = item.Amount,
-                CostGroupTitle = item.CostGroup.Title,
-                Type = item.Type.ToDisplay(),
-                PayType = "",
-                CreditorFullName = item.Creditor.FirstName + " " + item.Creditor.LastName
-            });
-        }
-        return View(list);
+        return View(invoices);
 
     }
 

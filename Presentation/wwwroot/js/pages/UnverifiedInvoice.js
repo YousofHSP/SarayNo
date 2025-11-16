@@ -1,4 +1,5 @@
-$("#updateModal").on('show.bs.modal', function (event) {
+$("#updateInvoiceModal").on('show.bs.modal', function (event) {
+    console.log("test", files)
     const button = $(event.relatedTarget)
     const id = button.data('id')
     const modelFiles = files.filter(i => i.ModelId == id);
@@ -14,7 +15,7 @@ $("#updateModal").on('show.bs.modal', function (event) {
                              />
                         <div class="card-body">
                             <p class="card-text">${item.Description}</p>
-                            <a class="btn btn-danger">حذف</a>
+                            <a class="btn btn-danger delete-image" data-id="${item.Id}">حذف</a>
                         </div>
 
                     </div>

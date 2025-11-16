@@ -1,7 +1,17 @@
+@using System.Text.Json
+@using AutoMapper
+@using AutoMapper.QueryableExtensions
 @using Common.Utilities
+@using Data.Contracts
 @using Domain
+@using Microsoft.EntityFrameworkCore
+@using Presentation.DTO
 @using Presentation.Helpers
-@model List<Presentation.DTO.ProjectCostDto>
+@using Service.Model.Contracts
+@model List<Invoice>
+@inject IUploadedFileService UploadedFileService
+@inject IRepository<Payoff> PayoffRepository;
+@inject IMapper Mapper
 
 @{
     ViewBag.Title = "هزینه های پروژه";
@@ -9,6 +19,12 @@
     var projects = ViewBag.Projects as List<Project>;
     var projectId = ViewBag.ProjectId as int?;
     var project = ViewBag.Project as Project;
+    
+    var url = UploadedFileService.GetUrl();
+    var files = await UploadedFileService.GetFiles(nameof(Invoice), [], null, default);
+    var payoffs = await PayoffRepository.TableNoTracking
+        .ProjectTo<PayoffResDto>(Mapper.ConfigurationProvider)
+        .ToListAsync();
 }
 
 <div class="card">
@@ -51,14 +67,17 @@
                 }
                 @foreach (var item in Model)
                 {
+                    
+                    var paid = item.Payoffs?.Sum(i => i.Price) ?? 0;
+                    var remain = item.Amount - paid;
                     <tr>
                         <td>@(index++)</td>
-                        <td>@item.CostGroupTitle</td>
-                        <td>@item.CreditorFullName</td>
+                        <td>@item.CostGroup.Title</td>
+                        <td>@item.Creditor.FirstName @item.Creditor.LastName</td>
                         <td>@item.Date</td>
-                        <td>@item.AmountNumeric</td>
-                        <td>@item.Type</td>
-                        <td>@item.PayType</td>
+                        <td>@item.Amount.ToNumeric()</td>
+                        <td>@item.Type.ToDisplay()</td>
+                        <td></td>
                         <td>@item.Description</td>
                         <td>
                             <div class="dropdown d-inline-block">
@@ -69,6 +88,18 @@
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
                                      style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
+                                    
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#detailModal"
+                                       data-bs-id="@item.Id"
+                                       data-bs-cost-group="@item.CostGroup.Title" data-bs-invoice-amount="@item.Amount"
+                                       data-bs-creditor="@item.Creditor.FirstName @item.Creditor.LastName"
+                                       data-bs-description="@item.Description" data-bs-date="@item.Date"
+                                       data-bs-payoffs-amount="@paid.ToNumeric()" data-bs-discount="@item.Discount.ToNumeric()"
+                                       class="dropdown-item">
+                                        <i
+                                            class="fa fa-list"></i>
+                                        جزئیات
+                                    </a>
                                     @if (CheckPermission.Check(User, "ProjectCost.Delete"))
                                     {
                                         <a asp-area="Admin" asp-controller="Invoice" asp-action="Delete"
@@ -95,5 +126,62 @@
         }
     </div>
 </div>
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModal" aria-hidden="true">
+    <div class="modal-xl modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-between">
+                <h1 class="modal-title fs-5" id="detailModalLabel">جزییات</h1>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row images g-2"></div>
+
+                <table class="table mb-2">
+                    <tr>
+                        <td>شرح: <span id="description-el"></span></td>
+                        <td>گروه هزنیه: <span id="cost-group-el"></span></td>
+                        <td>مبلغ فاکتور: <span id="invoice-amount-el"></span></td>
+                    </tr>
+                    <tr>
+                        <td> مبلغ پرداخت شده: <span id="payoffs-amount-el"></span></td>
+                        <td>تاریخ ثبت: <span id="date-el"></span></td>
+                        <td>نام بستانکار: <span id="creditor-el"></span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">مانده فاکتور: <span id="remain-amount-el"></span></td>
+                    </tr>
+                </table>
+
+                <div>
+                    <h4>پراخت ها</h4>
+                    <table class="table">
+                        <tr>
+                            <th>نوع پرداخت</th>
+                            <th>شرح</th>
+                            <th>تاریخ</th>
+                            <th>تاریخ سررسید</th>
+                            <th>مبلغ</th>
+                            <th>عملیات</th>
+                        </tr>
+                        <tbody id="payoffs-table">
+
+                        </tbody>
+
+                    </table>
+                </div>
+                <input type="hidden" class="id" name="Id" value="0">
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+        let files = @Html.Raw(JsonSerializer.Serialize(files))
+        let payoffs = @Html.Raw(JsonSerializer.Serialize(payoffs))
+        let url = "@url";
+        let hasRemovePermission = false;
+    </script>
+    <script src="~/js/pages/UnsettledInvoice.js"></script>
+}
 
 

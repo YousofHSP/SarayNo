@@ -11,7 +11,7 @@
 @{
     ViewBag.Title = "قاکتورهای تایید نشده";
     Layout = "_Layout";
-    var files = await UploadFileService.GetFiles(nameof(UnverifiedInvoice), [], null, default);
+    var files = await UploadFileService.GetFiles(nameof(Invoice), [], null, default);
     var url = UploadFileService.GetUrl();
     var projects = ViewBag.Projects as List<Project>;
     var projectId = ViewBag.ProjectId as int?;

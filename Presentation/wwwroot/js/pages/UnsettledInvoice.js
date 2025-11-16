@@ -31,7 +31,6 @@ $('#detailModal').on('show.bs.modal', function (event) {
         `
     })
     modelFiles.forEach(item => {
-        console.log(item)
         el += `
                 <div class="col-3">
                     <div class="card">
@@ -65,24 +64,6 @@ $('#detailModal').on('show.bs.modal', function (event) {
     modal.find('[name=discount]').val(discount);
 })
 
-$(document).on('click', '.delete-image', function () {
-    let id = $(this).data("id");
-
-    $.ajax({
-        url: `/Admin/api/Invoice/DeleteImage/${id}`,
-        contentType: 'application/json',
-        method: "post",
-        success: () => {
-            Swal.fire({
-                type: "success",
-                title: "ثبت شد",
-                text: "اطلاعات با موفقیت ثبت شد"
-            }).then(() =>
-                $(this).parent().parent().parent().remove()
-            );
-        }
-    })
-})
 $(".update-invoice").click(function () {
     const modal = $('#detailModal')
     let id = modal.find("[name=Id]").val()

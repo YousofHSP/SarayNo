@@ -17,7 +17,7 @@
 	@* <link rel="stylesheet" href="~/css/style.min.css"/> *@
 	<link rel="stylesheet" href="~/css/site.css"/>
 	<link rel="stylesheet" href="~/plugins/font-awesome-4/css/font-awesome.css"/>
-	<link rel="stylesheet" href="~/css/responsive.css" />
+	<link rel="stylesheet" href="~/css/responsive.css"/>
 	@await RenderSectionAsync("Styles", required: false)
 	<style>
 		body {
@@ -172,29 +172,32 @@
 	<div id="main-content" class="flex-grow-1">
 		<main class="flex-grow-1 d-flex flex-column">
 			<!-- Header -->
-				<header class="bg-header text-white d-flex justify-between align-items-center px-4" style="height: 64px; direction: ltr">
-					<!-- دکمه نمایش/مخفی کردن منو در موبایل -->
-					<button id="menuToggleBtn1" class="menu-toggle d-md-none btn btn-outline-light me-2">
-						<i class="fas fa-bars"></i>
-					</button>
+			<header class="bg-header text-white d-flex justify-between align-items-center px-4"
+			        style="height: 64px; direction: ltr">
+				<!-- دکمه نمایش/مخفی کردن منو در موبایل -->
+				<button id="menuToggleBtn1" class="menu-toggle d-md-none btn btn-outline-light me-2">
+					<i class="fas fa-bars"></i>
+				</button>
 
-					<div class="dropdown ms-auto">
-						<div class="d-flex align-items-center gap-2 dropdown-toggle" role="button" data-bs-toggle="dropdown">
-							<span>@User.Identity.GetUserName()</span>
-							<i class="fas fa-user-circle fs-4"></i>
-						</div>
-						<ul class="dropdown-menu dropdown-menu-end text-start" style="direction: rtl; right: -50px">
-							<li>
-								<a class="dropdown-item text-danger" asp-area="" asp-controller="Account" asp-action="Logout">
-									<i class="fas fa-sign-out-alt ms-2"></i>خروج
-								</a>
-							</li>
-						</ul>
+				<div class="dropdown ms-auto">
+					<div class="d-flex align-items-center gap-2 dropdown-toggle" role="button"
+					     data-bs-toggle="dropdown">
+						<span>@User.Identity.GetUserName()</span>
+						<i class="fas fa-user-circle fs-4"></i>
 					</div>
+					<ul class="dropdown-menu dropdown-menu-end text-start" style="direction: rtl; right: -50px">
+						<li>
+							<a class="dropdown-item text-danger" asp-area="" asp-controller="Account"
+							   asp-action="Logout">
+								<i class="fas fa-sign-out-alt ms-2"></i>خروج
+							</a>
+						</li>
+					</ul>
+				</div>
 
 
-				</header>
-	
+			</header>
+
 
 			<section class="p-4">
 				@RenderBody()
@@ -218,18 +221,18 @@
 				<h1 class="modal-title fs-5" id="changeStatusModalLabel">تغییر وضعیت</h1>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-				<div class="modal-body change-status-modal-body">
-					<input type="hidden" name="Id">
-					<input type="hidden" name="Status">
-					<div class="form-group">
-						<label class="form-label" for="DescriptionImage">توضیحات</label>
-						<textarea class="form-control" name="Description" id="DescriptionImage"></textarea>
-					</div>
+			<div class="modal-body change-status-modal-body">
+				<input type="hidden" name="Id">
+				<input type="hidden" name="Status">
+				<div class="form-group">
+					<label class="form-label" for="DescriptionImage">توضیحات</label>
+					<textarea class="form-control" name="Description" id="DescriptionImage"></textarea>
 				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
-					<button type="button" id="changeStatusBtn" class="btn btn-primary">ثبت</button>
-				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+				<button type="button" id="changeStatusBtn" class="btn btn-primary">ثبت</button>
+			</div>
 		</div>
 	</div>
 </div>
@@ -417,6 +420,27 @@
 	})
 
 
+</script>
+<script>
+
+	$(document).on('click', '.delete-image', function () {
+		let id = $(this).data("id");
+
+		$.ajax({
+			url: `/Admin/api/Invoice/DeleteImage/${id}`,
+			contentType: 'application/json',
+			method: "post",
+			success: () => {
+				Swal.fire({
+					type: "success",
+					title: "ثبت شد",
+					text: "اطلاعات با موفقیت ثبت شد"
+				}).then(() =>
+					$(this).parent().parent().parent().remove()
+				);
+			}
+		})
+	})
 </script>
 <script src="~/js/components/app.js"></script>
 <script src="~/js/components/addInvoiceDetailModal.js"></script>
