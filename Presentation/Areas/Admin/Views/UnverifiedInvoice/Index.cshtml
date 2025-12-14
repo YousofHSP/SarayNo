@@ -216,8 +216,30 @@
                             <th>مبلغ</th>
                             <th>عملیات</th>
                         </tr>
-                        <tbody id="payoffs-table">
+                        <tr id="addPayoffForm">
+                            <td>
+                                <input type="hidden" class="id" name="InvoiceId" value="0">
+                                <input type="hidden" name="status" value="1">
+                                <select name="type" class="select2">
+                                    <option value="@PayoffType.Cash">@PayoffType.Cash.ToDisplay()</option>
+                                    <option value="@PayoffType.Check">@PayoffType.Check.ToDisplay()</option>
+                                    <option
+                                        value="@PayoffType.EmployerPayment">@PayoffType.EmployerPayment.ToDisplay()</option>
+                                </select>
+                            </td>
+                            <td><input type="text" class="form-control" name="description"></td>
+                            <td><input type="text" class="form-control date-picker" name="date"></td>
+                            <td><input type="text" class="form-control date-picker" name="dueDate"></td>
+                            <td><input type="text" class="form-control numeric" name="price"></td>
+                            <td>
+                                @if (CheckPermission.Check(User, "UnverifiedInvoice.AddPayoff"))
+                                {
+                                    <button type="button" id="addPayoff" class="btn btn-primary">ثبت</button>
+                                }
+                            </td>
+                        </tr>
 
+                        <tbody id="payoffs-table">
                         </tbody>
 
                     </table>
@@ -237,7 +259,7 @@
 
     <script>
         let payoffs = @Html.Raw(JsonSerializer.Serialize(payoffs))
-        let hasRemovePermission = false;
+        let hasRemovePermission = @(CheckPermission.Check(User, "UnverifiedInvoice.DeletePayoff").ToString().ToLower());
     </script>
     <script src="~/js/pages/UnsettledInvoice.js"></script>
 }
