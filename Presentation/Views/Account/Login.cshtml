@@ -14,7 +14,8 @@
                     <p>ورود به پنل مدیریت ساخت و ساز</p>
 
                     <form asp-action="Login" method="post">
-                        <input type="hidden" asp-for="ReturnUrl "/>
+                        <div asp-validation-summary="All" class="text-danger"></div>                       
+                        <input type="hidden" asp-for="ReturnUrl"/>
                         <div class="input-group">
                             <input type="text" asp-for="PhoneNumber" class="form-control" placeholder="نام کاربری">
                             <i class="fa fa-envelope form-icon"></i>

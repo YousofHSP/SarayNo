@@ -106,6 +106,17 @@
                                             حذف
                                         </a>
                                     }
+                                    
+                                    @if (CheckPermission.Check(User, "UnsettledInvoice.AddImage"))
+                                    {
+                                        <a href="#" data-bs-toggle="modal" data-id="@item.Id"
+                                           data-bs-target="#addImageModal"
+                                           class="dropdown-item" data-bs-invoice-id="@item.Id">
+                                            <i
+                                                class="fa fa-image"></i>
+                                            آپلود تصویر
+                                        </a>
+                                    }
                                 </div>
                             </div>
                         </td>
@@ -211,9 +222,11 @@
     </div>
 </div>
 
+<partial name="Components/_AddImageModal"/>
 @section Scripts{
     <script>
         let files = @Html.Raw(JsonSerializer.Serialize(files))
+        console.log(files)
         let payoffs = @Html.Raw(JsonSerializer.Serialize(payoffs))
         let url = "@url";
         let hasRemovePermission = @(CheckPermission.Check(User, "UnsettledInvoice.DeletePayoff").ToString().ToLower());

@@ -1,12 +1,18 @@
+@using AutoMapper
+@using AutoMapper.QueryableExtensions
 @using Common.Utilities
 @using Data.Contracts
 @using Domain
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.EntityFrameworkCore
+@using Presentation.DTO
 @using Presentation.Helpers
 @using Service.Model.Contracts
 @using JsonSerializer = System.Text.Json.JsonSerializer
 @model List<Invoice>
 @inject IUploadedFileService UploadFileService
+@inject IRepository<Payoff> PayoffRepository
+@inject IMapper Mapper
 
 @{
     ViewBag.Title = "قاکتورهای تایید نشده";
@@ -15,6 +21,9 @@
     var url = UploadFileService.GetUrl();
     var projects = ViewBag.Projects as List<Project>;
     var projectId = ViewBag.ProjectId as int?;
+    var payoffs = await PayoffRepository.TableNoTracking
+        .ProjectTo<PayoffResDto>(Mapper.ConfigurationProvider)
+        .ToListAsync();
 }
 
 <div class="card">
@@ -40,7 +49,8 @@
             <div class="d-flex justify-content-between">
                 @if (CheckPermission.Check(User, "UnverifiedInvoice.Create"))
                 {
-                    <button data-bs-toggle="modal" data-bs-target="#addInvoiceModal" data-project-id="@projectId" data-type="@InvoiceType.Unverified" type="button" class="btn btn-primary">
+                    <button data-bs-toggle="modal" data-bs-target="#addInvoiceModal" data-project-id="@projectId"
+                            data-type="@InvoiceType.Unverified" type="button" class="btn btn-primary">
                         افزودن
                     </button>
                 }
@@ -72,7 +82,7 @@
                         <td>@item.Creditor.FirstName @item.Creditor.LastName</td>
                         <td>@item.Date.ToShamsi()</td>
                         <td>@item.Description</td>
-                        <td>@item.Amount.ToNumeric()</td>
+                        <td>@((item.Amount - item.Payoffs.Sum(i => i.Price)).ToNumeric())</td>
                         <td>@item.Status.ToDisplay()</td>
                         <td>
 
@@ -84,7 +94,20 @@
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="dLabel6" x-placement="bottom-start"
                                      style="text-align: right;position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 36px, 0px);">
-                                    @if (CheckPermission.Check(User, "UnverifiedInvoice.Update"))
+
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#detailModal"
+                                       data-bs-id="@item.Id"
+                                       data-bs-cost-group="@item.CostGroup.Title" data-bs-invoice-amount="@item.Amount"
+                                       data-bs-creditor="@item.Creditor.FirstName @item.Creditor.LastName"
+                                       data-bs-description="@item.Description" data-bs-date="@item.Date.ToShamsi()"
+                                       data-bs-payoffs-amount="@item.Payoffs.Sum(i => i.Price).ToNumeric()"
+                                       data-bs-discount="@item.Discount.ToNumeric()"
+                                       class="dropdown-item">
+                                        <i
+                                            class="fa fa-list"></i>
+                                        جزئیات
+                                    </a>
+                                    @if (CheckPermission.Check(User, "UnverifiedInvoice.Edit"))
                                     {
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#updateInvoiceModal"
                                            data-id="@item.Id" data-cost-group-id="@item.CostGroupId"
@@ -99,7 +122,8 @@
                                     }
                                     @if (CheckPermission.Check(User, "UnverifiedInvoice.AddImage"))
                                     {
-                                        <a href="#" data-bs-toggle="modal" data-id="@item.Id" data-bs-target="#addImageModal"
+                                        <a href="#" data-bs-toggle="modal" data-id="@item.Id"
+                                           data-bs-target="#addImageModal"
                                            class="dropdown-item" data-bs-invoice-id="@item.Id">
                                             <i
                                                 class="fa fa-image"></i>
@@ -109,7 +133,8 @@
 
                                     @if (CheckPermission.Check(User, "UnverifiedInvoice.ChangeStatusToApproved") && item.Status != InvoiceStatus.Approved)
                                     {
-                                        <a href="#" class="dropdown-item changeStatus" data-id="@item.Id" data-status="@((int)InvoiceStatus.Approved)">
+                                        <a href="#" class="dropdown-item changeStatus" data-id="@item.Id"
+                                           data-status="@((int)InvoiceStatus.Approved)">
                                             <i class="fa fa-check"></i>
                                             تایید
                                         </a>
@@ -117,21 +142,24 @@
 
                                     @if (CheckPermission.Check(User, "UnverifiedInvoice.ChangeStatusToRejected") && item.Status != InvoiceStatus.Rejected)
                                     {
-                                        <a href="#" class="dropdown-item changeStatus" data-id="@item.Id" data-status="@((int)InvoiceStatus.Rejected)">
+                                        <a href="#" class="dropdown-item changeStatus" data-id="@item.Id"
+                                           data-status="@((int)InvoiceStatus.Rejected)">
                                             <i class="fa fa-close"></i>
                                             رد
                                         </a>
                                     }
                                     @if (CheckPermission.Check(User, "UnverifiedInvoice.AddToUnsettledInvoice") && item is { Status: InvoiceStatus.Approved, InvoiceDetails.Count: 0 })
                                     {
-                                        <a href="#" class="dropdown-item changeType" data-id="@item.Id"  data-type="@InvoiceType.Unsettled">
+                                        <a href="#" class="dropdown-item changeType" data-id="@item.Id"
+                                           data-type="@InvoiceType.Unsettled">
                                             <i class="fa fa-send"></i>
                                             ارسال به فاکتور های تسویه نشده
                                         </a>
                                     }
                                     @if (CheckPermission.Check(User, "UnverifiedInvoice.Delete"))
                                     {
-                                        <a class="dropdown-item" asp-area="Admin" asp-controller="UnverifiedInvoice" asp-action="Delete" asp-route-id="@item.Id">
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="UnverifiedInvoice"
+                                           asp-action="Delete" asp-route-id="@item.Id">
                                             <i class="fa fa-trash"></i>
                                             حذف
                                         </a>
@@ -151,7 +179,54 @@
 </div>
 <partial name="Components/_AddInvoiceModal"/>
 <partial name="Components/_AddImageModal"/>
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModal" aria-hidden="true">
+    <div class="modal-xl modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-between">
+                <h1 class="modal-title fs-5" id="detailModalLabel">جزییات</h1>
+                <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row images g-2"></div>
 
+                <table class="table mb-2">
+                    <tr>
+                        <td>شرح: <span id="description-el"></span></td>
+                        <td>گروه هزنیه: <span id="cost-group-el"></span></td>
+                        <td>مبلغ فاکتور: <span id="invoice-amount-el"></span></td>
+                    </tr>
+                    <tr>
+                        <td> مبلغ پرداخت شده: <span id="payoffs-amount-el"></span></td>
+                        <td>تاریخ ثبت: <span id="date-el"></span></td>
+                        <td>نام بستانکار: <span id="creditor-el"></span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">مانده فاکتور: <span id="remain-amount-el"></span></td>
+                    </tr>
+                </table>
+
+                <div>
+                    <h4>پراخت ها</h4>
+                    <table class="table">
+                        <tr>
+                            <th>نوع پرداخت</th>
+                            <th>شرح</th>
+                            <th>تاریخ</th>
+                            <th>تاریخ سررسید</th>
+                            <th>مبلغ</th>
+                            <th>عملیات</th>
+                        </tr>
+                        <tbody id="payoffs-table">
+
+                        </tbody>
+
+                    </table>
+                </div>
+                <input type="hidden" class="id" name="Id" value="0">
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts{
     <script>
@@ -159,4 +234,10 @@
         let url = "@url";
     </script>
     <script src="~/js/pages/UnverifiedInvoice.js"></script>
+
+    <script>
+        let payoffs = @Html.Raw(JsonSerializer.Serialize(payoffs))
+        let hasRemovePermission = false;
+    </script>
+    <script src="~/js/pages/UnsettledInvoice.js"></script>
 }

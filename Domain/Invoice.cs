@@ -15,14 +15,15 @@ public class Invoice : BaseEntity
     public InvoiceType Type { get; set; }
     public InvoiceStatus Status { get; set; }
     public DateTimeOffset Date { get; set; }
+    public DateTimeOffset? PriceDate { get; set; }
     public string? Description { get; set; }
 
     public CostGroup CostGroup { get; set; }
     public Creditor Creditor{ get; set; }
     public Project Project { get; set; }
     public List<InvoiceDetail> InvoiceDetails { get; set; } = new();
-    public List<Payoff>? Payoffs{ get; set; }
-    public List<InvoiceLog>? InvoiceLogs { get; set; }
+    public List<Payoff> Payoffs { get; set; } = [];
+    public List<InvoiceLog> InvoiceLogs { get; set; } = [];
 }
 
 public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>

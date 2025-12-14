@@ -63,6 +63,7 @@ public class UnverifiedInvoiceController : Controller
             .Include(i => i.CostGroup)
             .Include(i => i.Creditor)
             .Include(i => i.InvoiceDetails)
+            .Include(i => i.Payoffs)
             .ToListAsync(ct);
         return View(list);
     }

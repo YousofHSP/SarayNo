@@ -90,12 +90,13 @@ public class ActivityController(
         return RedirectToAction("Details", new { id = model.InvoiceId});
     }
     [HttpPost("[area]/[controller]/[action]/{id:int}")]
-    public async Task<IActionResult> SetTotalAmount([FromRoute] int id, decimal totalAmount, CancellationToken ct)
+    public async Task<IActionResult> SetTotalAmount([FromRoute] int id, decimal totalAmount,string priceDate, CancellationToken ct)
     {
         var model = await invoiceRepository.GetByIdAsync(ct, id);
         if (model is null)
             return NotFound();
         model.Amount = totalAmount;
+        model.PriceDate = priceDate.ToGregorian();
         await invoiceRepository.UpdateAsync(model, ct);
         return RedirectToAction("Details", new { id, ct });
     }

@@ -64,7 +64,7 @@ $("#addPayoff").click(function () {
             let remain = parseInt(remainStr.replace(/,/g, ''));
             let price = parseInt(res.price.replace(/,/g, ''));
             let removeBtn = `<button type="button" class="btn btn-danger deletePayoff" data-id="${res.id}"> حذف</button>`
-            
+
             remain -= price;
             modal.find("#remain-amount-el").text(remain.toLocaleString("en-US"))
             let payoffsEl = `
@@ -87,7 +87,7 @@ $("#addPayoff").click(function () {
         }
     })
 })
-$("body").on("click", ".deletePayoff", function(){
+$("body").on("click", ".deletePayoff", function () {
     const id = $(this).data("id");
     const trEl = $(this).parents("tr")
     $.ajax({
@@ -104,9 +104,19 @@ $("body").on("click", ".deletePayoff", function(){
                 title: "خطا در حذف",
                 text: xhr.responseJSON?.message || "خطایی رخ داده است."
             })
-            
+
         }
     })
+})
+
+$("body").on("change", "#PayType", function () {
+    let value = $(this).val();
+    if (value === "Check") {
+        $("#DueDateContent").show();
+    } else {
+        $("#DueDateContent").hide();
+
+    }
 })
 
 function showImageModal(imageSrc) {

@@ -74,7 +74,7 @@
                         <td>@(index++)</td>
                         <td>@item.CostGroup.Title</td>
                         <td>@item.Creditor.FirstName @item.Creditor.LastName</td>
-                        <td>@item.Date</td>
+                        <td>@item.Date.ToShamsi()</td>
                         <td>@item.Amount.ToNumeric()</td>
                         <td>@item.Type.ToDisplay()</td>
                         <td></td>
@@ -93,13 +93,24 @@
                                        data-bs-id="@item.Id"
                                        data-bs-cost-group="@item.CostGroup.Title" data-bs-invoice-amount="@item.Amount"
                                        data-bs-creditor="@item.Creditor.FirstName @item.Creditor.LastName"
-                                       data-bs-description="@item.Description" data-bs-date="@item.Date"
+                                       data-bs-description="@item.Description" data-bs-date="@item.Date.ToShamsi()"
                                        data-bs-payoffs-amount="@paid.ToNumeric()" data-bs-discount="@item.Discount.ToNumeric()"
                                        class="dropdown-item">
                                         <i
                                             class="fa fa-list"></i>
                                         جزئیات
                                     </a>
+                                    
+                                    @if (CheckPermission.Check(User, "ProjectCost.AddImage"))
+                                    {
+                                        <a href="#" data-bs-toggle="modal" data-id="@item.Id"
+                                           data-bs-target="#addImageModal"
+                                           class="dropdown-item" data-bs-invoice-id="@item.Id">
+                                            <i
+                                                class="fa fa-image"></i>
+                                            آپلود تصویر
+                                        </a>
+                                    }
                                     @if (CheckPermission.Check(User, "ProjectCost.Delete"))
                                     {
                                         <a asp-area="Admin" asp-controller="Invoice" asp-action="Delete"
@@ -174,6 +185,7 @@
         </div>
     </div>
 </div>
+<partial name="Components/_AddImageModal"/>
 @section Scripts{
     <script>
         let files = @Html.Raw(JsonSerializer.Serialize(files))

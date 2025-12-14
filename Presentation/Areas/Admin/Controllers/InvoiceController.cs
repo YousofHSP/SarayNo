@@ -13,11 +13,15 @@ public class InvoiceController : Controller
 {
     private readonly IRepository<Invoice> _invoiceRepository;
     private readonly IUploadedFileService _uploadedFileService;
+    private readonly IRepository<Payoff> _payoffRepository;
+    private readonly IRepository<InvoiceLog> _invoiceLogRepository;
 
-    public InvoiceController(IUploadedFileService uploadedFileService, IRepository<Invoice> invoiceRepository)
+    public InvoiceController(IUploadedFileService uploadedFileService, IRepository<Invoice> invoiceRepository, IRepository<Payoff> payoffRepository, IRepository<InvoiceLog> invoiceLogRepository)
     {
         _uploadedFileService = uploadedFileService;
         _invoiceRepository = invoiceRepository;
+        _payoffRepository = payoffRepository;
+        _invoiceLogRepository = invoiceLogRepository;
     }
 
     [HttpPost("[area]/[controller]/[action]")]
@@ -48,6 +52,8 @@ public class InvoiceController : Controller
     public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken ct)
     {
         var model = await _invoiceRepository.Table
+            .Include(i => i.InvoiceLogs)
+            .Include(i => i.Payoffs)
             .FirstOrDefaultAsync(i => i.Id == id, ct);
         if (model is null)
         {
@@ -55,6 +61,8 @@ public class InvoiceController : Controller
             return Redirect(Request.Headers.Referer.ToString());
         }
 
+        await _payoffRepository.DeleteRangeAsync(model.Payoffs, ct);
+        await _invoiceLogRepository.DeleteRangeAsync(model.InvoiceLogs, ct);
         await _invoiceRepository.DeleteAsync(model, ct);
         TempData["SuccessMessage"] = "پروژه با موفقیت حذف شد";
         return Redirect(Request.Headers.Referer.ToString());

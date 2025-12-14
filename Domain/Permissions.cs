@@ -59,7 +59,7 @@ public static class Permissions
         new() { Controller = "Project", Action = "AddProjectDetailItem", ControllerLabel = "پروژه", ActionLabel = "افزودن جزئیات متراژ و برآورد" },
         new() { Controller = "Project", Action = "DeleteProjectDetailItem", ControllerLabel = "پروژه", ActionLabel = "حذف جزئیات متراژ و برآورد" },
         new() { Controller = "Project", Action = "Images", ControllerLabel = "پروژه", ActionLabel = "گالری" },
-        new() { Controller = "Project", Action = "AddImages", ControllerLabel = "پروژه", ActionLabel = "افزودن تصویر" },
+        new() { Controller = "Project", Action = "AddImage", ControllerLabel = "پروژه", ActionLabel = "افزودن تصویر" },
         new() { Controller = "Project", Action = "AddAlbum", ControllerLabel = "پروژه", ActionLabel = "افزودن آلبوم" },
         
         new() { Controller = "UnsettledInvoice", Action = "Index", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "نمایش" },
@@ -68,6 +68,7 @@ public static class Permissions
         new() { Controller = "UnsettledInvoice", Action = "AddPayoff", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "افزودن پرداخت" },
         new() { Controller = "UnsettledInvoice", Action = "DeletePayoff", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "حذف پرداخت" },
         new() { Controller = "UnsettledInvoice", Action = "Done", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "تسویه" },
+        new() { Controller = "UnsettledInvoice", Action = "AddImage", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "افزودن تصویر" },
         
         new() { Controller = "UnverifiedInvoice", Action = "Index", ControllerLabel = "فاکتورهای تایید نشده", ActionLabel = "نمایش" },
         new() { Controller = "UnverifiedInvoice", Action = "Create", ControllerLabel = "فاکتورهای تایید نشده", ActionLabel = "ایجاد" },
@@ -84,6 +85,7 @@ public static class Permissions
         new() { Controller = "ProjectCost", Action = "Check", ControllerLabel = "هزینه پروژه", ActionLabel = "چک" },
         new() { Controller = "ProjectCost", Action = "DirectPayment", ControllerLabel = "هزینه پروژه", ActionLabel = "پرداخت مستقیم کارفرما" },
         new() { Controller = "ProjectCost", Action = "Delete", ControllerLabel = "هزینه پروژه", ActionLabel = "حذف" },
+        new() { Controller = "ProjectCost", Action = "AddImage", ControllerLabel = "هزینه پروژه", ActionLabel = "آپلود تصویر" },
         
     ];
 }

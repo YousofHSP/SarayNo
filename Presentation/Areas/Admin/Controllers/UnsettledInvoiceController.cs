@@ -13,28 +13,22 @@ namespace Presentation.Areas.Admin.Controllers;
 
 
 [Area("Admin")]
-public class UnsettledInvoiceController : Controller
+public class UnsettledInvoiceController(
+    IRepository<Project> projectRepository,
+    IMapper mapper,
+    IRepository<Payoff> payoffRepository,
+    IRepository<Invoice> invoiceRepository,
+    IRepository<InvoiceDetail> invoiceDetailRepository,
+    IRepository<InvoiceLog> invoiceLogRepository)
+    : Controller
 {
-    private readonly IRepository<Invoice> _invoiceRepository;
-    private readonly IRepository<InvoiceDetail> _invoiceDetailRepository;
-    private readonly IRepository<InvoiceLog> _invoiceLogRepository;
-    private readonly IRepository<Project> _projectRepository;
-    private readonly IMapper _mapper;
-    private readonly IRepository<Payoff> _payoffRepository; 
-
-    public UnsettledInvoiceController(IRepository<Project> projectRepository, IMapper mapper, IRepository<Payoff> payoffRepository, IRepository<Invoice> invoiceRepository)
-    {
-        _projectRepository = projectRepository;
-        _mapper = mapper;
-        _payoffRepository = payoffRepository;
-        _invoiceRepository = invoiceRepository;
-    }
+    private readonly IMapper _mapper = mapper;
 
     public async Task<IActionResult> Index(int? projectId, CancellationToken ct)
     {
         if (projectId is null or 0)
         {
-            var query = _projectRepository.TableNoTracking
+            var query = projectRepository.TableNoTracking
                 .Include(i => i.User)
                 .AsQueryable();
             if (!CheckPermission.Check(User, "Project.All"))
@@ -48,7 +42,7 @@ public class UnsettledInvoiceController : Controller
             return View(new List<Invoice>());
         }
         ViewBag.ProjectId = projectId;
-        var list = await _invoiceRepository.TableNoTracking
+        var list = await invoiceRepository.TableNoTracking
             .Where(i => i.ProjectId == projectId)
             .Where(i => i.Type == InvoiceType.Unsettled)
             .Include(i => i.Payoffs)
@@ -63,10 +57,10 @@ public class UnsettledInvoiceController : Controller
 
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
-        await _payoffRepository.TableNoTracking.Where(i => i.InvoiceId == id).ExecuteDeleteAsync(ct);
-        await _invoiceLogRepository.TableNoTracking.Where(i => i.InvoiceId == id).ExecuteDeleteAsync(ct);
-        await _invoiceDetailRepository.TableNoTracking.Where(i => i.InvoiceId == id).ExecuteDeleteAsync(ct);
-        await _invoiceRepository.TableNoTracking.Where(i => i.Id == id).ExecuteDeleteAsync(ct);
+        await payoffRepository.TableNoTracking.Where(i => i.InvoiceId == id).ExecuteDeleteAsync(ct);
+        await invoiceLogRepository.TableNoTracking.Where(i => i.InvoiceId == id).ExecuteDeleteAsync(ct);
+        await invoiceDetailRepository.TableNoTracking.Where(i => i.InvoiceId == id).ExecuteDeleteAsync(ct);
+        await invoiceRepository.TableNoTracking.Where(i => i.Id == id).ExecuteDeleteAsync(ct);
 
         TempData["SuccessMessage"] = " فاکتور با موفقیت حذف شد";
         return RedirectToAction("Index");

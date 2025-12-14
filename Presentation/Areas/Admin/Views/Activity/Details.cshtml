@@ -107,7 +107,9 @@
                     var totalPrice = Model.Payoffs.Sum(i => i.Price);
                 }
                 <tr>
-                    <td colspan="3"></td>
+                    <td></td>
+                    <td>@(Model.PriceDate.HasValue ? Model.PriceDate.Value.ToShamsi(): "ثبت نشده")</td>
+                    <td></td>
                     <td colspan="2">جمع پرداختی: @totalPrice.ToNumeric()</td>
                 </tr>
                 <tr>
@@ -139,6 +141,11 @@
                         <label class="form-label" for="totalAmount">مبلغ کل فاکتور</label>
                         <input type="text" class="form-control numeric" name="totalAmount" id="totalAmount"
                                value="@Model.Amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="PriceDate">تاریخ</label>
+                        <input type="text" class="form-control date-picker" name="PriceDate" id="PriceDate"
+                               value="@Model.PriceDate" required>
                     </div>
                 </div>
                 <div class="modal-footer">
