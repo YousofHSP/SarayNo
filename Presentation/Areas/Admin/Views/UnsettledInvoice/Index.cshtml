@@ -68,7 +68,7 @@
                 @foreach (var item in Model)
                 {
                     var paid = item.Payoffs?.Sum(i => i.Price) ?? 0;
-                    var remain = item.Amount - paid;
+                    var remain = item.Amount - item.Discount - paid;
                     <tr>
                         <td>@(++index)</td>
                         <td>@item.CostGroup.Title</td>
