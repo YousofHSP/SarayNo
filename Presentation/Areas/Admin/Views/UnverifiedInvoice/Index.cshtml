@@ -64,6 +64,7 @@
                     <td>بستانکار</td>
                     <td>تاریخ</td>
                     <td>توضیحات</td>
+                    <td>تخفیف</td>
                     <td>مبلغ</td>
                     <td>وضعیت</td>
                     <td>عملیات</td>
@@ -82,7 +83,8 @@
                         <td>@item.Creditor.FirstName @item.Creditor.LastName</td>
                         <td>@item.Date.ToShamsi()</td>
                         <td>@item.Description</td>
-                        <td>@((item.Amount - item.Payoffs.Sum(i => i.Price)).ToNumeric())</td>
+                        <td>@item.Discount.ToNumeric()</td>
+                        <td>@((item.Amount - (item.Payoffs.Sum(i => i.Price) + item.Discount)).ToNumeric())</td>
                         <td>@item.Status.ToDisplay()</td>
                         <td>
 
@@ -201,7 +203,9 @@
                         <td>نام بستانکار: <span id="creditor-el"></span></td>
                     </tr>
                     <tr>
-                        <td colspan="3">مانده فاکتور: <span id="remain-amount-el"></span></td>
+                        <td >مانده فاکتور: <span id="remain-amount-el"></span></td>
+                        <td>تخفیف: <span id="discount-el"></span></td>
+                        <td></td>
                     </tr>
                 </table>
 

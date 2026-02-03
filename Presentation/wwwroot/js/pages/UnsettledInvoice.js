@@ -62,6 +62,7 @@ $('#detailModal').on('show.bs.modal', function (event) {
     modal.find('.id').val(id)
     modal.find('[name=isDone]').prop("checked", false);
     modal.find('[name=discount]').val(discount);
+    modal.find('#discount-el').text(discount);
 })
 
 $(".update-invoice").click(function () {
