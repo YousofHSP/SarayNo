@@ -179,6 +179,14 @@ public class ProjectController(
         return View(files);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> RemoveImage(int id, int projectId, int albumId, CancellationToken ct)
+    {
+        await uploadedFileService.RemoveFile(id, ct);
+        return RedirectToAction("Images", new { projectId, albumId });
+
+    }
+
 
     [HttpPost]
     public async Task<IActionResult> AddImage(AddImageDto dto, CancellationToken ct)

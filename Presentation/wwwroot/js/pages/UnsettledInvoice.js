@@ -48,7 +48,7 @@ $('#detailModal').on('show.bs.modal', function (event) {
                 </div>`
     })
     let invoiceAmount = parseInt(invoiceAmountStr);
-    let remain = invoiceAmount - paid;
+    let remain = invoiceAmount - (paid + discount);
 
     modal.find('.images').html(el)
     modal.find('#payoffs-table').html(payoffsEl)
