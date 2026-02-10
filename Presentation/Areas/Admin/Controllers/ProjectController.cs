@@ -183,6 +183,7 @@ public class ProjectController(
     public async Task<IActionResult> RemoveImage(int id, int projectId, int albumId, CancellationToken ct)
     {
         await uploadedFileService.RemoveFile(id, ct);
+        TempData["SuccessMessage"] = "نصویر با موفقیت حذف شد";
         return RedirectToAction("Images", new { projectId, albumId });
 
     }
@@ -204,6 +205,16 @@ public class ProjectController(
         var model = dto.ToEntity(_mapper);
         await albumRepository.AddAsync(model, ct);
         return RedirectToAction("Images", new { albumId = model.Id, projectId = model.ProjectId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> RemoveAlbum(int projectId, int albumId, CancellationToken ct)
+    {
+        
+        await uploadedFileService.RemoveAlbumFiles(albumId, ct);
+        await albumRepository.TableNoTracking.Where(i => i.Id == albumId).ExecuteDeleteAsync(ct);
+        TempData["SuccessMessage"] = "آلبوم با موفقیت حذف شد";
+        return RedirectToAction("Images", new { projectId  });
     }
 
     public override async Task<IActionResult> Delete(int id, CancellationToken ct)

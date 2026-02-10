@@ -60,7 +60,9 @@ public static class Permissions
         new() { Controller = "Project", Action = "DeleteProjectDetailItem", ControllerLabel = "پروژه", ActionLabel = "حذف جزئیات متراژ و برآورد" },
         new() { Controller = "Project", Action = "Images", ControllerLabel = "پروژه", ActionLabel = "گالری" },
         new() { Controller = "Project", Action = "AddImage", ControllerLabel = "پروژه", ActionLabel = "افزودن تصویر" },
+        new() { Controller = "Project", Action = "RemoveImage", ControllerLabel = "پروژه", ActionLabel = "حذف تصویر" },
         new() { Controller = "Project", Action = "AddAlbum", ControllerLabel = "پروژه", ActionLabel = "افزودن آلبوم" },
+        new() { Controller = "Project", Action = "RemoveAlbum", ControllerLabel = "پروژه", ActionLabel = "حذف آلبوم" },
         
         new() { Controller = "UnsettledInvoice", Action = "Index", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "نمایش" },
         new() { Controller = "UnsettledInvoice", Action = "Edit", ControllerLabel = "فاکتور های تسویه نشده", ActionLabel = "ویرایش" },

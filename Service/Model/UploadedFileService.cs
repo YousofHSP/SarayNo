@@ -117,6 +117,11 @@ namespace Service.Model
             await _repository.DeleteAsync(model, ct);
         }
 
+        public async Task RemoveAlbumFiles(int albumId, CancellationToken ct)
+        {
+            await _repository.TableNoTracking.Where(i => i.AlbumId == albumId).ExecuteDeleteAsync(ct);
+        }
+
         public async Task SetDisableFilesAsync(CancellationToken ct, string modelType, int modelId,
             UploadedFileType? type)
         {

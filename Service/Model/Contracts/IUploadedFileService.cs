@@ -17,6 +17,7 @@ namespace Service.Model.Contracts
         Task<UploadedFile> GetFile(int id,CancellationToken ct);
         Task RemoveFile(UploadedFile model, CancellationToken ct);
         Task RemoveFile(int id, CancellationToken ct);
+        Task RemoveAlbumFiles(int albumId, CancellationToken ct);
         Task AddRangeAsync(List<UploadedFile> list, CancellationToken ct);
     }
 }
