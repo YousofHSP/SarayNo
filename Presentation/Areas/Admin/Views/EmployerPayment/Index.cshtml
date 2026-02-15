@@ -15,10 +15,15 @@
     var projectId = 0;
     var files = await UploadedFileService.GetFiles(nameof(EmployerPayment), [], null, default);
     var url = UploadedFileService.GetUrl();
+    decimal totalAmount = 0;
     if (project is not null)
     {
         projectId = project.Id;
-        var totalAmount = project.Invoices.Where(i => i.Type is InvoiceType.Settled or InvoiceType.Unsettled).SelectMany(i => i.Payoffs).Sum(i => i.Price);
+        foreach (var invoice in project.Invoices.Where(i => i.Type is InvoiceType.Settled or InvoiceType.Unsettled))
+        {
+            var amount = invoice.Amount - invoice.Discount;
+            totalAmount += amount;
+        }
         percentAmount = totalAmount * (project.Percent / 100);
     }
 }
@@ -48,7 +53,8 @@
         {
             <h3>@project.Title</h3>
             <h4>@project.Percent %</h4>
-            <h4>@percentAmount.ToNumeric()</h4>
+            <h4>مبلغ کل : @totalAmount.ToNumeric()</h4>
+            <h4> دستمزد: @percentAmount.ToNumeric()</h4>
             <div class="d-flex mt-3 justify-content-between">
                 @if (CheckPermission.Check(User, "EmployerPayment.Create"))
                 {

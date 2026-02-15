@@ -66,12 +66,14 @@
                 </tr>
                 @{
                     var index = 1;
+                    decimal totalRemain = 0;
                 }
                 @foreach (var item in Model)
                 {
                     
                     var paid = item.Payoffs?.Sum(i => i.Price) ?? 0;
                     var remain = item.Amount - (paid + item.Discount);
+                    totalRemain += remain;
                     <tr>
                         <td>@(index++)</td>
                         <td>@item.CostGroup.Title</td>
@@ -134,7 +136,9 @@
                 <tr>
                     <td colspan="4"></td>
                     <td>مجموع: @Model.Sum(i => i.Amount).ToNumeric()</td>
-                    <td colspan="3"></td>
+                    <td></td>
+                    <td>مجموع مانده: @totalRemain.ToNumeric()</td>
+                    <td colspan="4"></td>
                 </tr>
 
             </table>
