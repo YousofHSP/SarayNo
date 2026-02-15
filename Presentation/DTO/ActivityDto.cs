@@ -74,6 +74,7 @@ public class ActivityResDto : BaseDto<ActivityResDto, Activity>
 public class AddImageDto
 {
     public int ModelId { get; set; }
+    public int? ProjectId { get; set; }
     public int? AlbumId { get; set; }
     public IFormFile File { get; set; }
     public string Description { get; set; }

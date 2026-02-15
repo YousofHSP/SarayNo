@@ -196,7 +196,7 @@ public class ProjectController(
         await uploadedFileService.UploadFileAsync(dto.File, dto.AlbumId, nameof(Album), dto.ModelId, userId, ct,
             dto.Description);
 
-        return RedirectToAction("Images", new { projectId = dto.ModelId });
+        return RedirectToAction("Images", new { projectId = dto.ProjectId});
     }
 
     [HttpPost]
