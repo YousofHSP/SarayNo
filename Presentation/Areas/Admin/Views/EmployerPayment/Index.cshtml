@@ -19,11 +19,7 @@
     if (project is not null)
     {
         projectId = project.Id;
-        foreach (var invoice in project.Invoices.Where(i => i.Type is InvoiceType.Settled or InvoiceType.Unsettled))
-        {
-            var amount = invoice.Amount - invoice.Discount;
-            totalAmount += amount;
-        }
+        totalAmount = project.Invoices.Where(i => i.Type is InvoiceType.Settled or InvoiceType.Unsettled).Sum(i => i.Amount);
         percentAmount = totalAmount * (project.Percent / 100);
     }
 }
